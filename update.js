@@ -93,7 +93,12 @@ class AutoUpdater {
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const backupPath = path.join(backupDir, `backup-${timestamp}`);
             
-            execSync(`xcopy "${process.cwd()}" "${backupPath}" /E /I /H /Y`, { stdio: 'inherit' });
+            // Windows용 백업 명령어
+            if (process.platform === 'win32') {
+                execSync(`xcopy "${process.cwd()}" "${backupPath}" /E /I /H /Y`, { stdio: 'inherit' });
+            } else {
+                execSync(`cp -r "${process.cwd()}" "${backupPath}"`, { stdio: 'inherit' });
+            }
             
             console.log(`Backup created at: ${backupPath}`);
             return true;
@@ -105,11 +110,102 @@ class AutoUpdater {
 
     async downloadUpdate(downloadUrl) {
         try {
+            console.log('Downloading update from:', downloadUrl);
             const response = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
-            return response.data;
+            
+            const downloadPath = path.join(process.cwd(), 'update.zip');
+            fs.writeFileSync(downloadPath, response.data);
+            
+            console.log(`Update downloaded to: ${downloadPath}`);
+            return downloadPath;
         } catch (error) {
             console.error('Failed to download update:', error.message);
             throw error;
+        }
+    }
+
+    async extractUpdate(zipPath) {
+        try {
+            // 압축 해제를 위한 임시 디렉토리 생성
+            const tempDir = path.join(process.cwd(), 'temp_update');
+            if (fs.existsSync(tempDir)) {
+                fs.rmSync(tempDir, { recursive: true, force: true });
+            }
+            fs.mkdirSync(tempDir, { recursive: true });
+
+            // Windows에서 압축 해제
+            if (process.platform === 'win32') {
+                execSync(`powershell -Command "Expand-Archive -Path '${zipPath}' -DestinationPath '${tempDir}' -Force"`, { stdio: 'inherit' });
+            } else {
+                // Linux/macOS에서는 unzip 명령어 사용
+                execSync(`unzip -o '${zipPath}' -d '${tempDir}'`, { stdio: 'inherit' });
+            }
+
+            // GitHub zipball은 내부에 {owner}-{repo}-{commit} 디렉토리가 있음
+            const extractedDirs = fs.readdirSync(tempDir).filter(item => {
+                const itemPath = path.join(tempDir, item);
+                return fs.statSync(itemPath).isDirectory();
+            });
+
+            if (extractedDirs.length === 0) {
+                throw new Error('No extracted directory found');
+            }
+
+            const sourceDir = path.join(tempDir, extractedDirs[0]);
+            return { sourceDir, tempDir };
+        } catch (error) {
+            console.error('Failed to extract update:', error.message);
+            throw error;
+        }
+    }
+
+    async applyUpdate(sourceDir) {
+        try {
+            console.log('Applying update...');
+            
+            // 현재 디렉토리의 파일들을 업데이트
+            const updateFiles = fs.readdirSync(sourceDir);
+            
+            for (const file of updateFiles) {
+                const sourcePath = path.join(sourceDir, file);
+                const targetPath = path.join(process.cwd(), file);
+                
+                // node_modules, backup, temp 디렉토리는 건너뛰기
+                if (['node_modules', 'backup', 'temp', 'temp_update'].includes(file)) {
+                    continue;
+                }
+                
+                // 파일/디렉토리 복사
+                if (process.platform === 'win32') {
+                    execSync(`xcopy "${sourcePath}" "${targetPath}" /E /I /H /Y`, { stdio: 'inherit' });
+                } else {
+                    execSync(`cp -r "${sourcePath}" "${targetPath}"`, { stdio: 'inherit' });
+                }
+            }
+            
+            console.log('Update applied successfully!');
+            return true;
+        } catch (error) {
+            console.error('Failed to apply update:', error.message);
+            throw error;
+        }
+    }
+
+    async cleanup(zipPath, tempDir) {
+        try {
+            // 다운로드된 zip 파일 삭제
+            if (fs.existsSync(zipPath)) {
+                fs.unlinkSync(zipPath);
+            }
+            
+            // 임시 디렉토리 삭제
+            if (fs.existsSync(tempDir)) {
+                fs.rmSync(tempDir, { recursive: true, force: true });
+            }
+            
+            console.log('Cleanup completed');
+        } catch (error) {
+            console.error('Cleanup failed:', error.message);
         }
     }
 
@@ -125,13 +221,25 @@ class AutoUpdater {
         await this.createBackup();
 
         console.log('Downloading update...');
-        const updateData = await this.downloadUpdate(updateInfo.downloadUrl);
+        const zipPath = await this.downloadUpdate(updateInfo.downloadUrl);
 
-        // 여기서 실제 업데이트 압축 해제 및 적용 로직을 구현해야 합니다
-        console.log('Update downloaded. Manual installation required.');
-        console.log('Release notes:', updateInfo.releaseNotes);
-        
-        return true;
+        try {
+            console.log('Extracting update...');
+            const { sourceDir, tempDir } = await this.extractUpdate(zipPath);
+
+            console.log('Applying update...');
+            await this.applyUpdate(sourceDir);
+
+            console.log('Release notes:', updateInfo.releaseNotes);
+            console.log('Update completed successfully! Please restart the application.');
+            
+            return true;
+        } catch (error) {
+            console.error('Update failed:', error.message);
+            return false;
+        } finally {
+            await this.cleanup(zipPath, path.join(process.cwd(), 'temp_update'));
+        }
     }
 }
 
