@@ -1,11 +1,13 @@
 {
   "name": "YoBot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server/server.js"
+    "start": "node src/server/server.js",
+    "update": "node update.js",
+    "check-update": "node -e \"import('./update.js').then(m => new m.default().checkForUpdates().then(console.log))\""
   },
   "keywords": [],
   "author": "",

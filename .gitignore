@@ -1,3 +1,18 @@
+# YoBot 특정 항목 추가
+backup/
+temp/
+soop_chat_info_cache.json
+ 
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+ 
+# OS
+.DS_Store
+Thumbs.db
+
 # Logs
 logs
 *.log

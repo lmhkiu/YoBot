@@ -1,5 +1,17 @@
 @echo off
 
+echo ===========================================
+echo YoBot Auto Updater
+echo ===========================================
+ 
+:: 업데이트 확인 및 적용
+echo Checking for updates...
+call npm run update
+ 
+echo.
+echo Starting YoBot...
+echo ===========================================
+
 
 for /f %%i in ('node -e "(async () => { const config = await import('./config.js'); console.log(config.default.PORT.SERVER); })()"') do set SERVER_PORT=%%i
 for /f %%i in ('node -e "(async () => { const config = await import('./config.js'); console.log(config.default.PORT.CHAT_DISPLAY); })()"') do set CHAT_DISPLAY_PORT=%%i
