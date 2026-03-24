@@ -4,9 +4,14 @@ echo ===========================================
 echo YoBot Auto Updater
 echo ===========================================
  
-:: 업데이트 확인 및 적용
-echo Checking for updates...
-call npm run update
+:: update.js를 update-run.js로 복사
+copy "update.js" "update-run.js"
+ 
+:: 복사된 파일로 업데이트 실행
+call node "update-run.js"
+ 
+:: 임시 파일 삭제
+if exist "update-run.js" del "update-run.js"
  
 echo.
 echo Starting YoBot...
@@ -44,3 +49,4 @@ echo ===========================================
 echo Server startup completed!
 echo - Run page: http://localhost:13101/run.html
 echo ===========================================
+pause
