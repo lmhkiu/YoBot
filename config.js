@@ -30,10 +30,10 @@ const config = {
         "BOT_USERNAME": "꾸덕이"
     },
     "UPDATE": {
-        "GITHUB_OWNER": "lmhkiu",           // GitHub 사용자명
-        "GITHUB_REPO": "YoBot",              // 저장소 이름
-        "AUTO_UPDATE": true,                 // 자동 업데이트 활성화
-        "BACKUP_ENABLED": true               // 백업 활성화
+        "GITHUB_OWNER": "lmhkiu",
+        "GITHUB_REPO": "YoBot",
+        "AUTO_UPDATE": true,
+        "BACKUP_ENABLED": true
     }
 };
  

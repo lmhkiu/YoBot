@@ -1,0 +1,10 @@
+
+1. 코드 수정한다.
+2. package.json 버전을 올린다.
+3. 아래 git 명령어로 git에 업로드한다. 
+
+git add .
+git commit -m "Release version 1.0.1"
+git push origin main
+git tag -a v1.0.1 -m "Release version 1.0.1"
+git push origin v1.0.1
