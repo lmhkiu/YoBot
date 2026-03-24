@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="html-head">꾸덕이 YoBot</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <canvas>
+
+        </canvas>
+    </div>
+    <div id="chat-container">
+        <h3>채팅 타이틀</h3>
+        <div id="chat-messages">
+            <div class="chat-message">
+                <img class="chat-message-platform-icon" src="./assets/chat/icon/chzzk/icon_24.png" alt="chzzk">
+                <div class="chat-message-nickname-container">  
+                    <img class="chat-message-badge" src="./assets/chat/badge/fan_03.png" alt="badge">
+                    <div class="chat-message-nickname">꾸덕이</div>
+                </div>
+                <div class="chat-message-content-container">
+                    안녕하세요!<img class="chat-message-emote" src="./assets/chat/emote/b_05.gif" alt="emote">안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!
+                </div>
+            </div>
+            <div class="chat-message">
+                <img class="chat-message-platform-icon" src="./assets/chat/icon/chzzk/icon_24.png" alt="chzzk">
+                <div class="chat-message-nickname-container">  
+                    <img class="chat-message-badge" src="./assets/chat/badge/fan_03.png" alt="badge">
+                    <div class="chat-message-nickname">YoBot</div>
+                </div>
+                <div class="chat-message-content-container">
+                    안녕하세요! 안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!안녕하세요!
+                </div>
+            </div>
+        </div>
+        <div id="chat-controller">
+            <div id="broad_time">00:00:00</div>
+            <div class="memo-container">
+                <textarea id="memo-input" placeholder="메모할 내용을 입력하세요..."></textarea>
+                <button id="save-memo-btn">메모 저장</button>
+                <div id="memo-status" class="memo-status"></div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="lib/phaser.js"></script>
+    <script type="module" src="app.js"></script>
+    
+</body>
+
+</html>

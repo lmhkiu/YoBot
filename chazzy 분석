@@ -1,0 +1,35 @@
+chazzy 사이트(https://chazzy.vercel.app/)는 Next.js 기반 오픈소스 프로젝트(GitHub: https://github.com/AiOO/chazzy)로, 각 플랫폼의 채팅을 WebSocket 또는 커스텀 프로토콜을 통해 실시간으로 가져와 통합 표시합니다. 모든 방법은 비공식적입니다(공식 REST API가 아닌 WebSocket/커스텀 연결 사용).
+
+플랫폼별 채팅 가져오기 방식:
+
+Chzzk (치지직):
+WebSocket 연결 (wss://kr-ss1.chat.naver.com/chat).
+Chzzk API에서 액세스 토큰 필요.
+치즈 후원 티어(0~4) 파싱.
+라이브 상태 30초마다 폴링.
+
+Twitch:
+WebSocket 연결 (wss://irc-ws.chat.twitch.tv).
+IRC 프로토콜 + 태그 파싱.
+Twitch API에서 배지 가져오기.
+클라이언트 ID와 액세스 토큰 필요.
+
+Soop (숲, 구 AfreecaTV):
+커스텀 바이너리 프로토콜 (%SF 시작, %EC 종료 구분자).
+비트 플래그로 메시지 속성 파싱.
+스테이션 메타데이터 30초마다 폴링.
+SVG 배지 아이콘 사용.
+
+YouTube:
+클라이언트 사이드 InnerTube API (youtubei.js 라이브러리).
+API 키 불필요 (공식 YouTube Data API 우회).
+CORS 우회를 위한 커스텀 프록시 (innertube.proxy.aioo.ooo).
+이벤트 기반 (chat-update, metadata-update).
+비디오 메타데이터 30초마다 폴링.
+
+전체 구조:
+Next.js 앱에서 각 플랫폼 핸들러가 WebSocket/API 연결을 관리.
+메시지를 통합 파이핑라인으로 처리 (스마트 배칭, 성능 최적화).
+OBS 오버레이 지원, 환경 변수로 설정.
+채널 ID를 URL 파라미터로 받아 동적 연결.
+이 구조를 Phaser 프로젝트에 적용하려면 JavaScript에서 각 WebSocket 연결을 구현하세요. Chzzk의 경우 채팅 채널 ID를 live-detail API로 먼저 가져온 후 WebSocket에 연결.

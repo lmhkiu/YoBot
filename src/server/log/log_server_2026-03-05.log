@@ -1,0 +1,18 @@
+[2026-03-05T05:05:29.573Z] [Uncaught Exception] Error: listen EADDRINUSE: address already in use :::13102
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at new WebSocketServer (C:\vscode project\YoBot\node_modules\ws\lib\websocket-server.js:106:20)
+    at ChatHub.createWebSocketDisplay (file:///C:/vscode%20project/YoBot/src/server/chat/ChatHub.js:45:20)
+    at ChatHub.init (file:///C:/vscode%20project/YoBot/src/server/chat/ChatHub.js:24:20)
+    at file:///C:/vscode%20project/YoBot/src/server/server.js:63:23
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[2026-03-05T05:07:07.588Z] [Uncaught Exception] Error: listen EADDRINUSE: address already in use :::13102
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at new WebSocketServer (C:\vscode project\YoBot\node_modules\ws\lib\websocket-server.js:106:20)
+    at ChatHub.createWebSocketDisplay (file:///C:/vscode%20project/YoBot/src/server/chat/ChatHub.js:45:20)
+    at ChatHub.init (file:///C:/vscode%20project/YoBot/src/server/chat/ChatHub.js:24:20)
+    at file:///C:/vscode%20project/YoBot/src/server/server.js:63:23
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)

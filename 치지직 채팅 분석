@@ -1,0 +1,39 @@
+chat 객체 
+
+chat = {
+  svcid: 'game',
+  cid: 'N2Juo8',
+  mbrCnt: 1392,
+  uid: '9fb17feb8b5992f330c46e27cf7eb64d',
+  profile: '{"userIdHash":"9fb17feb8b5992f330c46e27cf7eb64d","nickname":"기형조류","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[]}',
+  msg: 'FA 레쓰고',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"TVeJjhEaX3cR1ksGpG5MDHD9/OstZ7CtExoiJg+WyepfiUebJoUsOPBaMH49ZuqlgvNSXys5XLEHt8PKmraX5Q==","streamingChannelId":"0d027498b18371674fac3ed17247e6b8","emojis":{}}',
+  ctime: 1771991966944,
+  utime: 1771991966944,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1771991966944
+}
+기형조류:FA 레쓰고
+
+
+
+
+Chzzk CHAT, CHEESE_CHAT, 예외 채팅 메시지 수신 {
+  svcid: 'game',
+  cid: 'N2KB4R',
+  mbrCnt: 3177,
+  uid: 'anonymous',
+  profile: null,
+  msg: '미츠루기 실수맞음? 세이프티 해제하고 던진거잖아',
+  msgTypeCode: 10,
+  msgStatusType: 'NORMAL',
+  extras: '{"isAnonymous":true,"payType":"CURRENCY","payAmount":1000,"donationId":"25tq53VxPH78aI6vOQ5ceNVCOtaSw","donationType":"CHAT","continuousDonationDays":0,"weeklyRankList":[{"userIdHash":"7edf09b68cf378a61960e752dca489a4","nickName":"크크맨","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":44640,"ranking":1},{"userIdHash":"80dc65ac73d16c3ad770373245847976","nickName":"어흥이90","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":32000,"ranking":2},{"userIdHash":"a2cf41797ae9360943a7aea2c307f8ac","nickName":"노란깔깔이","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":27200,"ranking":3},{"userIdHash":"91a21c8a07970ebfbd2decbf2ae07102","nickName":"은드기","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":24400,"ranking":4},{"userIdHash":"650fe52335ed8156658faf2f1bcaaaa7","nickName":"폭주하는 킬러 6022","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":23000,"ranking":5},{"userIdHash":"fa95fcc5f1feea0bfc666e3a9dc42bf8","nickName":"불작볶음","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":18600,"ranking":6},{"userIdHash":"d728c0f566e7d86e58ee7689f6af85c5","nickName":"산삼부엉","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":18200,"ranking":7},{"userIdHash":"2d0aa8ae92ee303b39b57fcd5b9a9002","nickName":"제네식가오가이가","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":14000,"ranking":8},{"userIdHash":"8d2e358d18535e38490417047e614acc","nickName":"Totalingplayer1","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":11000,"ranking":9},{"userIdHash":"b3a8b104d27af7d66501f31e4af5585c","nickName":"손익맨","verifiedMark":false,"activatedAchievementBadgeIds":[],"donationAmount":10000,"ranking":10}]}',
+  ctime: 1772168777429,
+  utime: 1772168777429,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1772168777427
+}

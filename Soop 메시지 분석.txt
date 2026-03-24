@@ -1,0 +1,54 @@
+<img class="emoticon" src="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/626a40027ac3c/3_80.png?ver=1" data-default-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/626a40027ac3c/3_80.png?ver=1" data-static-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/626a40027ac3c/3_80.png?ver=1" alt="OGQ 이모티콘 이미지" onerror="this.src='https://res.sooplive.co.kr/images/chat/ogq_default.svg'">
+
+
+
+
+<img class="emoticon" src="https://static.file.sooplive.co.kr/signature_emoticon/kaksjak0730/887565a25660616b2.webp" data-default-img="https://static.file.sooplive.co.kr/signature_emoticon/kaksjak0730/887565a25660616b2.webp" data-static-img="https://static.file.sooplive.co.kr/signature_emoticon/kaksjak0730/100765a25660925d4.png" onerror="this.src='https://res.sooplive.co.kr/images/chat/ogq_default.svg'">
+
+
+Soop WebSocket 메시지: [
+  '\x1B\t000500014100',
+  '/응원봉//응원봉//응원봉//응원봉//응원봉//응원봉/',
+  'xoflaqk0673',
+  '0',
+  '0',
+  '-1',
+  '네즈하',
+  '805945376|557056',
+  '26',
+  '1915BF',
+  '6F6DD6',
+  '26',
+  '-1',
+  '',
+  '-1',
+  ''
+]
+
+
+****팬클럽 메시지****
+
+<div class="chatting-list-item" user-type=""><div class="donation-container"><div class="donation-bubble"><div class="ceremony-img custom-mobile-img"><img src="https://res.sooplive.co.kr/new_player/items/m_balloon_1.png?v=1678839637" alt="별풍선"></div><div class="info-box"><button type="button" class="name" user_id="ceolsw" user_nick="바르옹">바르옹</button><span class="money">별풍선 <em>1</em>개</span></div></div></div></div>
+
+그 다음줄.
+<div class="chatting-list-item" user-type="fan"><div class="system-message donation-state"><p class="msg"><button type="button" class="name" user_id="ceolsw" user_nick="바르옹">바르옹</button>님이 12,766번째 팬클럽이 되셨습니다.</p></div></div>
+
+
+Soop WebSocket 메시지: [
+  '\x1B\t001800011800',
+  'kaksjak0730',
+  'ceolsw',
+  '바르옹',
+  '1',
+  '12766',
+  '0',
+  '3520',
+  '1',
+  '0',
+  '0',
+  'kor_custom06',
+  'd380d7a3-6fdc-45a0-8da7-b2b2347ef420',
+  'ko_KR',
+  '1678839637',
+  ''
+]

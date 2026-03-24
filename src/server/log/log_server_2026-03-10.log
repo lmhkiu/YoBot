@@ -1,0 +1,11 @@
+[2026-03-10T06:03:28.860Z] [Uncaught Exception] ReferenceError: printParts is not defined
+    at SoopScrapper.onSocketMessage (file:///C:/vscode%20project/YoBot/src/server/chat/soop/SoopScrapper.js:170:9)
+    at callListener (C:\vscode project\YoBot\node_modules\ws\lib\event-target.js:290:14)
+    at WebSocket.onMessage (C:\vscode project\YoBot\node_modules\ws\lib\event-target.js:209:9)
+    at WebSocket.emit (node:events:508:28)
+    at Receiver.receiverOnMessage (C:\vscode project\YoBot\node_modules\ws\lib\websocket.js:1225:20)
+    at Receiver.emit (node:events:508:28)
+    at Receiver.dataMessage (C:\vscode project\YoBot\node_modules\ws\lib\receiver.js:569:14)
+    at Receiver.getData (C:\vscode project\YoBot\node_modules\ws\lib\receiver.js:496:10)
+    at Receiver.startLoop (C:\vscode project\YoBot\node_modules\ws\lib\receiver.js:167:16)
+    at Receiver._write (C:\vscode project\YoBot\node_modules\ws\lib\receiver.js:94:10)
