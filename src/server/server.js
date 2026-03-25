@@ -98,7 +98,7 @@ app.post('/start-chat', async (req, res) => {
 
         // shutdown 콜백 설정
         chatHub.setShutdownCallback(() => {
-            //shutdown();
+            shutdown();
         });
 
         await chatHub.init();
