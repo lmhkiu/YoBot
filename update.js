@@ -188,7 +188,7 @@ class AutoUpdater {
                 }
 
                 // 중요 디렉토리 건너뛰기
-                if (['node_modules', 'backup', 'temp', 'temp_update', 'init.bat', 'run.bat'].includes(file)) {
+                if (['node_modules', 'backup', 'temp', 'temp_update', 'run.bat'].includes(file)) {
                     console.log(`Skipping ${file} (protected directory)`);
                     continue;
                 }
