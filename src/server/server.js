@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import ChatHub from './chat/ChatHub.js';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
+import GistBackup from './gist/GistBackup.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,45 +13,66 @@ const __dirname = path.dirname(__filename);
 let server = null;
 let chatHub = null;
 
+let gistBackup = null;
+let broadcastStartDate = null; // 방송 시작 날짜 저장
 
 const app = express();
 app.use(express.json());
 
 
-app.post('/api/test-memo', async (req, res) => {
-    try {
-        const { fileName, content } = req.body;
-        console.log('메모 저장 요청:', { fileName, content });
-        
-        res.json({ success: true, message: '메모가 저장되었습니다.' });
-    } catch (error) {
-        console.error('메모 저장 오류:', error);
-        res.status(500).json({ error: '서버 오류가 발생했습니다.' });
-    }
-});
 
-// 메모 저장 API 엔드포인트
+// 방송 시작 날짜 기준으로 오늘 날짜 반환
+function getBroadcastDate() {
+    if (!broadcastStartDate) {
+        return new Date().toISOString().split('T')[0]; // 방송 시작 전이면 현재 날짜
+    }
+    return broadcastStartDate.toISOString().split('T')[0];
+}
+ 
+// 방송 날짜 기준 파일명 생성
+function getBroadcastDateFileName() {
+    const date = getBroadcastDate();
+    return `memo_${date.replace(/-/g, '')}.txt`;
+}
+
+// 메모 저장 API 엔드포인트 수정
 app.post('/api/save-memo', async (req, res) => {
     try {
-        const { fileName, content, timestamp } = req.body;
+        const { content, timestamp } = req.body;
         
-        if (!fileName || !content) {
-            return res.status(400).json({ error: '파일 이름과 내용이 필요합니다.' });
+        if (!content) {
+            return res.status(400).json({ error: '내용이 필요합니다.' });
         }
 
-        // YoBot 디렉토리에 파일 저장
-        // const memoPath = path.join(__dirname, '..', fileName);
-        const memoPath = path.join(process.cwd(), fileName);
+        // 방송 시작 날짜 기준으로 파일명 생성
+        const fileName = getBroadcastDateFileName();
+        
+        // memo 디렉토리가 없으면 생성
+        const memoDir = path.join(process.cwd(), 'memo');
+        if (!fs.existsSync(memoDir)) {
+            fs.mkdirSync(memoDir, { recursive: true });
+        }
+        
+        const memoPath = path.join(memoDir, fileName);
         
         // 파일이 존재하면 내용을 추가, 없으면 새로 생성
         await fsPromises.appendFile(memoPath, content + ' (' + timestamp + ')\n', 'utf8');
         
-        res.json({ success: true, message: '메모가 저장되었습니다.' });
+        console.log(`메모 저장됨: ${fileName} - ${content}`);
+        
+        res.json({ 
+            success: true, 
+            message: '메모가 저장되었습니다.',
+            fileName: fileName
+        });
     } catch (error) {
         console.error('메모 저장 오류:', error);
         res.status(500).json({ error: '서버 오류가 발생했습니다.' });
     }
 });
+
+
+
 
 // 설정 저장 엔드포인트
 app.post('/save-config', async (req, res) => {
@@ -92,6 +114,13 @@ app.post('/start-chat', async (req, res) => {
                 message: '채팅이 이미 실행 중입니다.' 
             });
         }
+
+
+        // 방송 시작 날짜 저장
+        broadcastStartDate = new Date();
+        console.log(`방송 시작 날짜 설정: ${broadcastStartDate.toISOString().split('T')[0]}`);
+        
+
         await loadChannelIDs();
         const ChatHub = (await import('./chat/ChatHub.js')).default;
         chatHub = new ChatHub();
@@ -103,6 +132,12 @@ app.post('/start-chat', async (req, res) => {
 
         await chatHub.init();
         
+
+        // gist 메모 백업 기능
+        // 서버 시작 시 백업 초기화
+        if (config.UPDATE.GIST.TOKEN) {
+            gistBackup = new GistBackup(config);
+        }
  
         res.json({ 
             success: true, 
@@ -203,9 +238,15 @@ process.on('unhandledRejection', (reason, promise) => {
 
 
 // shutdown 함수 추가
-function shutdown() {
+async function shutdown() {
     console.log('서버 종료 시작...');
     
+
+    if (gistBackup) {
+        console.log('Gist 백업 실행 중...');
+        await gistBackup.backupOnShutdown(broadcastStartDate);
+    }
+  
     // ChatHub 자원 해제
     if (chatHub) {
         chatHub.destroy();
@@ -221,3 +262,5 @@ function shutdown() {
         process.exit();
     }
 }
+
+

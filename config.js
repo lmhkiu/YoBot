@@ -17,10 +17,10 @@ const config = {
     "CHZZK": {
         "URL": "wss://kr-ss1.chat.naver.com/chat",
         "WS_URL": "wss://kr-ss3.chat.naver.com/chat",
-        "CHANNEL_ID": "bb382c2c0cc9fa7c86ab3b037fb5799c"
+        "CHANNEL_ID": "502f2a93037ff6984286d4104c1cac73"
     },
     "SOOP": {
-        "CHANNEL_ID": "iamquaddurup",
+        "CHANNEL_ID": "mhc0114",
         "WS_URL": "wss://soop.live/chat",
         "PLAYER_API_URL": "https://live.afreecatv.com/afreeca/player_live_api.php",
         "CHAT_INFO_CACHE_FILE": "./soop_chat_info_cache.json"
@@ -33,7 +33,11 @@ const config = {
         "GITHUB_OWNER": "lmhkiu",
         "GITHUB_REPO": "YoBot",
         "AUTO_UPDATE": true,
-        "BACKUP_ENABLED": true
+        "BACKUP_ENABLED": true,
+        "GIST": {
+            "TOKEN": "pnybXeIyty6Oh76R6YPQ3Rp4eTin0M0P0e3r",
+            "MAX_GISTS": 100
+        }
     }
 };
  
