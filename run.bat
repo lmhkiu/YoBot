@@ -1,52 +1,29 @@
 @echo off
+chcp 65001 >nul
 
 echo ===========================================
-echo YoBot Auto Updater
-echo ===========================================
- 
-:: update.js를 update-run.js로 복사
-copy "update.js" "update-run.js"
- 
-:: 복사된 파일로 업데이트 실행
-call node "update-run.js"
- 
-:: 임시 파일 삭제
-if exist "update-run.js" del "update-run.js"
- 
-echo.
-echo Starting YoBot...
+echo YoBot Launcher
 echo ===========================================
 
+:: 시작 시 임시 파일 정리
+if exist "init_new.bat" del "init_new.bat"
 
-for /f %%i in ('node -e "(async () => { const config = await import('./config.js'); console.log(config.default.PORT.SERVER); })()"') do set SERVER_PORT=%%i
-for /f %%i in ('node -e "(async () => { const config = await import('./config.js'); console.log(config.default.PORT.CHAT_DISPLAY); })()"') do set CHAT_DISPLAY_PORT=%%i
+:: 최신 init.bat 다운로드
+echo Downloading latest init.bat...
+curl -f -s -o "init_new.bat" "https://raw.githubusercontent.com/lmhkiu/YoBot/main/init.bat"
 
-
-:: 포트 %SERVER_PORT%을 사용하는 프로세스 찾기
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%SERVER_PORT%') do (
-    echo Found process %%a using port %SERVER_PORT%, terminating...
-    taskkill /F /PID %%a 2>nul
+:: 다운로드 성공 여부 확인
+if exist "init_new.bat" (
+    echo Download successful
+    move /y "init_new.bat" "init.bat"
+) else (
+    echo Download failed, using existing init.bat
 )
 
-:: 포트 %CHAT_DISPLAY_PORT%을 사용하는 프로세스 찾기
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%CHAT_DISPLAY_PORT%') do (
-    echo Found process %%a using port %CHAT_DISPLAY_PORT%, terminating...
-    taskkill /F /PID %%a 2>nul
-)
+:: init.bat 실행
+call init.bat
 
-
-echo Starting server.js...
-start "Server" cmd /k node src/server/server.js
-
-timeout /t 2 /nobreak >nul
-
-:: 설정 페이지 열기
-echo Opening configuration page...
-start http://localhost:13101/run.html
-
-echo.
-echo ===========================================
-echo Server startup completed!
-echo - Run page: http://localhost:13101/run.html
-echo ===========================================
+:: 임시 정리
+if exist "init.bat" del "init.bat"
+if exist "init_new.bat" del "init_new.bat"
 pause

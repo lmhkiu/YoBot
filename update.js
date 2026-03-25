@@ -6,7 +6,7 @@ import { execSync } from 'child_process';
 class AutoUpdater {
     constructor() {
         this.config = null;
-        
+
     }
 
     async loadConfig() {
@@ -66,15 +66,15 @@ class AutoUpdater {
     compareVersions(v1, v2) {
         const parts1 = v1.split('.').map(Number);
         const parts2 = v2.split('.').map(Number);
-        
+
         for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
             const part1 = parts1[i] || 0;
             const part2 = parts2[i] || 0;
-            
+
             if (part1 > part2) return 1;
             if (part1 < part2) return -1;
         }
-        
+
         return 0;
     }
 
@@ -92,19 +92,19 @@ class AutoUpdater {
 
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const backupPath = path.join(backupDir, `backup-${timestamp}`);
-            
+
             // Windows용 백업 명령어
             if (process.platform === 'win32') {
                 execSync(`xcopy "${process.cwd()}" "${backupPath}" /E /I /H /Y`, { stdio: 'inherit' });
             } else {
                 execSync(`cp -r "${process.cwd()}" "${backupPath}"`, { stdio: 'inherit' });
             }
-            
+
             console.log(`Backup created at: ${backupPath}`);
             return true;
         } catch (error) {
             console.error('Failed to create backup:', error.message);
-            return false;
+            return false; e
         }
     }
 
@@ -112,10 +112,10 @@ class AutoUpdater {
         try {
             console.log('Downloading update from:', downloadUrl);
             const response = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
-            
+
             const downloadPath = path.join(process.cwd(), 'update.zip');
             fs.writeFileSync(downloadPath, response.data);
-            
+
             console.log(`Update downloaded to: ${downloadPath}`);
             return downloadPath;
         } catch (error) {
@@ -136,10 +136,13 @@ class AutoUpdater {
             // Windows에서 압축 해제 (PowerShell 사용)
             if (process.platform === 'win32') {
                 try {
-                    execSync(`powershell -Command "Expand-Archive -Path '${zipPath}' -DestinationPath '${tempDir}' -Force"`, { stdio: 'inherit' });
+                    execSync(`tar -xf "${zipPath}" -C "${tempDir}"`, {
+                        stdio: 'inherit',
+                        encoding: 'utf8'
+                    });
                 } catch (error) {
-                    // PowerShell이 실패하면 tar 사용 (Windows 10+)
-                    execSync(`tar -xf "${zipPath}" -C "${tempDir}"`, { stdio: 'inherit' });
+                    // 최후의 수단으로 PowerShell
+                    execSync(`powershell -Command "Expand-Archive -Path '${zipPath}' -DestinationPath '${tempDir}' -Force"`);
                 }
             } else {
                 // Linux/macOS에서는 unzip 명령어 사용
@@ -168,26 +171,26 @@ class AutoUpdater {
     async applyUpdate(sourceDir) {
         try {
             console.log('Applying update...');
-            
+
             const updateFiles = fs.readdirSync(sourceDir);
             console.log(`Files to update: ${updateFiles.length}`);
-            
+
             for (const file of updateFiles) {
                 const sourcePath = path.join(sourceDir, file);
                 const targetPath = path.join(process.cwd(), file);
-                
+
                 // update-run.js는 건너뛰기 (실행 중인 임시 파일)
                 if (file === 'update-run.js') {
                     console.log(`Skipping ${file} (temporary execution file)`);
                     continue;
                 }
-                
+
                 // 중요 디렉토리 건너뛰기
-                if (['node_modules', 'backup', 'temp', 'temp_update'].includes(file)) {
+                if (['node_modules', 'backup', 'temp', 'temp_update', 'init.bat'].includes(file)) {
                     console.log(`Skipping ${file} (protected directory)`);
                     continue;
                 }
-                
+
                 try {
                     // 기존 파일/디렉토리 삭제
                     if (fs.existsSync(targetPath)) {
@@ -197,21 +200,21 @@ class AutoUpdater {
                             fs.unlinkSync(targetPath);
                         }
                     }
-                    
+
                     // 파일/디렉토리 복사
                     if (fs.statSync(sourcePath).isDirectory()) {
                         fs.cpSync(sourcePath, targetPath, { recursive: true });
                     } else {
                         fs.copyFileSync(sourcePath, targetPath);
                     }
-                    
+
                     console.log(`Updated: ${file}`);
                 } catch (fileError) {
                     console.error(`Failed to update ${file}:`, fileError.message);
                     // 개별 파일 실패는 전체 업데이트를 중단시키지 않음
                 }
             }
-            
+
             console.log('Update applied successfully!');
             return true;
         } catch (error) {
@@ -227,13 +230,13 @@ class AutoUpdater {
                 fs.unlinkSync(zipPath);
                 console.log('Cleaned up: update.zip');
             }
-            
+
             // 임시 디렉토리 삭제
             if (fs.existsSync(tempDir)) {
                 fs.rmSync(tempDir, { recursive: true, force: true });
                 console.log('Cleaned up: temp_update directory');
             }
-            
+
             console.log('Cleanup completed');
         } catch (error) {
             console.error('Cleanup failed:', error.message);
@@ -241,27 +244,27 @@ class AutoUpdater {
     }
 
     async performUpdate() {
-
         if (!this.config) {
             await this.loadConfig();
         }
-        
+
+        let zipPath = null;
+        let tempDir = null;
+
         try {
             const updateInfo = await this.checkForUpdates();
-            
+
             if (!updateInfo.hasUpdate) {
                 console.log(updateInfo.message || 'No updates available');
                 return false;
             }
 
-            console.log('Update available! Creating backup...');
-            await this.createBackup();
-
             console.log('Downloading update...');
-            const zipPath = await this.downloadUpdate(updateInfo.downloadUrl);
+            zipPath = await this.downloadUpdate(updateInfo.downloadUrl);
 
             console.log('Extracting update...');
-            const { sourceDir, tempDir } = await this.extractUpdate(zipPath);
+            const { sourceDir, tempDir: extractedTempDir } = await this.extractUpdate(zipPath);
+            tempDir = extractedTempDir;
 
             console.log('Applying update...');
             await this.applyUpdate(sourceDir);
@@ -269,16 +272,15 @@ class AutoUpdater {
             console.log('Release notes:');
             console.log(updateInfo.releaseNotes || 'No release notes available');
             console.log('Update completed successfully! Please restart the application.');
-            
+
             return true;
         } catch (error) {
             console.error('Update failed:', error.message);
             return false;
         } finally {
-            // cleanup 호출을 위해 zipPath와 tempDir을 finally 밖에서 관리
-            const zipPath = path.join(process.cwd(), 'update.zip');
-            const tempDir = path.join(process.cwd(), 'temp_update');
-            await this.cleanup(zipPath, tempDir);
+            if (zipPath && tempDir) {
+                await this.cleanup(zipPath, tempDir);
+            }
         }
     }
 }
