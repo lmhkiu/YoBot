@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import axios from 'axios';
-import { execSync } from 'child_process';
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const { execSync } = require('child_process');
 
 class AutoUpdater {
     constructor() {
@@ -11,8 +11,8 @@ class AutoUpdater {
 
     async loadConfig() {
         try {
-            const module = await import('./config.js');
-            this.config = module.default;
+            const config = require('./config.js');
+            this.config = config;
         } catch (error) {
             console.error('Failed to load config:', error.message);
         }
@@ -104,7 +104,7 @@ class AutoUpdater {
             return true;
         } catch (error) {
             console.error('Failed to create backup:', error.message);
-            return false; e
+            return false;
         }
     }
 
@@ -186,7 +186,7 @@ class AutoUpdater {
                 }
 
                 // 중요 디렉토리 건너뛰기
-                if (['node_modules', 'backup', 'temp', 'temp_update', 'init.bat'].includes(file)) {
+                if (['node_modules', 'backup', 'temp', 'temp_update', 'init.bat', 'run.bat'].includes(file)) {
                     console.log(`Skipping ${file} (protected directory)`);
                     continue;
                 }
@@ -289,4 +289,5 @@ class AutoUpdater {
 const updater = new AutoUpdater();
 updater.performUpdate().catch(console.error);
 
-export default AutoUpdater;
+
+module.exports = AutoUpdater;

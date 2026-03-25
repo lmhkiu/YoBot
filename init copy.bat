@@ -40,17 +40,19 @@ echo ===========================================
 
 echo.
 :: config.js에서 포트 추출 (문자열 파싱)
-echo Extracting ports from config.js...
-for /f "tokens=2 delims=:" %%i in ('findstr "SERVER.*[0-9]" config.js') do set SERVER_PORT=%%i
-for /f "tokens=2 delims=:" %%i in ('findstr "CHAT_DISPLAY.*[0-9]" config.js') do set CHAT_DISPLAY_PORT=%%i
+:: SERVER_PORT 추출
+
+ 
+:: CHAT_DISPLAY_PORT 추출
 
 :: 공백 제거
-set SERVER_PORT=%SERVER_PORT: =%
-set CHAT_DISPLAY_PORT=%CHAT_DISPLAY_PORT: =%
+set SERVER_PORT= 13101
+set CHAT_DISPLAY_PORT= 13102
 
 echo Server Port: %SERVER_PORT%
 echo Chat Display Port: %CHAT_DISPLAY_PORT%
-
+echo.
+echo Terminating processes using these ports...
 :: 포트 %SERVER_PORT%을 사용하는 프로세스 찾기
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%SERVER_PORT%') do (
     echo Found process %%a using port %SERVER_PORT%, terminating...
