@@ -1,7 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+import { execSync } from 'child_process';
+// 수정 후
+import config from './config.js';
 
 class AutoUpdater {
     constructor() {
@@ -11,7 +13,7 @@ class AutoUpdater {
 
     async loadConfig() {
         try {
-            const config = require('./config.js');
+            // 수정 후
             this.config = config;
         } catch (error) {
             console.error('Failed to load config:', error.message);
@@ -288,6 +290,3 @@ class AutoUpdater {
 // 기본 실행 로직
 const updater = new AutoUpdater();
 updater.performUpdate().catch(console.error);
-
-
-module.exports = AutoUpdater;
