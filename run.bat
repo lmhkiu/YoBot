@@ -65,9 +65,13 @@ for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%CHAT_DISPLAY_PORT%') do (
 
 
 echo Starting server.js...
-start "Server" cmd /k node src/server/server.js
+::start "Server" cmd /k node src/server/server.js
+start /B node src/server/server.js
 
-timeout /t 2 /nobreak >nul
+:wait_for_server
+timeout /t 1 /nobreak >nul
+netstat -ano | findstr :%SERVER_PORT% >nul
+if errorlevel 1 goto wait_for_server
 
 :: 설정 페이지 열기
 echo Opening configuration page...
@@ -78,4 +82,4 @@ echo ===========================================
 echo Server startup completed!
 echo - Run page: http://localhost:%SERVER_PORT%/run.html
 echo ===========================================
-pause
+exit

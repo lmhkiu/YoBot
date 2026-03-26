@@ -16,6 +16,7 @@ export default class ChatHub {
         this.twitchScrapper = null;
         this.wss = null;
         this.clients = [];
+    
     }
 
     async init() {
@@ -39,11 +40,10 @@ export default class ChatHub {
         await this.twitchScrapper.connectToTwitchChat();
 
 
-        // 모든 연결이 완료된 후 방송 시간 전송
-        // if (this.soopScrapper.chatInfo && this.soopScrapper.chatInfo.btime) {
-        //     this.soopScrapper.sendBroadTime(this.soopScrapper.chatInfo);
-        // }
+    }
 
+    getBroadcastDate() {
+        return this.soopScrapper.getBroadcastDate();
     }
 
     //포메터와 통신할 소켓, scarpper가 서버가 된다. 치지직 채팅 서버 연결은 클라이언트지만.

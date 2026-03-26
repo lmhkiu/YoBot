@@ -19,6 +19,7 @@ export default class ChatDisplay {
         this.userColorCache = new Map();
 
         this.chatMemoController = null;
+        this.autoScrollEnabled = true;
     }
 
     async init(chatMemoController) {
@@ -37,6 +38,25 @@ export default class ChatDisplay {
             }));
 
         };
+
+        this.ws.onclose = (event) => {
+            console.log('ChatDisplay disconnected from server', event);
+            
+            // 서버 종료로 판단하고 페이지 닫기
+            if (event.code !== 1000) { // 정상 종료가 아닌 경우
+                console.log('Server appears to be shutdown, closing window...');
+                window.close();
+            }
+        };
+
+        // 스크롤 이벤트 리스너 추가
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.addEventListener('scroll', () => {
+            // 스크롤이 가장 아래에 있는지 확인
+            const isAtBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - config.SCROLL.BOTTOM_TOLERANCE;
+            this.autoScrollEnabled = isAtBottom;
+        });
+
         this.ws.onmessage = (event) => {
             const chatData = JSON.parse(event.data);
             console.log("Received message:", chatData);
@@ -68,7 +88,11 @@ export default class ChatDisplay {
             }
 
             chatMessages.insertAdjacentHTML('beforeend', html);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 자동 스크롤이 활성화된 경우에만 아래로 스크롤
+            if (this.autoScrollEnabled) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
         };
     }
 

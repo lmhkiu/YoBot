@@ -227,7 +227,7 @@ export default config;`;
                 showStatus('설정 저장에 실패했습니다: ' + error.message, 'error');
             }
         }
-
+        let isAutoClosing = false;
         async function startChat() {
             try {
                 await saveConfig();
@@ -240,7 +240,10 @@ export default config;`;
 
                 if (response.ok) {
                     showStatus('채팅 연결이 시작되었습니다! 🚀', 'success');
-
+                    
+                    // 자동 닫기 플래그 설정
+                    isAutoClosing = true;
+                    
                     // 2. 1초 후 index.html 호출
                     setTimeout(() => {
                         window.open('http://localhost:' + document.getElementById('serverPort').value, '_blank');
@@ -276,6 +279,26 @@ export default config;`;
         window.addEventListener('load', () => {
             loadConfig();
         });
+
+        // 페이지 닫힐 때 서버 종료 신호 보내기
+        window.addEventListener('beforeunload', async (event) => {
+
+            // 자동 닫기일 경우 서버 종료 신호 보내지 않음
+            if (isAutoClosing) {
+                return;
+            }
+            
+            try {
+                
+                await fetch('/shutdown', {
+                    method: 'POST',
+                    keepalive: true  // 페이지가 닫히기 전에 요청이 완료되도록 보장
+                });
+            } catch (error) {
+                console.error('서버 종료 신호 전송 실패:', error);
+            }
+        });
+
     </script>
 </body>
 

@@ -5,6 +5,9 @@ const config = {
         "MAIN": "SceneMain"
     },
     "MAX_MESSAGES": 200,
+    "SCROLL": {
+        "BOTTOM_TOLERANCE": 10
+    },
     "PORT": {
         "SERVER": 13101,
         "CHAT_DISPLAY": 13102
@@ -20,13 +23,13 @@ const config = {
         "CHANNEL_ID": "502f2a93037ff6984286d4104c1cac73"
     },
     "SOOP": {
-        "CHANNEL_ID": "mhc0114",
+        "CHANNEL_ID": "kimjudy",
         "WS_URL": "wss://soop.live/chat",
         "PLAYER_API_URL": "https://live.afreecatv.com/afreeca/player_live_api.php",
         "CHAT_INFO_CACHE_FILE": "./soop_chat_info_cache.json"
     },
     "TWITCH": {
-        "CHANNEL_ID": "lmhki",
+        "CHANNEL_ID": "jinijudy",
         "BOT_USERNAME": "꾸덕이"
     },
     "UPDATE": {
@@ -36,8 +39,10 @@ const config = {
         "BACKUP_ENABLED": true,
         "GIST": {
             "TOKEN": "pnybXeIyty6Oh76R6YPQ3Rp4eTin0M0P0e3r",
-            "MAX_GISTS": 100
-        }
+            "MAX_GISTS": 100,
+            "SYNC_WITH_SERVER": true
+        },
+        "BACKUP_INTERVAL": 60000
     }
 };
  

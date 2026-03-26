@@ -126,7 +126,8 @@ export default class SoopScrapper extends BaseChatScrapper {
                 title: res.CHANNEL.TITLE,
                 bjid: res.CHANNEL.BJID,
                 chpt: parseInt(res.CHANNEL.CHPT) + 1,
-                btime: res.CHANNEL.BTIME  // 방송 시간(분) 추가
+                btime: res.CHANNEL.BTIME,  // 방송 시간(분) 추가
+                startDate: new Date(response.headers.get('date')).toISOString().slice(0,10).replace(/-/g, '')  // 20260326 형식
             };
             this.chatInfoCache[channelId] = chatInfo;
             await this.saveChatInfoCache();
@@ -138,6 +139,14 @@ export default class SoopScrapper extends BaseChatScrapper {
         }
 
         return chatInfo;
+    }
+
+    getBroadcastDate() {
+        if (!this.chatInfo) {
+            console.log('No chatInfo available, using current date');
+            return new Date().toISOString().split('T')[0].replace(/-/g, ''); // 방송 시작 전이면 현재 날짜
+        }
+        return this.chatInfo.startDate;
     }
 
     async connectToSoopChat() {
