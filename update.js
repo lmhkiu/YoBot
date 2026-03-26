@@ -192,7 +192,7 @@ class AutoUpdater {
                     console.log(`Skipping ${file} (protected directory)`);
                     continue;
                 }
-
+                console.log(`Processing ${file}`);
                 try {
                     // 기존 파일/디렉토리 삭제
                     if (fs.existsSync(targetPath)) {
@@ -280,8 +280,14 @@ class AutoUpdater {
             console.error('Update failed:', error.message);
             return false;
         } finally {
+
+            console.log('Cleaning up...');
+            console.log('zipPath:', zipPath);
+            console.log('tempDir:', tempDir);
             if (zipPath && tempDir) {
                 await this.cleanup(zipPath, tempDir);
+            } else {
+                console.log('Cleanup skipped - zipPath or tempDir is null/undefined');
             }
         }
     }
