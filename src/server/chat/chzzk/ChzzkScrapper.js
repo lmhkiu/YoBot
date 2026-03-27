@@ -137,8 +137,8 @@ export default class ChzzkScrapper extends BaseChatScrapper {
         switch (json.cmd) {
             case 0: // PING
                 console.log('Chzzk PING 메시지 수신:', json);
-                this.chzzkWs.send(JSON.stringify({ ver: '2', cmd: 10000 })); // PONG
-                console.log('Chzzk PONG 메시지 전송:', { ver: '2', cmd: 10000 });
+                this.chzzkWs.send(JSON.stringify({ ver: config.CHZZK.WS_VERSION, cmd: 10000 })); // PONG
+                console.log('Chzzk PONG 메시지 전송:', { ver: config.CHZZK.WS_VERSION, cmd: 10000 });
                 break;
             case 10100: // 인증 성공 응답
                 console.log('인증 성공:', json.bdy.sid);
