@@ -11,18 +11,19 @@ export default class ChzzkScrapper extends BaseChatScrapper {
         this.accessToken = null;
         this.chzzkWs = null;
         this.chatHub = null;
-  
+        this.currentServerIndex = 4; // 기본값 kr-ss5
+
     }
 
     async init(chatHub) {
         this.chatHub = chatHub;
-     
+
         //그리고 치지직 채팅 서버 연결
-        
+
     }
 
 
-  
+
 
     // Chzzk WebSocket 연결 함수
     async connectToChzzkChat() {
@@ -43,9 +44,13 @@ export default class ChzzkScrapper extends BaseChatScrapper {
             throw new Error('chatChannelId 또는 accessToken 없음');
         }
 
+        const wsUrl = config.CHZZK.WS_SERVERS[this.currentServerIndex];
+        console.log(`서버 ${this.currentServerIndex + 1}/5 시도: ${wsUrl}`);
+ 
+
         //WebSocket 생성 하는 순간 연결이 시작된다. 이때 연결은 비동기 식으로 이벤트 루프에서 처리한다.
         // 따라서 생성자는 인스턴스를 반환하여 사용가능한 상태이지만, 아직 연결은 진행되지 않는다.
-        this.chzzkWs = new WebSocket(config.CHZZK.WS_URL);
+        this.chzzkWs = new WebSocket(wsUrl);
 
         this.chzzkWs.onopen = this.onSocketOpen.bind(this);
         this.chzzkWs.onmessage = this.onSocketMessage.bind(this);
@@ -54,42 +59,72 @@ export default class ChzzkScrapper extends BaseChatScrapper {
 
     }
 
+    getNextServerIndex() {
+        let index = this.currentServerIndex + 1;
+        if(index > config.CHZZK.WS_SERVERS.length - 1) {
+            index = 0;
+        }
+        this.currentServerIndex = index;
+        return this.currentServerIndex;
+    }
+
     onSocketOpen = (event) => {
         console.log('Chzzk WebSocket 연결 성공', event);
         // 인증 메시지 전송
         const authMessage = {
-            ver: "2",
+            ver: "3",
             cmd: 100,
             svcid: "game",
             cid: this.chatChannelId,
+            sid: null,
             bdy: {
                 uid: null,
                 devType: 2001,
                 accTkn: this.accessToken,
-                auth: "READ"
+                auth: "READ",
+                libVer: "4.11.0",
+                osVer: "Windows/10",
+                devName: "Mozilla Firefox/149.0",
+                locale: "ko-KR",
+                timezone: "Asia/Seoul",
+                uuid: this.generateUUID(),
+                windowId: this.generateWindowId()
             },
             tid: 1
         };
         this.chzzkWs.send(JSON.stringify(authMessage));
     }
 
+    // UUID 생성 함수
+    generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
 
-        // 채팅 메시지 수신 {
-        //     svcid: 'game',
-        //     cid: 'N2KB4R',
-        //     mbrCnt: 2704,
-        //     uid: '6fef65f641dbe662c6933463eac94ab2',
-        //     profile: '{"userIdHash":"6fef65f641dbe662c6933463eac94ab2","nickname":"HoneyBEES","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[]}',
-        //     msg: '!투표 1',
-        //     msgTypeCode: 1,
-        //     msgStatusType: 'NORMAL',
-        //     extras: '{"extraToken":"t2OoTmNxIH0mFuyyEqV4W5UJFrMQi\\/ALtd\\/897zqQtDq7ho8VEf+1vSL050C9aIRRT6y\\/juk\\/aCwr+b1tYtDxQ==","osType":"IOS","chatType":"STREAMING","streamingChannelId":"dc7fb0d085cfbbe90e11836e3b85b784"}',
-        //     ctime: 1772164980262,
-        //     utime: 1772164980262,
-        //     msgTid: null,
-        //     cuid: null,
-        //     msgTime: 1772164980262
-        // }
+    // Window ID 생성 함수
+    generateWindowId() {
+        return this.generateUUID(); // 간단히 UUID로도 가능
+    }
+
+    // 채팅 메시지 수신 {
+    //     svcid: 'game',
+    //     cid: 'N2KB4R',
+    //     mbrCnt: 2704,
+    //     uid: '6fef65f641dbe662c6933463eac94ab2',
+    //     profile: '{"userIdHash":"6fef65f641dbe662c6933463eac94ab2","nickname":"HoneyBEES","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[]}',
+    //     msg: '!투표 1',
+    //     msgTypeCode: 1,
+    //     msgStatusType: 'NORMAL',
+    //     extras: '{"extraToken":"t2OoTmNxIH0mFuyyEqV4W5UJFrMQi\\/ALtd\\/897zqQtDq7ho8VEf+1vSL050C9aIRRT6y\\/juk\\/aCwr+b1tYtDxQ==","osType":"IOS","chatType":"STREAMING","streamingChannelId":"dc7fb0d085cfbbe90e11836e3b85b784"}',
+    //     ctime: 1772164980262,
+    //     utime: 1772164980262,
+    //     msgTid: null,
+    //     cuid: null,
+    //     msgTime: 1772164980262
+    // }
 
 
     onSocketMessage = (event) => {
@@ -98,12 +133,16 @@ export default class ChzzkScrapper extends BaseChatScrapper {
         //console.log('Chzzk 메시지 수신:', event.data);
         // 메시지 파싱 및 처리 (필요시 추가)
         const json = JSON.parse(event.data);
-        
+
         switch (json.cmd) {
             case 0: // PING
                 console.log('Chzzk PING 메시지 수신:', json);
                 this.chzzkWs.send(JSON.stringify({ ver: '2', cmd: 10000 })); // PONG
                 console.log('Chzzk PONG 메시지 전송:', { ver: '2', cmd: 10000 });
+                break;
+            case 10100: // 인증 성공 응답
+                console.log('인증 성공:', json.bdy.sid);
+                // 필요하다면 this.sessionId = json.bdy.sid; 저장 가능
                 break;
             case 93101: // CHAT
             case 93102: // CHEESE_CHAT
@@ -111,19 +150,19 @@ export default class ChzzkScrapper extends BaseChatScrapper {
                 json.bdy.forEach(chat => {
                     if (chat.msgTypeCode === 1 || chat.msgTypeCode === 2) { // 일반 채팅 또는 치즈 채팅
                         chat.platformType = config.PLATFORM_TYPE.CHZZK;
-                        //console.log("Chzzk 채팅", chat);
-                        chat.userId = chat.uid; 
+
+                        chat.userId = chat.uid;
 
                         this.chatHub.broadcast(chat);
-                        
+
                     } else {
-                        //console.log("Chzzk CHAT, CHEESE_CHAT, 예외 채팅 메시지 수신", chat);
+                        console.log("Chzzk CHAT, CHEESE_CHAT, 예외 채팅 메시지 수신", chat);
                     }
                 });
                 break;
             // 기타 케이스...
             default:
-                //console.log("Chzzk예외 채팅 메시지 수신", json);
+                console.log("Chzzk예외 채팅 메시지 수신", json);
                 break;
         }
 
@@ -141,7 +180,23 @@ export default class ChzzkScrapper extends BaseChatScrapper {
     }
 
     onSocketError = (event) => {
-        console.log('Chzzk WebSocket 에러', event);
+        console.error('Chzzk WebSocket 에러:', {
+            type: event.type,
+            timeStamp: event.timeStamp,
+            url: config.CHZZK.WS_URL,
+            channelId: this.chatChannelId,
+            hasAccessToken: !!this.accessToken
+        });
+
+        // 다음 서버로 이동
+        this.getNextServerIndex();
+        console.log(`다음 서버로 변경: ${this.currentServerIndex + 1}/5`);
+
+        // 재연결 로직 추가
+        if (this.chzzkWs?.readyState !== WebSocket.CLOSED) {
+            console.log('WebSocket 재연결 시도...');
+            setTimeout(() => this.connectToChzzkChat(), 1000);
+        }
     }
 
     onMessageCallback = (message) => {
@@ -189,7 +244,7 @@ export default class ChzzkScrapper extends BaseChatScrapper {
     async getChatChannelAccessToken(chatChannelId) {
         try {
             const url = `https://comm-api.game.naver.com/nng_main/v1/chats/access-token?channelId=${chatChannelId}&chatType=STREAMING`;
-     
+
             const response = await fetch(url, {
                 headers: {
                     Origin: 'https://chzzk.naver.com'
@@ -212,5 +267,5 @@ export default class ChzzkScrapper extends BaseChatScrapper {
             this.chzzkWs = null;
         }
     }
-    
+
 }

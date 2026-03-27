@@ -19,8 +19,15 @@ const config = {
     },
     "CHZZK": {
         "URL": "wss://kr-ss1.chat.naver.com/chat",
-        "WS_URL": "wss://kr-ss3.chat.naver.com/chat",
-        "CHANNEL_ID": "502f2a93037ff6984286d4104c1cac73"
+        "WS_SERVERS": [
+            "wss://kr-ss1.chat.naver.com/chat",
+            "wss://kr-ss2.chat.naver.com/chat",
+            "wss://kr-ss3.chat.naver.com/chat",
+            "wss://kr-ss4.chat.naver.com/chat",
+            "wss://kr-ss5.chat.naver.com/chat"
+        ],
+        "CHANNEL_ID": "502f2a93037ff6984286d4104c1cac73",
+        "WS_URL": "undefined"
     },
     "SOOP": {
         "CHANNEL_ID": "kimjudy",
