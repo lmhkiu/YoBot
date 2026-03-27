@@ -183,7 +183,7 @@ export default class ChzzkScrapper extends BaseChatScrapper {
         console.error('Chzzk WebSocket 에러:', {
             type: event.type,
             timeStamp: event.timeStamp,
-            url: config.CHZZK.WS_URL,
+            url: config.CHZZK.WS_SERVERS[this.currentServerIndex],
             channelId: this.chatChannelId,
             hasAccessToken: !!this.accessToken
         });
@@ -193,7 +193,7 @@ export default class ChzzkScrapper extends BaseChatScrapper {
         console.log(`다음 서버로 변경: ${this.currentServerIndex + 1}/5`);
 
         // 재연결 로직 추가
-        if (this.chzzkWs?.readyState !== WebSocket.CLOSED) {
+        if (this.chzzkWs) {
             console.log('WebSocket 재연결 시도...');
             setTimeout(() => this.connectToChzzkChat(), 1000);
         }
