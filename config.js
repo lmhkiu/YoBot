@@ -27,7 +27,8 @@ const config = {
             "wss://kr-ss5.chat.naver.com/chat"
         ],
         "CHANNEL_ID": "502f2a93037ff6984286d4104c1cac73",
-        "WS_VERSION": "3"
+        "WS_VERSION": "3",
+        "WS_URL": "undefined"
     },
     "SOOP": {
         "CHANNEL_ID": "kimjudy",
@@ -50,6 +51,22 @@ const config = {
             "SYNC_WITH_SERVER": true
         },
         "BACKUP_INTERVAL": 60000
+    },
+    "BROADCAST_COMMANDS": {
+        "COMMANDS_FILE": "broadcast_commands.txt",
+        "gistId": "d0e8937cfe41b4be97ded7c4905218ee",
+        "url": "https://gist.github.com/lmhkiu/d0e8937cfe41b4be97ded7c4905218ee",
+        "COMMANDS_SEPARATOR": " ",
+        "COMMANDS_PREFIX": "!",
+        "getListCommand": "!명령어",
+        "registerCommands": [
+            "!명령어등록",
+            "!명령어"
+        ],
+        "removeCommands": [
+            "!명령어삭제",
+            "!명령어제거"
+        ]
     }
 };
  

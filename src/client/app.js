@@ -12,7 +12,7 @@ try {
     const chatMemoController = new ChatMemoController();
 
     await chatDisplay.init(chatMemoController);
-    chatMemoController.init();
+    chatMemoController.init(chatDisplay);
 
 
 } catch (error) {

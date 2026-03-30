@@ -156,6 +156,93 @@ app.post('/start-chat', async (req, res) => {
 });
 
 
+// 명령어 관리 엔드포인트
+app.post('/api/command', async (req, res) => {
+    try {
+        const { action, command, response } = req.body;
+        
+        if (!gistBackup) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'GistBackup이 초기화되지 않았습니다.' 
+            });
+        }
+        
+        if (action === 'register') {
+            // 명령어 등록
+            gistBackup.addCommand(command, response);
+            const saved = await gistBackup.saveCommandsToGist();
+            
+            if (saved) {
+                res.json({
+                    success: true,
+                    message: `명령어 ${command}가 등록되었습니다.`
+                });
+            } else {
+                res.status(500).json({
+                    success: false,
+                    message: 'Gist 저장에 실패했습니다.'
+                });
+            }
+            
+        } else if (action === 'remove') {
+            // 명령어 삭제
+            console.log(`명령어 제거 요청: ${command}`);
+            gistBackup.removeCommand(command);
+            console.log(`제거 후 Map 크기: ${gistBackup.commands.size}`);
+            const saved = await gistBackup.saveCommandsToGist();
+            console.log(`Gist 저장 결과: ${saved}`);
+            if (saved) {
+                res.json({
+                    success: true,
+                    message: `명령어 ${command}가 삭제되었습니다.`
+                });
+            } else {
+                res.status(500).json({
+                    success: false,
+                    message: 'Gist 저장에 실패했습니다.'
+                });
+            }
+            
+        } else if (action === 'execute') {
+            // 명령어 실행
+            const cmdResponse = gistBackup.getCommand(command);
+            if (cmdResponse) {
+                res.json({
+                    success: true,
+                    response: cmdResponse
+                });
+            } else {
+                res.json({
+                    success: false,
+                    message: '등록되지 않은 명령어입니다.'
+                });
+            }
+            
+        } else if (action === 'list') {
+            // 명령어 목록 조회
+            const commands = gistBackup.getAllCommands();
+            res.json({
+                success: true,
+                commands: commands
+            });
+            
+        } else {
+            res.status(400).json({
+                success: false,
+                message: '지원하지 않는 액션입니다.'
+            });
+        }
+        
+    } catch (error) {
+        console.error('명령어 처리 오류:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '서버 오류가 발생했습니다.' 
+        });
+    }
+});
+
 
 // CHANNEL_ID만 읽어 업데이트하는 함수
 async function loadChannelIDs() {

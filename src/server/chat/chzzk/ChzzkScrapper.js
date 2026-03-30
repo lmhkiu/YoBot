@@ -141,8 +141,7 @@ export default class ChzzkScrapper extends BaseChatScrapper {
                 console.log('Chzzk PONG 메시지 전송:', { ver: config.CHZZK.WS_VERSION, cmd: 10000 });
                 break;
             case 10100: // 인증 성공 응답
-                console.log('인증 성공:', json.bdy.sid);
-                // 필요하다면 this.sessionId = json.bdy.sid; 저장 가능
+                console.log('인증 성공:', json.bdy.sid);                // 필요하다면 this.sessionId = json.bdy.sid; 저장 가능
                 break;
             case 93101: // CHAT
             case 93102: // CHEESE_CHAT

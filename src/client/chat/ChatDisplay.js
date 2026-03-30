@@ -81,22 +81,26 @@ export default class ChatDisplay {
             // ChatDisplay에서 색상 처리
             html = this.applyColorToMessage(html, chatData);
 
-            const chatMessages = document.getElementById('chat-messages');
-
-            if (chatMessages.children.length >= config.MAX_MESSAGES) {
-                chatMessages.removeChild(chatMessages.firstChild);
-            }
-
-            chatMessages.insertAdjacentHTML('beforeend', html);
-
-            // 자동 스크롤이 활성화된 경우에만 아래로 스크롤
-            if (this.autoScrollEnabled) {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+            this.addMessageToChat(html);
         };
     }
 
-    
+    addMessageToChat(html) {
+        
+        const chatMessages = document.getElementById('chat-messages');
+
+        if (chatMessages.children.length >= config.MAX_MESSAGES) {
+            chatMessages.removeChild(chatMessages.firstChild);
+        }
+
+        chatMessages.insertAdjacentHTML('beforeend', html);
+
+        // 자동 스크롤이 활성화된 경우에만 아래로 스크롤
+        if (this.autoScrollEnabled) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+
     // 통합 색상 처리 메서드
     applyColorToMessage(html, chatData) {
         const userId = chatData.userId;

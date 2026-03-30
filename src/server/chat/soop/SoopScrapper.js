@@ -237,9 +237,9 @@ export default class SoopScrapper extends BaseChatScrapper {
         const parts = data.split('\x0c');
         //console.log('Soop WebSocket 메시지:', parts);
 
-        this.printParts(parts);
+        //this.printParts(parts);
         const chat = this.parseMessage(parts);
-        console.log('Soop WebSocket 채팅:', chat);
+        //console.log('Soop WebSocket 채팅:', chat);
         if (chat) {
             this.chatHub.broadcast(chat);
         }
@@ -251,12 +251,12 @@ export default class SoopScrapper extends BaseChatScrapper {
     parseMessage(parts) {
         let ret = null;
         if (!parts || parts.length === 0) {
-            console.log('parseMessage called with empty parts');
+            //console.log('parseMessage called with empty parts');
             return ret;
         }
         parts[0] = parts[0].replace(/[\s\x1B]/g, '');
-        console.log('Char codes:', Array.from(parts[0]).map(c => c.charCodeAt(0)));
-        console.log('parseMessage called with parts[0]:', parts[0], 'length:', parts[0].length);
+        //console.log('Char codes:', Array.from(parts[0]).map(c => c.charCodeAt(0)));
+        //console.log('parseMessage called with parts[0]:', parts[0], 'length:', parts[0].length);
         // 숲 스티커는 글자와 함께 써도 항상 맨 앞에 온다.
         if (parts.length >= 13 && parts[12] === 'png') {
             // OGQ Emoticon message
@@ -292,7 +292,7 @@ export default class SoopScrapper extends BaseChatScrapper {
             };
         } else if (parts.length < 20 && parts.length > 5 && parts[1] !== '-1' && parts[1] !== '1' && !parts[1].includes('|')) {
 
-            console.log('Checking donation condition for parts[0]:', parts[0], 'trim():', parts[0]?.trim());
+            //console.log('Checking donation condition for parts[0]:', parts[0], 'trim():', parts[0]?.trim());
             ret = {
                 platformType: config.PLATFORM_TYPE.SOOP,
                 userId: parts[2],
