@@ -103,7 +103,7 @@ export default class TwitchScrapper extends BaseChatScrapper {
             });
 
             return {
-                platformType: config.PLATFORM_TYPE.TWITCH,
+                messageType: config.PLATFORM_TYPE.TWITCH,
                 userId: tagMap['user-id'] || username,
                 nickname: tagMap['display-name'] || username,
                 content: content,

@@ -148,7 +148,7 @@ export default class ChzzkScrapper extends BaseChatScrapper {
                 // 채팅 메시지 처리
                 json.bdy.forEach(chat => {
                     if (chat.msgTypeCode === 1 || chat.msgTypeCode === 2) { // 일반 채팅 또는 치즈 채팅
-                        chat.platformType = config.PLATFORM_TYPE.CHZZK;
+                        chat.messageType = config.PLATFORM_TYPE.CHZZK;
 
                         chat.userId = chat.uid;
 

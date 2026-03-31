@@ -20,6 +20,17 @@ export default class ChatDisplay {
 
         this.chatMemoController = null;
         this.autoScrollEnabled = true;
+
+        // 탭 쓰로틀링(비활성 탭 멈추는 현상) 방지
+        this.connectionStartTime = null;
+        this.keepaliveTimer = null;
+        this.reconnectTimer = null;
+        this.isReconnecting = false;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
+
+        // 마지막 메시지 시간 (탭 쓰로틀링 방지)
+        this.lastMessageTime = null;
     }
 
     async init(chatMemoController) {
@@ -28,61 +39,196 @@ export default class ChatDisplay {
         this.soopFormatter = new SoopFormatter();
         this.twitchFormatter = new TwitchFormatter();
 
-        this.ws = new WebSocket(`ws://localhost:${config.PORT.CHAT_DISPLAY}`);
-        this.ws.onopen = () => {
-            console.log('ChatDisplay connected to server');
+        this.connectWebSocket();
+
+        this.setScrollListener();
         
-            // 서버에 방송 시간 정보 요청
-            this.ws.send(JSON.stringify({
-                type: 'request_broad_time'
-            }));
+        
+    }
 
-        };
-
-        this.ws.onclose = (event) => {
-            console.log('ChatDisplay disconnected from server', event);
-            
-            // 서버 종료로 판단하고 페이지 닫기
-            if (event.code !== 1000) { // 정상 종료가 아닌 경우
-                console.log('Server appears to be shutdown, closing window...');
-                window.close();
-            }
-        };
-
-        // 스크롤 이벤트 리스너 추가
+    setScrollListener() {
         const chatMessages = document.getElementById('chat-messages');
         chatMessages.addEventListener('scroll', () => {
             // 스크롤이 가장 아래에 있는지 확인
             const isAtBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - config.SCROLL.BOTTOM_TOLERANCE;
             this.autoScrollEnabled = isAtBottom;
         });
+    }
 
+    connectWebSocket() {
+        this.connectionStartTime = Date.now();
+        this.ws = new WebSocket(`ws://localhost:${config.PORT.CHAT_DISPLAY}`);
+        
+        this.ws.onopen = () => {
+            console.log('ChatDisplay connected to server');
+            
+            this.reconnectAttempts = 0;
+            this.isReconnecting = false;
+
+            // Keep-Alive 시작 (10초 간격)
+            this.startKeepalive();
+
+            // 예방적 재연결 스케줄링 (4분 30초 후)
+            this.schedulePreemptiveReconnect();
+
+            // 서버에 방송 시간 정보 요청
+            this.ws.send(JSON.stringify({
+                messageType: 'request_broad_time'
+            }));
+
+            this.requestMissedMessages();
+
+        };
+
+        this.ws.onclose = (event) => {
+            console.log('ChatDisplay disconnected from server', event);
+            
+            if (event.code !== 1000) { // 정상 종료가 아닌 경우
+                console.log('ChatDisplay 소켓 연결이 close되었습니다.');
+                //window.close();
+                this.attemptReconnect();
+            }
+        };
+
+       
         this.ws.onmessage = (event) => {
-            const chatData = JSON.parse(event.data);
-            console.log("Received message:", chatData);
+            const data = JSON.parse(event.data);
+            console.log("Received message:", data);
            
+
+            // 마지막 메시지 시간 기록
+            if (data.messageId && data.timestamp) {
+                this.lastMessageTime = data.timestamp;
+            }
+            
             let html = '';
-            switch (chatData.platformType) {
+            switch (data.messageType) {
                 case config.PLATFORM_TYPE.CHZZK:
 
-                    html = this.chzzkFormatter.format(chatData);
+                    html = this.chzzkFormatter.format(data);
                     break;
                 case config.PLATFORM_TYPE.SOOP:
-                    html = this.soopFormatter.format(chatData);
+                    html = this.soopFormatter.format(data);
                     break;
                 case config.PLATFORM_TYPE.TWITCH:
-                    html = this.twitchFormatter.format(chatData);
+                    html = this.twitchFormatter.format(data);
                     break;
-                case 'broad_time':
-                    this.chatMemoController.handleBroadTime(chatData.btime);
+                case 'response_broad_time':
+                    this.chatMemoController.handleBroadTime(data.btime);
+                    break;
+                case 'pong':
+                    // Pong 메시지는 처리하지 않음
+                    this.resetKeepaliveTimer();
                     break;
             }
 
             // ChatDisplay에서 색상 처리
-            html = this.applyColorToMessage(html, chatData);
+            html = this.applyColorToMessage(html, data);
 
             this.addMessageToChat(html);
         };
+    }
+
+    requestMissedMessages() {
+        this.ws.send(JSON.stringify({
+            messageType: 'request_missed_messages',
+            lastSeen: this.lastMessageTime || 0
+        }));
+    }
+
+    startKeepalive() {
+        this.clearKeepaliveTimer();
+        
+        this.keepaliveTimer = setInterval(() => {
+            if (this.ws?.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify({
+                    messageType: 'ping',
+                    timestamp: Date.now()
+                }));
+            }
+        }, config.CHAT_DISPLAY.KEEPALIVE_INTERVAL);
+    }
+
+    resetKeepaliveTimer() {
+        // Keep-Alive 응답 수신 시 타이머 리셋
+        this.clearKeepaliveTimer();
+        this.startKeepalive();
+    }
+ 
+    clearKeepaliveTimer() {
+        if (this.keepaliveTimer) {
+            clearInterval(this.keepaliveTimer);
+            this.keepaliveTimer = null;
+        }
+    }
+ 
+    schedulePreemptiveReconnect() {
+        this.clearReconnectTimer();
+        
+        // 4분 30초 후에 예방적 재연결
+        this.reconnectTimer = setTimeout(() => {
+            console.log('Starting preemptive reconnect (30s before browser throttling)');
+            this.startPreemptiveReconnect();
+        }, config.CHAT_DISPLAY.PREEMPTIVE_RECONNECT_DELAY);
+    }
+ 
+    startPreemptiveReconnect() {
+        if (this.isReconnecting) return;
+        
+        this.isReconnecting = true;
+        const newWs = new WebSocket(`ws://localhost:${config.PORT.CHAT_DISPLAY}`);
+        
+        newWs.onopen = () => {
+            console.log('Preemptive reconnection successful');
+            
+            // 새 연결 안정화 후 기존 연결 종료
+            if (this.ws) {
+                this.ws.close();
+            }
+            this.ws = newWs;
+            this.isReconnecting = false;
+            this.connectionStartTime = Date.now();
+            
+            // 새 연결에서 Keep-Alive 재시작
+            this.startKeepalive();
+            this.schedulePreemptiveReconnect();
+        };
+        
+        newWs.onerror = () => {
+            console.log('Preemptive reconnection failed, keeping old connection');
+            this.isReconnecting = false;
+
+            // 실패 시 attemptReconnect()로 대체
+            this.attemptReconnect();
+        };
+    }
+ 
+    attemptReconnect() {
+        if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+            console.log('Max reconnect attempts reached');
+            return;
+        }
+        
+        this.reconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+        
+        console.log(`Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`);
+        
+        setTimeout(() => {
+            this.connectWebSocket();
+        }, delay);
+    }
+ 
+    clearTimers() {
+        this.clearKeepaliveTimer();
+        this.clearReconnectTimer();
+    }
+ 
+    clearReconnectTimer() {
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
     }
 
     addMessageToChat(html) {
@@ -169,9 +315,8 @@ export default class ChatDisplay {
         return color;
     }
 
-
     destroy() {
-        
+        this.clearTimers();
         if (this.ws) {
             this.ws.close();
         }

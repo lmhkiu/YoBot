@@ -26,12 +26,12 @@ const config = {
             "wss://kr-ss4.chat.naver.com/chat",
             "wss://kr-ss5.chat.naver.com/chat"
         ],
-        "CHANNEL_ID": "502f2a93037ff6984286d4104c1cac73",
+        "CHANNEL_ID": "19e3b97ca1bca954d1ac84cf6862e0dc",
         "WS_VERSION": "3",
         "WS_URL": "undefined"
     },
     "SOOP": {
-        "CHANNEL_ID": "kimjudy",
+        "CHANNEL_ID": "goodb99",
         "WS_URL": "wss://soop.live/chat",
         "PLAYER_API_URL": "https://live.afreecatv.com/afreeca/player_live_api.php",
         "CHAT_INFO_CACHE_FILE": "./soop_chat_info_cache.json"
@@ -67,6 +67,14 @@ const config = {
             "!명령어삭제",
             "!명령어제거"
         ]
+    },
+    "CHAT_DISPLAY": {
+        "KEEPALIVE_INTERVAL": 10000,
+        "PREEMPTIVE_RECONNECT_DELAY": 270000,
+        "MESSAGE_BUFFER_DURATION": 300000
+    },
+    "SERVER": {
+        "SHUTDOWN_DELAY": 5000
     }
 };
  

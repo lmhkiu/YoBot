@@ -5,45 +5,6 @@ export default class SoopFormatter {
 
 
 
-    /*
-    
-    Soop WebSocket 채팅: {
-
-        platformType: 'soop',
-        userID: 'lmhkiu',
-        nickname: '주눈비',
-        content: '',
-        type: 'builtin_emoticon',
-        emoticonText: '/샤방/dd',
-        userFlag: '65536|163840',
-        color: '6518C8',
-        msgTime: 1773121864105
-
-    }
-
-    Soop WebSocket 메시지: [
-        '\x1B\t000500008200', 'ㅇㅇ/윽/ㅇㄹ',
-        'lmhkiu',             '0',
-        '0',                  '3',
-        '주눈비',             '65536|163840',
-        '-1',                 '6518C8',
-        '9568CD',             '-1',
-        '-1',                 '',
-        '-1',                 ''
-    ]
-
-    Soop WebSocket 채팅: {
-        platformType: 'soop',
-        userID: 'lmhkiu',
-        nickname: '주눈비',
-        content: 'ㅇㅇ/윽/ㅇㄹ',
-        type: 'text',
-        msgTime: 1773122325907
-    }
-
-    */
-
-
     format(chat) {
         const platformImg = "<img class='chat-message-platform-icon' src='./assets/chat/icon/soop/icon_24.png'>";
         let ret = null;
@@ -288,74 +249,5 @@ export default class SoopFormatter {
     }
 
 
-
-    /*    Soop WebSocket 메시지: {
-    platformType: 'soop',
-    userId: 'patrol123123',
-    nickname: '어금니.',
-    content: '둘이서 70줄을 까버리네 이거ㅋㅋ',
-    msgTime: 1772176393228
-    }
-    */
-
-
-    /*
-    Soop WebSocket 메시지: [
-  '\x1B\t010900010600', '6507',
-  '',                   '622d8b74bc99e',
-  '2',                  '1',
-  'romihogg0101',       '로미호0101',
-  '538001440|32768',    '0',
-  '-1',                 '',
-  'png',                '-1',
-  '0C61E1',             '5C82E3',
-  '-1',                 '-1',
-  '0',                  '-1',
-  ''
-]
-
-
-
-<div class="message-container"><div class="username"><button user_id="romihogg0101" user_nick="로미호0101" userflag="538001440" is_mobile="true" grade="fan" is_subscriber="false" tiernickname="" personalcon="https://static.file.sooplive.co.kr/spcon/personalcon_default.png" sub-month="-1" acc-sub-month="-1"><span class="grade-badge-fan" tip="팬클럽">F</span><span class="author random-color14" data-color="0C61E1">로미호0101</span></button></div><div class="message-text"><div class="emoticon-box " id="0"><a href="https://ogqmarket.sooplive.co.kr/?m=detail&amp;productId=622d8b74bc99e" target="_blank" tip="구매하기" id="ogq-img" type="button" class="img-box" data-id="622d8b74bc99e" data-subid="2" data-type="OGQ">
-                    <img class="emoticon" src="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/622d8b74bc99e/2_80.png?ver=1" data-default-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/622d8b74bc99e/2_80.png?ver=1" data-static-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/622d8b74bc99e/2_80.png?ver=1" alt="OGQ 이모티콘 이미지" onerror="this.src='https://res.sooplive.co.kr/images/chat/ogq_default.svg'">
-            </a></div></div></div>
-
-    */
-
-
-    /*
-    
-Soop WebSocket 메시지: [
-'\x1B\t000500007400', '/샤방/',
-'lmhkiu',             '0',
-'0',                  '-1',
-'주눈비',             '65536|163840',
-'-1',                 '0C80D3',
-'288ED8',             '-1',
-'-1',                 '',
-'-1',                 ''
-]
-
-<img class="emoticon" src="https://res.sooplive.co.kr/images/chat/emoticon/big/1.png" data-default-img="https://res.sooplive.co.kr/images/chat/emoticon/big/1.png" data-static-img="https://res.sooplive.co.kr/images/chat/emoticon/big/1.png" onerror="this.src='https://res.sooplive.co.kr/images/chat/ogq_default.svg'">
-
-
-Soop WebSocket 메시지: [
-'\x1B\t000500007700', '/개좋아/',
-'lmhkiu',             '0',
-'0',                  '-1',
-'주눈비',             '65536|163840',
-'-1',                 '0C80D3',
-'288ED8',             '-1',
-'-1',                 '',
-'-1',                 ''
-]
-
-<img class="emoticon" src="https://res.sooplive.co.kr/images/chat/emoticon/big/7.png" data-default-img="https://res.sooplive.co.kr/images/chat/emoticon/big/7.png" data-static-img="https://res.sooplive.co.kr/images/chat/emoticon/big/7.png" onerror="this.src='https://res.sooplive.co.kr/images/chat/ogq_default.svg'">
-
-
-
-
-
-    */
 
 }

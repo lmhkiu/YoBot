@@ -52,3 +52,944 @@ Soop WebSocket 메시지: [
   '1678839637',
   ''
 ]
+
+
+
+
+------ 시그 192 개 ------
+seMessage called with parts[0]: 000500012900 length: 12
+Checking donation condition for parts[0]: 000500012900 trim(): 000500012900
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'kimjudy(2)',
+  nickname: '지니주디',
+  content: '지미주디님 별풍선 192개 선물! 감사합니다!',
+  type: 'text',
+  userFlag: '66052|163840',
+  nicknameColor: '0B6D82',
+  msgTime: 1774629578815
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'kimjudy(2)',
+  nickname: '지니주디',
+  content: '지미주디님 별풍선 192개 선물! 감사합니다!',
+  type: 'text',
+  userFlag: '66052|163840',
+  nicknameColor: '0B6D82',
+  msgTime: 1774629578815
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 33,
+  uid: '50829cb1f5ec5f3a202481fca210717b',
+  profile: '{"userIdHash":"50829cb1f5ec5f3a202481fca210717b","nickname":"우유함유","profileImageUrl":"","userRoleCode":"streaming_chat_manager","badge":{"imageUrl":"https://ssl.pstatic.net/static/nng/glive/icon/manager.png"},"title":{"name":"채팅 운영자","color":"#749FFE"},"verifiedMark":false,"activityBadges":[{"badgeNo":1850119,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png"}}]}',
+  msg: '와 이게 몇개야 ㄷㄷㄷ',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"aJeqEAXwmwja8S1FN0xnLNIbkVw7oQvwy16R1wqRdBDpVlvZO3q/IVNwLr1ueH1gdTQFrQggibkOjZ6/sG2StA==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629580645,
+  utime: 1774629580645,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629580645,
+  platformType: 'chzzk',
+  userId: '50829cb1f5ec5f3a202481fca210717b'
+}
+parts[0]:       01800012700
+parts[1]: kimjudy
+parts[2]: greatiam
+parts[3]: 지미주디
+parts[4]: 192
+parts[5]: 0
+parts[6]: 0
+parts[7]: 2956
+parts[8]: kimjudy_192
+parts[9]: 0
+parts[10]: 0
+parts[11]: kor_custom12
+parts[12]: 32a1232c-33ec-4645-a8d8-7cda2a408798
+parts[13]: ko_KR
+parts[14]: 1759246269
+parts[15]:
+Char codes: [
+  48, 48, 49, 56, 48,
+  48, 48, 49, 50, 55,
+  48, 48
+]
+parseMessage called with parts[0]: 001800012700 length: 12
+Donation detected: [
+  '001800012700',
+  'kimjudy',
+  'greatiam',
+  '지미주디',
+  '192',
+  '0',
+  '0',
+  '2956',
+  'kimjudy_192',
+  '0',
+  '0',
+  'kor_custom12',
+  '32a1232c-33ec-4645-a8d8-7cda2a408798',
+  'ko_KR',
+  '1759246269',
+  ''
+]
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: '별풍선',
+  type: 'donation',
+  amount: 192,
+  donationType: 'kor_custom12',
+  userFlag: '2956',
+  nicknameColor: '0',
+  msgTime: 1759246269
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: '별풍선',
+  type: 'donation',
+  amount: 192,
+  donationType: 'kor_custom12',
+  userFlag: '2956',
+  nicknameColor: '0',
+  msgTime: 1759246269
+}
+parts[0]:       00500007800
+parts[1]: 역시!!!
+parts[2]: jjinil28
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 쫌걷자
+parts[7]: 268501024|425984
+parts[8]: 1
+parts[9]: C40F70
+parts[10]: C279A1
+parts[11]: 1
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 48, 55, 56,
+  48, 48
+]
+parseMessage called with parts[0]: 000500007800 length: 12
+Checking donation condition for parts[0]: 000500007800 trim(): 000500007800
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'jjinil28',
+  nickname: '쫌걷자',
+  content: '역시!!!',
+  type: 'text',
+  userFlag: '268501024|425984',
+  nicknameColor: 'C40F70',
+  msgTime: 1774629584969
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'jjinil28',
+  nickname: '쫌걷자',
+  content: '역시!!!',
+  type: 'text',
+  userFlag: '268501024|425984',
+  nicknameColor: 'C40F70',
+  msgTime: 1774629584969
+}
+[TWITCH] WebSocket 메시지: PING :tmi.twitch.tv
+
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 33,
+  uid: '50829cb1f5ec5f3a202481fca210717b',
+  profile: '{"userIdHash":"50829cb1f5ec5f3a202481fca210717b","nickname":"우유함유","profileImageUrl":"","userRoleCode":"streaming_chat_manager","badge":{"imageUrl":"https://ssl.pstatic.net/static/nng/glive/icon/manager.png"},"title":{"name":"채팅 운영자","color":"#749FFE"},"verifiedMark":false,"activityBadges":[{"badgeNo":1850119,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png"}}]}',
+  msg: '!!!',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"aJeqEAXwmwja8S1FN0xnLNIbkVw7oQvwy16R1wqRdBDpVlvZO3q/IVNwLr1ueH1gdTQFrQggibkOjZ6/sG2StA==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629601417,
+  utime: 1774629601417,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629601417,
+  platformType: 'chzzk',
+  userId: '50829cb1f5ec5f3a202481fca210717b'
+}
+parts[0]:       00500007800
+parts[1]: ㅋㅋ
+parts[2]: greatiam
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 지미주디
+parts[7]: 805421088|557056
+parts[8]: 6
+parts[9]: 047143
+parts[10]: 45A48D
+parts[11]: 6
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 48, 55, 56,
+  48, 48
+]
+parseMessage called with parts[0]: 000500007800 length: 12
+Checking donation condition for parts[0]: 000500007800 trim(): 000500007800
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅋㅋ',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629605654
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅋㅋ',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629605654
+}
+parts[0]:       10900009500
+parts[1]: 2956
+parts[2]:
+parts[3]: 5fe53f42edb76
+parts[4]: 6
+parts[5]: 1
+parts[6]: lmhkiu
+parts[7]: 주눈비
+parts[8]: 268501312|425984
+parts[9]: 0
+parts[10]: -1
+parts[11]:
+parts[12]: png
+parts[13]: 1
+parts[14]: C25111
+parts[15]: CF8362
+parts[16]: 5
+parts[17]: -1
+parts[18]: 0
+parts[19]: -1
+parts[20]:
+Char codes: [
+  48, 49, 48, 57, 48,
+  48, 48, 48, 57, 53,
+  48, 48
+]
+parseMessage called with parts[0]: 010900009500 length: 12
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '',
+  type: 'sticker',
+  stickerId: '5fe53f42edb76',
+  stickerNum: '6',
+  extension: 'png',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629608280
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '',
+  type: 'sticker',
+  stickerId: '5fe53f42edb76',
+  stickerNum: '6',
+  extension: 'png',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629608280
+}
+parts[0]:       10900009500
+parts[1]: 2956
+parts[2]:
+parts[3]: 5fe53f42edb76
+parts[4]: 7
+parts[5]: 1
+parts[6]: lmhkiu
+parts[7]: 주눈비
+parts[8]: 268501312|425984
+parts[9]: 0
+parts[10]: -1
+parts[11]:
+parts[12]: png
+parts[13]: 1
+parts[14]: C25111
+parts[15]: CF8362
+parts[16]: 5
+parts[17]: -1
+parts[18]: 0
+parts[19]: -1
+parts[20]:
+Char codes: [
+  48, 49, 48, 57, 48,
+  48, 48, 48, 57, 53,
+  48, 48
+]
+parseMessage called with parts[0]: 010900009500 length: 12
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '',
+  type: 'sticker',
+  stickerId: '5fe53f42edb76',
+  stickerNum: '7',
+  extension: 'png',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629610913
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '',
+  type: 'sticker',
+  stickerId: '5fe53f42edb76',
+  stickerNum: '7',
+  extension: 'png',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629610913
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 33,
+  uid: '1f44b68418d14bb7e2046e134f9c028c',
+  profile: '{"userIdHash":"1f44b68418d14bb7e2046e134f9c028c","nickname":"푸타우","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[{"badgeNo":331774,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_01.png"}}]}',
+  msg: '지개미 업 지개미 업 지개미 업 지개미 업',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"pbSz/QEjLfGPbajZnY9+9wkduhx+ltyBxhq39d9KhFxwLtbIDXfOGGobfGn8N87zLyefzQt8ALeB+z83VlJ0Aw==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629613830,
+  utime: 1774629613830,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629613830,
+  platformType: 'chzzk',
+  userId: '1f44b68418d14bb7e2046e134f9c028c'
+}
+parts[0]:       10900009600
+parts[1]: 2956
+parts[2]:
+parts[3]: 5fe53f42edb76
+parts[4]: 10
+parts[5]: 1
+parts[6]: lmhkiu
+parts[7]: 주눈비
+parts[8]: 268501312|425984
+parts[9]: 0
+parts[10]: -1
+parts[11]:
+parts[12]: png
+parts[13]: 1
+parts[14]: C25111
+parts[15]: CF8362
+parts[16]: 5
+parts[17]: -1
+parts[18]: 0
+parts[19]: -1
+parts[20]:
+Char codes: [
+  48, 49, 48, 57, 48,
+  48, 48, 48, 57, 54,
+  48, 48
+]
+parseMessage called with parts[0]: 010900009600 length: 12
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '',
+  type: 'sticker',
+  stickerId: '5fe53f42edb76',
+  stickerNum: '10',
+  extension: 'png',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629615348
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '',
+  type: 'sticker',
+  stickerId: '5fe53f42edb76',
+  stickerNum: '10',
+  extension: 'png',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629615348
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 33,
+  uid: '1f44b68418d14bb7e2046e134f9c028c',
+  profile: '{"userIdHash":"1f44b68418d14bb7e2046e134f9c028c","nickname":"푸타우","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[{"badgeNo":331774,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_01.png"}}]}',
+  msg: '황진이춤 뭐야;;',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"pbSz/QEjLfGPbajZnY9+9wkduhx+ltyBxhq39d9KhFxwLtbIDXfOGGobfGn8N87zLyefzQt8ALeB+z83VlJ0Aw==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629619264,
+  utime: 1774629619264,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629619264,
+  platformType: 'chzzk',
+  userId: '1f44b68418d14bb7e2046e134f9c028c'
+}
+parts[0]:       00500010800
+parts[1]: /짝짝//신남//신남//신남//신남/
+parts[2]: lmhkiu
+parts[3]: 0
+parts[4]: 0
+parts[5]: -1
+parts[6]: 주눈비
+parts[7]: 268501312|425984
+parts[8]: 1
+parts[9]: C25111
+parts[10]: CF8362
+parts[11]: 5
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 49, 48, 56,
+  48, 48
+]
+parseMessage called with parts[0]: 000500010800 length: 12
+Checking donation condition for parts[0]: 000500010800 trim(): 000500010800
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '/짝짝//신남//신남//신남//신남/',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629623946
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '/짝짝//신남//신남//신남//신남/',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629623946
+}
+Soop WebSocket 핑 패킷:         00000000100
+
+Chzzk PING 메시지 수신: { ver: '2', cmd: 0 }
+Chzzk PONG 메시지 전송: { ver: '3', cmd: 10000 }
+parts[0]:       00500008800
+parts[1]: ㅋㅋㅋㅋㅋㅋㅋ
+parts[2]: lmhkiu
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 주눈비
+parts[7]: 268501312|425984
+parts[8]: 1
+parts[9]: C25111
+parts[10]: CF8362
+parts[11]: 5
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 48, 56, 56,
+  48, 48
+]
+parseMessage called with parts[0]: 000500008800 length: 12
+Checking donation condition for parts[0]: 000500008800 trim(): 000500008800
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: 'ㅋㅋㅋㅋㅋㅋㅋ',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629634940
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: 'ㅋㅋㅋㅋㅋㅋㅋ',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629634940
+}
+parts[0]:       00500008400
+parts[1]: ㅋㅋㅋㅋ
+parts[2]: greatiam
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 지미주디
+parts[7]: 805421088|557056
+parts[8]: 6
+parts[9]: 047143
+parts[10]: 45A48D
+parts[11]: 6
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 48, 56, 52,
+  48, 48
+]
+parseMessage called with parts[0]: 000500008400 length: 12
+Checking donation condition for parts[0]: 000500008400 trim(): 000500008400
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅋㅋㅋㅋ',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629639768
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅋㅋㅋㅋ',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629639768
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 33,
+  uid: '50829cb1f5ec5f3a202481fca210717b',
+  profile: '{"userIdHash":"50829cb1f5ec5f3a202481fca210717b","nickname":"우유함유","profileImageUrl":"","userRoleCode":"streaming_chat_manager","badge":{"imageUrl":"https://ssl.pstatic.net/static/nng/glive/icon/manager.png"},"title":{"name":"채팅 운영자","color":"#749FFE"},"verifiedMark":false,"activityBadges":[{"badgeNo":1850119,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png"}}]}',
+  msg: '{:d_42:}{:d_47:}{:d_47:}{:d_47:}{:d_47:}',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"aJeqEAXwmwja8S1FN0xnLNIbkVw7oQvwy16R1wqRdBDpVlvZO3q/IVNwLr1ueH1gdTQFrQggibkOjZ6/sG2StA==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{"d_42":"https://ssl.pstatic.net/static/nng/glive/icon/b_02.gif","d_47":"https://ssl.pstatic.net/static/nng/glive/icon/b_07.gif"}}',
+  ctime: 1774629641685,
+  utime: 1774629641685,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629641685,
+  platformType: 'chzzk',
+  userId: '50829cb1f5ec5f3a202481fca210717b'
+}
+parts[0]:       00500007500
+parts[1]: ㅎㅎ
+parts[2]: jjinil28
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 쫌걷자
+parts[7]: 268501024|425984
+parts[8]: 1
+parts[9]: C40F70
+parts[10]: C279A1
+parts[11]: 1
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 48, 55, 53,
+  48, 48
+]
+parseMessage called with parts[0]: 000500007500 length: 12
+Checking donation condition for parts[0]: 000500007500 trim(): 000500007500
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'jjinil28',
+  nickname: '쫌걷자',
+  content: 'ㅎㅎ',
+  type: 'text',
+  userFlag: '268501024|425984',
+  nicknameColor: 'C40F70',
+  msgTime: 1774629650113
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'jjinil28',
+  nickname: '쫌걷자',
+  content: 'ㅎㅎ',
+  type: 'text',
+  userFlag: '268501024|425984',
+  nicknameColor: 'C40F70',
+  msgTime: 1774629650113
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 33,
+  uid: '1f44b68418d14bb7e2046e134f9c028c',
+  profile: '{"userIdHash":"1f44b68418d14bb7e2046e134f9c028c","nickname":"푸타우","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[{"badgeNo":331774,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_01.png"}}]}',
+  msg: '머리를 쪼개버리겠다는 제스쳐;',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"pbSz/QEjLfGPbajZnY9+9wkduhx+ltyBxhq39d9KhFxwLtbIDXfOGGobfGn8N87zLyefzQt8ALeB+z83VlJ0Aw==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629654793,
+  utime: 1774629654793,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629654793,
+  platformType: 'chzzk',
+  userId: '1f44b68418d14bb7e2046e134f9c028c'
+}
+parts[0]:       00500012300
+parts[1]: ㅋㅋㅋㅋ 어디서 신문물 배워 오셨네 ㅋㅋ
+parts[2]: lmhkiu
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 주눈비
+parts[7]: 268501312|425984
+parts[8]: 1
+parts[9]: C25111
+parts[10]: CF8362
+parts[11]: 5
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 49, 50, 51,
+  48, 48
+]
+parseMessage called with parts[0]: 000500012300 length: 12
+Checking donation condition for parts[0]: 000500012300 trim(): 000500012300
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: 'ㅋㅋㅋㅋ 어디서 신문물 배워 오셨네 ㅋㅋ',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629657485
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: 'ㅋㅋㅋㅋ 어디서 신문물 배워 오셨네 ㅋㅋ',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629657485
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 33,
+  uid: '50829cb1f5ec5f3a202481fca210717b',
+  profile: '{"userIdHash":"50829cb1f5ec5f3a202481fca210717b","nickname":"우유함유","profileImageUrl":"","userRoleCode":"streaming_chat_manager","badge":{"imageUrl":"https://ssl.pstatic.net/static/nng/glive/icon/manager.png"},"title":{"name":"채팅 운영자","color":"#749FFE"},"verifiedMark":false,"activityBadges":[{"badgeNo":1850119,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png"}}]}',
+  msg: 'ㅋㅋㅋㅋㅋ',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"aJeqEAXwmwja8S1FN0xnLNIbkVw7oQvwy16R1wqRdBDpVlvZO3q/IVNwLr1ueH1gdTQFrQggibkOjZ6/sG2StA==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629660441,
+  utime: 1774629660441,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629660441,
+  platformType: 'chzzk',
+  userId: '50829cb1f5ec5f3a202481fca210717b'
+}
+parts[0]:       00500008400
+parts[1]: ㅋㅋㅋㅋ
+parts[2]: greatiam
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 지미주디
+parts[7]: 805421088|557056
+parts[8]: 6
+parts[9]: 047143
+parts[10]: 45A48D
+parts[11]: 6
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 48, 56, 52,
+  48, 48
+]
+parseMessage called with parts[0]: 000500008400 length: 12
+Checking donation condition for parts[0]: 000500008400 trim(): 000500008400
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅋㅋㅋㅋ',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629665213
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅋㅋㅋㅋ',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629665213
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 32,
+  uid: '1f44b68418d14bb7e2046e134f9c028c',
+  profile: '{"userIdHash":"1f44b68418d14bb7e2046e134f9c028c","nickname":"푸타우","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[{"badgeNo":331774,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_01.png"}}]}',
+  msg: '개열받아 ㅋㅋㅋㅋㅋㅋㅋ',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"pbSz/QEjLfGPbajZnY9+9wkduhx+ltyBxhq39d9KhFxwLtbIDXfOGGobfGn8N87zLyefzQt8ALeB+z83VlJ0Aw==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629674657,
+  utime: 1774629674657,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629674657,
+  platformType: 'chzzk',
+  userId: '1f44b68418d14bb7e2046e134f9c028c'
+}
+[TWITCH] WebSocket 메시지: PONG :tmi.twitch.tv
+
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 32,
+  uid: '1f44b68418d14bb7e2046e134f9c028c',
+  profile: '{"userIdHash":"1f44b68418d14bb7e2046e134f9c028c","nickname":"푸타우","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[{"badgeNo":331774,"badgeId":"donation_newbie","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_03.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[{"type":"STANDARD","badge":{"badgeId":"donation_newbie","scope":"CHANNEL","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/fan_01.png"}}]}',
+  msg: '숲여캠 효과 죽이고싶어...',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"pbSz/QEjLfGPbajZnY9+9wkduhx+ltyBxhq39d9KhFxwLtbIDXfOGGobfGn8N87zLyefzQt8ALeB+z83VlJ0Aw==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{}}',
+  ctime: 1774629683338,
+  utime: 1774629683338,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629683338,
+  platformType: 'chzzk',
+  userId: '1f44b68418d14bb7e2046e134f9c028c'
+}
+parts[0]:       00500013200
+parts[1]: /댄스//댄스//파닥파닥//무지개파닥//무지개파닥/
+parts[2]: lmhkiu
+parts[3]: 0
+parts[4]: 0
+parts[5]: -1
+parts[6]: 주눈비
+parts[7]: 268501312|425984
+parts[8]: 1
+parts[9]: C25111
+parts[10]: CF8362
+parts[11]: 5
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 49, 51, 50,
+  48, 48
+]
+parseMessage called with parts[0]: 000500013200 length: 12
+Checking donation condition for parts[0]: 000500013200 trim(): 000500013200
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '/댄스//댄스//파닥파닥//무지개파닥//무지개파닥/',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629685796
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '/댄스//댄스//파닥파닥//무지개파닥//무지개파닥/',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629685796
+}
+parts[0]:       00500008700
+parts[1]: ㅎㅎㅎㅎ오
+parts[2]: greatiam
+parts[3]: 0
+parts[4]: 0
+parts[5]: 3
+parts[6]: 지미주디
+parts[7]: 805421088|557056
+parts[8]: 6
+parts[9]: 047143
+parts[10]: 45A48D
+parts[11]: 6
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 48, 56, 55,
+  48, 48
+]
+parseMessage called with parts[0]: 000500008700 length: 12
+Checking donation condition for parts[0]: 000500008700 trim(): 000500008700
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅎㅎㅎㅎ오',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629688076
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'greatiam',
+  nickname: '지미주디',
+  content: 'ㅎㅎㅎㅎ오',
+  type: 'text',
+  userFlag: '805421088|557056',
+  nicknameColor: '047143',
+  msgTime: 1774629688076
+}
+Soop WebSocket 핑 패킷:         00000000100
+
+Chzzk PING 메시지 수신: { ver: '2', cmd: 0 }
+Chzzk PONG 메시지 전송: { ver: '3', cmd: 10000 }
+parts[0]:       00500012300
+parts[1]: /무지개파닥//파닥파닥//신남//신남//댄스/
+parts[2]: lmhkiu
+parts[3]: 0
+parts[4]: 0
+parts[5]: -1
+parts[6]: 주눈비
+parts[7]: 268501312|425984
+parts[8]: 1
+parts[9]: C25111
+parts[10]: CF8362
+parts[11]: 5
+parts[12]: -1
+parts[13]:
+parts[14]: -1
+parts[15]:
+Char codes: [
+  48, 48, 48, 53, 48,
+  48, 48, 49, 50, 51,
+  48, 48
+]
+parseMessage called with parts[0]: 000500012300 length: 12
+Checking donation condition for parts[0]: 000500012300 trim(): 000500012300
+Soop WebSocket 채팅: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '/무지개파닥//파닥파닥//신남//신남//댄스/',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629691909
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  platformType: 'soop',
+  userId: 'lmhkiu',
+  nickname: '주눈비',
+  content: '/무지개파닥//파닥파닥//신남//신남//댄스/',
+  type: 'text',
+  userFlag: '268501312|425984',
+  nicknameColor: 'C25111',
+  msgTime: 1774629691909
+}
+ChatHub clients count: 1
+Broadcasting message: {
+  svcid: 'game',
+  cid: 'N2O2DZ',
+  mbrCnt: 32,
+  uid: '99a909012a3dc934cbfb52586cc96071',
+  profile: '{"userIdHash":"99a909012a3dc934cbfb52586cc96071","nickname":"Zz똘킴zZ","profileImageUrl":"","userRoleCode":"common_user","badge":null,"title":null,"verifiedMark":false,"activityBadges":[{"badgeNo":4245817,"badgeId":"all_time_viewers_2025","imageUrl":"https://ssl.pstatic.net/static/nng/glive/badge/recap_25.png","activated":true}],"streamingProperty":{"nicknameColor":{"colorCode":"CC000"},"activatedAchievementBadgeIds":[]},"viewerBadges":[]}',
+  msg: '{:d_94:}{:d_94:}{:d_94:}',
+  msgTypeCode: 1,
+  msgStatusType: 'NORMAL',
+  extras: '{"chatType":"STREAMING","osType":"PC","extraToken":"jbptc/KuKfBiy3hGqOjRUApi6/rSa5bEOypnwyqMx5XOPyBW5R0KI3KAmwcFf6sxQEZEE6BLXV7KSFe3ookFzQ==","streamingChannelId":"502f2a93037ff6984286d4104c1cac73","emojis":{"d_94":"https://ssl.pstatic.net/static/nng/glive/icon/c_22.png"}}',
+  ctime: 1774629692654,
+  utime: 1774629692654,
+  msgTid: null,
+  cuid: null,
+  msgTime: 1774629692654,
+  platformType: 'chzzk',
+  userId: '99a909012a3dc934cbfb52586cc96071'
+}

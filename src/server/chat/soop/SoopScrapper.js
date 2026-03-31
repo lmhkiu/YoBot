@@ -197,7 +197,7 @@ export default class SoopScrapper extends BaseChatScrapper {
             return;
         }
         const data = {
-            platformType: 'broad_time',
+            messageType: 'response_broad_time',
             btime: this.chatInfo.btime
         }
         this.chatHub.broadcast(data)
@@ -261,7 +261,7 @@ export default class SoopScrapper extends BaseChatScrapper {
         if (parts.length >= 13 && parts[12] === 'png') {
             // OGQ Emoticon message
             ret = {
-                platformType: config.PLATFORM_TYPE.SOOP,
+                messageType: config.PLATFORM_TYPE.SOOP,
                 userId: parts[6],
                 nickname: parts[7],
                 content: parts[2],
@@ -279,7 +279,7 @@ export default class SoopScrapper extends BaseChatScrapper {
 
 
             ret = {
-                platformType: config.PLATFORM_TYPE.SOOP,
+                messageType: config.PLATFORM_TYPE.SOOP,
                 userId: parts[2],  // shyeond
                 nickname: parts[3],  // 두부졸림
                 content: '별풍선', // 기부한 아이템 이름
@@ -294,7 +294,7 @@ export default class SoopScrapper extends BaseChatScrapper {
 
             //console.log('Checking donation condition for parts[0]:', parts[0], 'trim():', parts[0]?.trim());
             ret = {
-                platformType: config.PLATFORM_TYPE.SOOP,
+                messageType: config.PLATFORM_TYPE.SOOP,
                 userId: parts[2],
                 nickname: parts[6],
                 content: parts[1],
@@ -367,211 +367,3 @@ export default class SoopScrapper extends BaseChatScrapper {
         
     }
 }
-
-
-
-
-    /**
-
-parts[0]:       00500008500
-parts[1]: ㅇㅇ/샤방/ㅇㅇ
-parts[2]: lmhkiu
-parts[3]: 0
-parts[4]: 0
-parts[5]: 3
-parts[6]: 주눈비
-parts[7]: 65536|163840
-parts[8]: -1
-parts[9]: 6518C8
-parts[10]: 9568CD
-parts[11]: -1
-parts[12]: -1
-parts[13]:
-parts[14]: -1
-parts[15]:
-
-Soop WebSocket 채팅: {
-  platformType: 'soop',
-  userID: 'lmhkiu',
-  nickname: '주눈비',
-  content: 'ㅇㅇ/샤방/ㅇㅇ',
-  type: 'text',
-  msgTime: 1773122714886
-}
-
-
-
-Soop WebSocket 메시지: [
-  '\x1B\t000500007100', 'ㅇㅇ',
-  'lmhkiu',             '0',
-  '0',                  '3',
-  '주눈비',             '65536|163840',
-  '-1',                 'DC3585',
-  'CF5F9B',             '-1',
-  '-1',                 '',
-  '-1',                 ''
-]
-parts[0]:       00500007100
-parts[1]: ㅇㅇ
-parts[2]: lmhkiu
-parts[3]: 0
-parts[4]: 0
-parts[5]: 3
-parts[6]: 주눈비
-parts[7]: 65536|163840
-parts[8]: -1
-parts[9]: DC3585
-parts[10]: CF5F9B
-parts[11]: -1
-parts[12]: -1
-parts[13]:
-parts[14]: -1
-parts[15]:
-Soop WebSocket 채팅: {
-  platformType: 'soop',
-  userID: 'lmhkiu',
-  nickname: '주눈비',
-  content: 'ㅇㅇ',
-  type: 'text',
-  msgTime: 1773126550546
-}
-
-
-
-
-
-parts[0]:       00500008500
-parts[1]: ㅇㅇ/샤방/ㅇㅇ
-parts[2]: lmhkiu
-parts[3]: 0
-parts[4]: 0
-parts[5]: 3
-parts[6]: 주눈비
-parts[7]: 65536|163840
-parts[8]: -1
-parts[9]: 6518C8
-parts[10]: 9568CD
-parts[11]: -1
-parts[12]: -1
-parts[13]:
-parts[14]: -1
-parts[15]:
-
-
-parts[0]:       00500007100
-parts[1]: ㅇㅇ
-parts[2]: lmhkiu
-parts[3]: 0
-parts[4]: 0
-parts[5]: 3
-parts[6]: 주눈비
-parts[7]: 65536|163840
-parts[8]: -1
-parts[9]: DC3585
-parts[10]: CF5F9B
-parts[11]: -1
-parts[12]: -1
-parts[13]:
-parts[14]: -1
-parts[15]:
-
-
-
-
-//스티커
-<img class="emoticon" src="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/5fe53f42edb76/10_80.png?ver=1" data-default-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/5fe53f42edb76/10_80.png?ver=1" data-static-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/5fe53f42edb76/10_80.png?ver=1" alt="OGQ 이모티콘 이미지" onerror="this.onerror=null;this.src='https://res.sooplive.co.kr/images/chat/ogq_default.svg'">
-
-parts[0]:       10900009900
-parts[1]: 3995
-parts[2]: ㅇㅇ
-parts[3]: 5fe53f42edb76
-parts[4]: 10
-parts[5]: 1
-parts[6]: lmhkiu
-parts[7]: 주눈비
-parts[8]: 65536|163840
-parts[9]: 0
-parts[10]: 3
-parts[11]:
-parts[12]: png
-parts[13]: -1
-parts[14]: DC3585
-parts[15]: CF5F9B
-parts[16]: -1
-parts[17]: -1
-parts[18]: 0
-parts[19]: -1
-parts[20]:
-
-
-/// 도네이션 10개
-parts[0]:       01800011500
-parts[1]: danz59
-parts[2]: shyeond
-parts[3]: 두부졸림
-parts[4]: 10
-parts[5]: 0
-parts[6]: 0
-parts[7]: 9552
-parts[8]: 10
-parts[9]: 0
-parts[10]: 0
-parts[11]: kor_custom07
-parts[12]: 01fbe3ff-81f2-44b1-a8dd-2eb8348c28f5
-parts[13]: ko_KR
-parts[14]: 1771461483
-parts[15]:
-Soop WebSocket 채팅: {
-  platformType: 'soop',
-  userId: 'shyeond',
-  nickname: '0',
-  content: 'danz59',
-  type: 'text',
-  userFlag: '9552',
-  nicknameColor: '0',
-  msgTime: 1773208175407
-}
-
-
-<div class="chatting-list-item" user-type=""><div class="donation-container"><div class="donation-bubble"><div class="ceremony-img custom-mobile-img"><img src="https://res.sooplive.co.kr/new_player/items/m_balloon_10.png?v=1771461483" alt="별풍선"></div><div class="info-box"><button type="button" class="name" user_id="shyeond" user_nick="두부졸림">두부졸림</button><span class="money">별풍선 <em>10</em>개</span></div></div></div></div>
-
-
-////도네이션 5개  
-parts[0]:       01800012000
-parts[1]: jrdart
-parts[2]: wordyong
-parts[3]: 거지왕리지상
-parts[4]: 5
-parts[5]: 0
-parts[6]: 0
-parts[7]: 2604
-parts[8]: 5
-parts[9]: 0
-parts[10]: 0
-parts[11]: kor_custom10
-parts[12]: de33f821-ed04-41e1-bc47-37adfabb32ad
-parts[13]: ko_KR
-parts[14]: 1672402477
-parts[15]:
-Soop WebSocket 채팅: {
-  platformType: 'soop',
-  userId: 'wordyong',
-  nickname: '0',
-  content: 'jrdart',
-  type: 'text',
-  userFlag: '2604',
-  nicknameColor: '0',
-  msgTime: 1773209201200
-}
-
-
-    <div class="chatting-list-item" user-type=""><div class="donation-container"><div class="donation-bubble"><div class="ceremony-img custom-mobile-img"><img src="https://res.sooplive.co.kr/new_player/items/m_balloon_5.png?v=1672402477" alt="별풍선"></div><div class="info-box"><button type="button" class="name" user_id="wordyong" user_nick="거지왕리지상">거지왕리지상</button><span class="money">별풍선 <em>5</em>개</span></div></div></div></div>
-
-
-
-
-    //움직이는 스티커
-    <div class="chatting-list-item" user-type="subscribe"><div class="message-container"><div class="username"><button user_id="pnsjo2207" user_nick="메이링vV" userflag="805388800" is_mobile="true" grade="gudok" is_subscriber="true" tiernickname="씩씩이" personalcon="https://static.file.sooplive.co.kr/spcon/243568ce67e613c45.png?_=1758504003" sub-month="1" acc-sub-month="1"><span class="thumb"><img src="https://static.file.sooplive.co.kr/spcon/243568ce67e613c45.png?_=1758504003" alt="프로필 이미지" onerror="this.onerror=null;this.src='https://res.sooplive.co.kr/images/chatting/signature-default.svg'"><span class="tier_tip"><em class="name">씩씩이</em>누적 1개월</span></span><span class="author random-color20" data-color="C40F70">메이링vV</span></button></div><div class="message-text"><div class="emoticon-box " id="0"><a href="https://ogqmarket.sooplive.co.kr/?m=detail&amp;productId=6460cd0322470" target="_blank" tip="구매하기" id="ogq-img" type="button" class="img-box" data-id="6460cd0322470" data-subid="9" data-type="OGQ">
-                    <img class="emoticon" src="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/6460cd0322470/9_80.webp?ver=1" data-default-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/6460cd0322470/9_80.webp?ver=1" data-static-img="https://ogq-sticker-global-cdn-z01.sooplive.co.kr/sticker/6460cd0322470/9_80.png?ver=1" alt="OGQ 이모티콘 이미지" onerror="this.onerror=null;this.src='https://res.sooplive.co.kr/images/chat/ogq_default.svg'">
-            </a></div></div></div></div>
-    */
