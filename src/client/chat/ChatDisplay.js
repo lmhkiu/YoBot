@@ -283,6 +283,11 @@ export default class ChatDisplay {
 
     // 사용자 ID 기반 파스텔 톤 색상 생성
     generatePastelColor(userId) {
+
+        if(userId === null || userId === undefined || userId === '' || userId.length == 0) {
+            return '#ffffff';
+        }
+        
         let hash = 0;
         for (let i = 0; i < userId.length; i++) {
             hash = userId.charCodeAt(i) + ((hash << 5) - hash);

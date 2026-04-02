@@ -43,6 +43,10 @@ export default class ChatMemoController {
     handleBroadTime(data) {
         console.log('방송 시간(초):', data);
 
+        // 이미 broadcastStartTime이 설정되어 있다면 더 이상 처리하지 않음
+        if (this.broadcastStartTime) {
+            return;
+        }
         // BTIME은 초 단위
         const totalSeconds = data;
 
@@ -66,19 +70,23 @@ export default class ChatMemoController {
     // 방송 시간 업데이트 함수
     updateBroadcastTime() {
         if (!this.broadcastStartTime) return;
-
-        const elapsedSeconds = Math.floor((Date.now() - this.broadcastStartTime) / 1000);
+        console.log('방송 시간 업데이트');
+        const nowObject = new Date();
+        const now = nowObject.getTime();
+       
+        const elapsedSeconds = Math.floor((now - this.broadcastStartTime) / 1000);
         const timeString = this.secondToTime(elapsedSeconds);
-
+        console.log(`now : ${this.getCurrentTimestamp(nowObject)}`);
+        console.log(`broadcastStartTime : ${this.getCurrentTimestamp(new Date(this.broadcastStartTime))}`);
+        console.log(`elapsedSeconds : ${timeString}`);
         // HTML의 broad_time 요소 업데이트
         const broadTimeElement = document.getElementById('broad_time');
         if (broadTimeElement) {
             broadTimeElement.textContent = timeString;
         }
     }
-    getCurrentTimestamp() {
+    getCurrentTimestamp(now) {
         // yyyymmdd HH:MM:SS 형식으로 변경
-        const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
@@ -354,7 +362,7 @@ export default class ChatMemoController {
                 body: JSON.stringify({
                     fileName: this.memoFileName,
                     content: memoContent,
-                    timestamp: this.getCurrentTimestamp()
+                    timestamp: this.getCurrentTimestamp(new Date())
                 })
             });
 
