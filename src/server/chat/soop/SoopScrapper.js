@@ -23,7 +23,7 @@ export default class SoopScrapper extends BaseChatScrapper {
             const data = await fsPromises.readFile(config.SOOP.CHAT_INFO_CACHE_FILE, 'utf8');
             this.chatInfoCache = JSON.parse(data);
         } catch (error) {
-            this.chatInfoCache = {};
+            this.chatInfoCache = null;
         }
     }
     // 캐시 저장 메서드
@@ -114,9 +114,9 @@ export default class SoopScrapper extends BaseChatScrapper {
         }
         let chatInfo = null;
 
-        if (!res.CHANNEL.CHDOMAIN && this.chatInfoCache[channelId]) {
+        if (!res.CHANNEL.CHDOMAIN && this.chatInfoCache) {
             console.log('Using cached chatInfo for', channelId);
-            chatInfo = this.chatInfoCache[channelId];
+            chatInfo = this.chatInfoCache;
         } else if (res.CHANNEL.CHDOMAIN) {
             console.log('Caching chatInfo for', channelId);
             chatInfo = {
@@ -129,7 +129,7 @@ export default class SoopScrapper extends BaseChatScrapper {
                 btime: res.CHANNEL.BTIME,  // 방송 시간(분) 추가
                 startDate: new Date(response.headers.get('date')).toISOString().slice(0,10).replace(/-/g, '')  // 20260326 형식
             };
-            this.chatInfoCache[channelId] = chatInfo;
+            this.chatInfoCache = chatInfo;
             await this.saveChatInfoCache();
         }
 

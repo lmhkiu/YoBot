@@ -46,10 +46,29 @@ export default class GistBackup {
             const serverGists = response.data;
             const localBackups = await this.loadBackupInfo();
 
-            // 서버에 없는 Gist는 로컬에서 제거
+            // 1. 서버에 있고 로컬에 없는 Gist 추가
+            const serverOnly = serverGists.filter(server => 
+                !localBackups.some(local => local.gistId === server.id)
+            );
+
+            // 2. 로컬에 있고 서버에 없는 기록 제거  
             const validBackups = localBackups.filter(local =>
                 serverGists.some(server => server.id === local.gistId)
             );
+
+            // 3. 서버 전용 Gist 정보를 로컬에 추가
+            for (const gist of serverOnly) {
+                const fileName = Object.keys(gist.files)[0];
+                if (fileName && fileName.startsWith('memo_')) {
+                    validBackups.push({
+                        fileName,
+                        gistId: gist.id,
+                        url: gist.html_url,
+                        createdAt: gist.created_at,
+                        localBackup: true
+                    });
+                }
+            }
 
             await fs.writeFile(this.backupFile, JSON.stringify(validBackups, null, 2));
             console.log(`동기화 완료: ${localBackups.length} -> ${validBackups.length}`);
