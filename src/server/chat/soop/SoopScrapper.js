@@ -317,7 +317,7 @@ export default class SoopScrapper extends BaseChatScrapper {
             clearInterval(this.pingInterval);
         }
         if (event.code !== 1000) {
-            //setTimeout(() => this.connectToSoopChat(), 5000);
+            setTimeout(() => this.connectToSoopChat(), 1000);
         }
     }
 
