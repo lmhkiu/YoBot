@@ -1,10 +1,23 @@
+Git 배포 방법
 
-1. 코드 수정한다.
-2. package.json 버전을 올린다.
-3. 아래 git 명령어로 git에 업로드한다. 
+1. 코드를 수정하고 관련 검증을 실행한다.
+2. package.json과 package-lock.json의 프로젝트 버전을 함께 올린다.
+3. CHANGELOG.md에 버전, 날짜, 업데이트 내용과 검증 결과를 기록한다.
+4. src/client/index.html의 업데이트 안내(29줄 부근)에 같은 버전과 주요 변경 사항을 적는다.
+5. git diff와 git status로 배포할 파일을 확인한다. 개인 설정, 토큰, 실행 중 생성된 메모·캐시·백업 정보는 포함하지 않는다.
+6. 배포할 파일을 지정해 추가하고, 버전과 업데이트 내용이 담긴 커밋을 만든다.
+7. main 브랜치를 origin에 푸시하고, 같은 커밋에 버전 태그를 생성해 푸시한다.
+8. GitHub Releases에서 해당 태그로 Release를 발행하고 CHANGELOG.md의 내용을 설명에 기록한다.
+   자동 업데이트는 /releases/latest를 확인하므로 태그 푸시만으로는 배포가 완료되지 않는다.
 
-git add .
-git commit -m "Release version 1.0.1"
+예시 (배포할 때마다 버전과 파일 목록을 확인한다):
+
+git add package.json package-lock.json CHANGELOG.md src/client/index.html
+git add src/client/chat/ChatDisplay.js src/client/chat/soop/SoopFormatter.js src/client/chat/soop/SoopEmoticons.js
+git add "git 배포 방법"
+git commit -m "Release version 1.0.25" -m "재연결 개선, 닉네임 색상 반영, 숲 이모티콘 392개 지원"
 git push origin main
-git tag -a v1.0.1 -m "Release version 1.0.1"
-git push origin v1.0.1
+git tag -a v1.0.25 -m "Release version 1.0.25"
+git push origin v1.0.25
+
+이후 GitHub Releases에서 v1.0.25를 선택해 Release를 발행한다.
