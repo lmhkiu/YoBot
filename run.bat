@@ -6,5 +6,8 @@ if errorlevel 1 (
     echo.
     echo YoBot could not start. Read the error above.
     pause
+    endlocal
+    exit 1
 )
 endlocal
+exit 0

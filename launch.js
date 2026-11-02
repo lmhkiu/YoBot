@@ -40,7 +40,17 @@ try {
     }
     const child = spawn(node, [path.join(root, 'src/server/server.js')], { cwd: root, stdio: 'inherit', windowsHide: true });
     let finished = false;
-    child.once('exit', code => { finished = true; process.exitCode = code || 0; });
+    // Wait for the server's own shutdown/save and stdio completion, then end
+    // the launcher explicitly instead of waiting on leftover HTTP pool handles.
+    child.once('close', code => {
+        finished = true;
+        process.exit(code ?? 1);
+    });
+    child.once('error', error => {
+        console.error('YoBot server could not start:', error.message);
+        finished = true;
+        process.exit(1);
+    });
     process.once('SIGINT', () => child.kill('SIGINT'));
     process.once('SIGTERM', () => child.kill('SIGTERM'));
     for (let attempt=0;attempt<100;attempt++) {

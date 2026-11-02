@@ -1,6 +1,6 @@
 {
   "name": "YoBot",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "update": "copy update.js update-run.js && node update-run.js && del update-run.js",
     "test:history": "node --test tests/history*.test.js",
     "build:release": "node scripts/build-release.mjs",
-    "test:bundle": "node --test tests/bundled-update.test.js"
+    "test:bundle": "node --test tests/bundled-update.test.js",
+    "test:terminal": "node --test tests/terminal-close.test.js"
   },
   "keywords": [],
   "author": "",
