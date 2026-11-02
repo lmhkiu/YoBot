@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>사용자 채팅 기록 · YoBot</title>
+    <link rel="stylesheet" href="history.css">
+</head>
+<body>
+    <header>
+        <div class="heading"><span id="platform"></span><h1 id="nickname">채팅 기록</h1></div>
+        <p id="identity"></p>
+        <div class="toolbar"><span id="count"></span><button id="refresh" type="button">최신 기록</button></div>
+        <p class="hint">최신 채팅부터 표시합니다. 아래로 스크롤하면 이전 기록을 불러옵니다.</p>
+    </header>
+    <p id="status" role="status" aria-live="polite">기록을 불러오는 중…</p>
+    <main id="viewport" aria-label="최신순 채팅 기록" tabindex="0">
+        <div id="top-spacer"></div><div id="messages" role="list"></div><div id="bottom-spacer"></div>
+    </main>
+    <footer><button id="more" type="button">이전 기록 더 보기</button><button id="top" type="button">맨 위로</button></footer>
+    <script type="module" src="history.js"></script>
+</body>
+</html>

@@ -1,12 +1,13 @@
 {
   "name": "YoBot",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server/server.js",
-    "update": "copy update.js update-run.js && node update-run.js && del update-run.js"
+    "update": "copy update.js update-run.js && node update-run.js && del update-run.js",
+    "test:history": "node --test tests/history*.test.js"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +21,8 @@
     "express": "^4.18.2",
     "node-fetch": "^3.3.2",
     "ws": "^8.19.0"
+  },
+  "engines": {
+    "node": ">=24.13.0"
   }
 }

@@ -95,8 +95,38 @@ export default class ChatDisplay {
         this.connectWebSocket();
 
         this.setScrollListener();
+        this.setHistoryClickListener();
         
         
+    }
+
+    setHistoryClickListener() {
+        this.historyClickHandler = event => {
+            const nickname = event.target.closest('[data-history-user]');
+            if (!nickname) return;
+            const platform = nickname.dataset.historyPlatform;
+            const userId = decodeURIComponent(nickname.dataset.historyUser);
+            const query = new URLSearchParams({ platform, userId });
+            const popup = window.open(`/history.html?${query}`, `yobot-history-${platform}-${userId}`, 'width=600,height=800,resizable=yes,scrollbars=yes');
+            if (popup) { popup.opener = null; popup.focus(); }
+            else window.alert('채팅 기록 창을 열려면 이 사이트의 팝업을 허용해 주세요.');
+        };
+        this.historyKeyHandler = event => {
+            if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('[data-history-user]')) {
+                event.preventDefault();
+                event.target.click();
+            }
+        };
+        const container = document.getElementById('chat-messages');
+        container.addEventListener('click', this.historyClickHandler);
+        container.addEventListener('keydown', this.historyKeyHandler);
+    }
+
+    attachHistoryLink(html, data) {
+        const user = data.historyUser;
+        if (!user || !['chzzk', 'soop', 'twitch'].includes(user.platform)) return html;
+        const userId = encodeURIComponent(user.userId).replace(/'/g, '%27');
+        return html.replace(/<div class="chat-message-nickname"/, `<div data-history-platform="${user.platform}" data-history-user="${userId}" role="button" tabindex="0" title="이 사용자의 채팅 기록 보기" class="chat-message-nickname"`);
     }
 
     setScrollListener() {
@@ -241,6 +271,7 @@ export default class ChatDisplay {
                 return;
         }
         html = this.applyColorToMessage(html, data);
+        html = this.attachHistoryLink(html, data);
         this.addMessageToChat(html);
 
         if (data.messageId) {
@@ -429,6 +460,11 @@ export default class ChatDisplay {
     }
 
     destroy() {
+        if (this.historyClickHandler) {
+            const container = document.getElementById('chat-messages');
+            container.removeEventListener('click', this.historyClickHandler);
+            container.removeEventListener('keydown', this.historyKeyHandler);
+        }
         this.destroyed = true;
         this.clearTimers();
         this.closeSocket(this.pendingWs);

@@ -6,11 +6,12 @@ import ChzzkScraper from './chzzk/ChzzkScrapper.js';
 import SoopScraper from './soop/SoopScrapper.js';
 import TwitchScrapper from './twitch/TwitchScrapper.js';
 import config from '../../../config.js';
-import { WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 
 export default class ChatHub {
 
-    constructor() {
+    constructor(historyStore = null) {
+        this.historyStore = historyStore;
         this.chzzkScrapper = null;
         this.soopScrapper = null;
         this.twitchScrapper = null;
@@ -56,7 +57,10 @@ export default class ChatHub {
     async createWebSocketDisplay() {
         this.wss = new WebSocketServer({ port: config.PORT.CHAT_DISPLAY });
 
-        this.wss.on('connection', (ws) => {
+        this.wss.on('connection', (ws, request) => {
+            this.cancelShutdownTimer();
+            const query = new URL(request.url, 'http://localhost').searchParams;
+            ws.historyUser = query.get('history') === '1' ? { platform: query.get('platform'), userId: query.get('userId') } : null;
             console.log('chatDisplay 클라이언트 연결됨');
             this.clients.push(ws);
 
@@ -146,8 +150,10 @@ export default class ChatHub {
         console.log('ChatHub clients count:', this.clients.length);
         console.log('Broadcasting message:', message);
 
+        const historyUser = this.historyStore?.record(message);
         const messageWithId = {
             ...message,
+            historyUser,
             messageId: this.generateMessageId(),
             timestamp: Date.now()
         };
@@ -160,6 +166,12 @@ export default class ChatHub {
 
         this.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
+                if (client.historyUser) {
+                    if (historyUser && client.historyUser.platform === historyUser.platform && client.historyUser.userId === historyUser.userId) {
+                        client.send(JSON.stringify({ messageType: 'history_changed' }));
+                    }
+                    return;
+                }
                 client.send(JSON.stringify(messageWithId));
                 this.clientLastSeen.set(client, Date.now());
             }
@@ -203,6 +215,8 @@ export default class ChatHub {
 
     destroy() {
         console.log('ChatHub 자원 해제 시작...');
+        this.cancelShutdownTimer();
+        this.onShutdownCallback = null;
         
         // 각 스크래퍼 WebSocket 연결 종료
         // 각 스크래퍼의 destroy 메서드 호출
@@ -218,6 +232,7 @@ export default class ChatHub {
         
         // WebSocket 서버 종료
         if (this.wss) {
+            for (const client of this.wss.clients) client.close(1000);
             this.wss.close();
         }
         

@@ -3,13 +3,16 @@ import ChatDisplay from "./chat/ChatDisplay.js";
 import ChatMemoController from "./chat/ChatMemoController.js";
 
 
+let chatDisplay;
+let chatMemoController;
+
 try {
 
     // const gameController = new GameController();
     // gameController.init();
 
-    const chatDisplay = new ChatDisplay();
-    const chatMemoController = new ChatMemoController();
+    chatDisplay = new ChatDisplay();
+    chatMemoController = new ChatMemoController();
 
     await chatDisplay.init(chatMemoController);
     chatMemoController.init(chatDisplay);

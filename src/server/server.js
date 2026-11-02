@@ -6,6 +6,8 @@ import ChatHub from './chat/ChatHub.js';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import GistBackup from './gist/GistBackup.js';
+import ChatHistoryStore from './history/ChatHistoryStore.js';
+import { createHistoryHandler } from './history/historyApi.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +20,12 @@ let gistBackup = null;
 
 const app = express();
 app.use(express.json());
+const historyStore = new ChatHistoryStore({
+    limit: config.CHAT_HISTORY?.MAX_MESSAGES_PER_USER ?? 999,
+    channels: { chzzk: config.CHZZK.CHANNEL_ID, soop: config.SOOP.CHANNEL_ID, twitch: config.TWITCH.CHANNEL_ID }
+});
+await historyStore.ready;
+app.get('/api/chat-history', createHistoryHandler(historyStore));
 
 
 
@@ -120,9 +128,10 @@ app.post('/start-chat', async (req, res) => {
 
 
         await loadChannelIDs();
+        historyStore.channels = { chzzk: config.CHZZK.CHANNEL_ID, soop: config.SOOP.CHANNEL_ID, twitch: config.TWITCH.CHANNEL_ID };
 
         //const ChatHub = (await import('./chat/ChatHub.js')).default;
-        chatHub = new ChatHub();
+        chatHub = new ChatHub(historyStore);
 
         if (config.UPDATE.GIST.TOKEN) {
             gistBackup = new GistBackup();
@@ -134,7 +143,7 @@ app.post('/start-chat', async (req, res) => {
         });
 
         await chatHub.init();
-        await gistBackup.init(chatHub.getBroadcastDate());
+        if (gistBackup) await gistBackup.init(chatHub.getBroadcastDate());
 
         // gist 메모 백업 기능
         // 서버 시작 시 백업 초기화
@@ -326,7 +335,10 @@ process.on('unhandledRejection', (reason, promise) => {
 
 
 // shutdown 함수 추가
+let shuttingDown = false;
 async function shutdown() {
+    if (shuttingDown) return;
+    shuttingDown = true;
     console.log('서버 종료 시작...');
 
     if (gistBackup) {
@@ -339,6 +351,9 @@ async function shutdown() {
         chatHub.destroy();
     }
 
+    try { await historyStore.close(); }
+    catch (error) { console.error('채팅 기록 종료 저장 실패:', error.message); }
+
     // Express 서버 종료
     if (server) {
         server.close(() => {
@@ -350,6 +365,9 @@ async function shutdown() {
     }
 
 }
+
+process.once('SIGINT', shutdown);
+process.once('SIGTERM', shutdown);
 
 // 서버 종료 엔드포인트
 app.post('/shutdown', async (req, res) => {

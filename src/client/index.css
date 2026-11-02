@@ -218,3 +218,6 @@ canvas {
     border-radius: 8px;
     cursor: pointer;
 }
+.chat-message-nickname[data-history-user] { cursor: pointer; }
+.chat-message-nickname[data-history-user]:hover { text-decoration: underline; }
+.chat-message-nickname[data-history-user]:focus-visible { outline: 2px solid #bfb3ff; outline-offset: 2px; }

@@ -1,0 +1,21 @@
+:root { color-scheme: dark; font-family: "Malgun Gothic", sans-serif; background: #0e0e10; color: #efeff1; }
+* { box-sizing: border-box; }
+body { margin: 0; height: 100vh; display: flex; flex-direction: column; }
+header { padding: 18px 20px 8px; border-bottom: 1px solid #303039; }
+.heading { display: flex; align-items: center; gap: 10px; }
+#platform { color: #bfb3ff; font-size: 13px; }
+h1 { font-size: 20px; margin: 0; overflow-wrap: anywhere; }
+#identity { font-size: 12px; color: #aaaab6; overflow-wrap: anywhere; margin: 8px 0; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hint, #status { color: #aaaab6; font-size: 12px; }
+#status { min-height: 18px; margin: 8px 20px; }
+#status.error { color: #ff9b9b; }
+button { cursor: pointer; color: #f5f3ff; background: #383044; border: 1px solid #635278; border-radius: 6px; padding: 7px 12px; font: inherit; font-size: 13px; }
+button:disabled { opacity: .5; cursor: default; }
+#viewport { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; }
+.record { height: 108px; border-bottom: 1px solid #25252d; padding: 10px 20px; }
+.record-meta { display: flex; gap: 8px; color: #aaaab6; font-size: 11px; white-space: nowrap; }
+.record-nickname { font-size: 12px; color: #d2c8ff; margin: 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.record-content { margin: 0; max-height: 52px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 25px; }
+.chat-message-emote { max-height: 26px; max-width: 100px; vertical-align: middle; object-fit: contain; }
+footer { padding: 10px 20px; display: flex; justify-content: space-between; border-top: 1px solid #303039; }
