@@ -21,3 +21,11 @@ git tag -a v1.0.25 -m "Release version 1.0.25"
 git push origin v1.0.25
 
 이후 GitHub Releases에서 v1.0.25를 선택해 Release를 발행한다.
+
+내부 Node.js 포함 배포 추가 절차
+
+1. npm run build:release로 dist/YoBot.zip과 dist/YoBot.zip.sha256을 생성한다.
+2. GitHub Release를 먼저 draft로 만들고 두 파일을 모두 첨부한 뒤 공개한다.
+3. 이후 자동 업데이트는 첨부 파일 YoBot.zip을 사용한다. 소스 ZIP만으로 배포하지 않는다.
+4. runtime/, node_modules/, 개인 설정, 기록 DB는 Git에 추가하지 않는다. 라이브러리는 빌드 중 npm ci로 설치되고 ZIP에 포함된다.
+5. 최초 전환 사용자는 새 ZIP을 별도 폴더에 풀고 기존 config.js를 옮긴 후 run.bat을 실행한다.

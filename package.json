@@ -1,13 +1,15 @@
 {
   "name": "YoBot",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server/server.js",
     "update": "copy update.js update-run.js && node update-run.js && del update-run.js",
-    "test:history": "node --test tests/history*.test.js"
+    "test:history": "node --test tests/history*.test.js",
+    "build:release": "node scripts/build-release.mjs",
+    "test:bundle": "node --test tests/bundled-update.test.js"
   },
   "keywords": [],
   "author": "",

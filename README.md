@@ -1,2 +1,24 @@
 # YoBot
-자동 업데이트 포함 버전
+
+치지직·숲·트위치 통합 채팅 프로그램입니다.
+
+## Windows에서 실행
+
+1. GitHub Release의 첨부 파일 **YoBot.zip**을 내려받습니다. Source code ZIP은 실행 환경을 포함하지 않습니다.
+2. 별도 폴더에 압축을 풀고, 안에 있는 **run.bat**을 실행합니다.
+3. 설정 화면에서 채널 ID를 확인하고 시작합니다.
+
+Node.js와 필요한 라이브러리가 포함되어 있어 별도 설치는 필요 없습니다. Windows x64용입니다. 기본 설정을 그대로 쓸 경우 config.js를 옮길 필요가 없습니다. 기존 개인 설정을 유지하려는 사용자만 이전 config.js를 새 폴더에 복사하세요. 사용자 채팅 기록은 같은 Windows 계정에서 유지됩니다.
+
+새 실행기로 전환한 이후에는 run.bat 실행 시 GitHub의 최신 완성 패키지를 확인합니다. 업데이트 시 config.js와 메모, 로컬 채팅 DB를 보존합니다. 인터넷 연결이나 패키지 검증에 문제가 있으면 기존 설치 버전을 실행합니다.
+
+## 개발·배포
+
+개발 환경은 Node.js 24.13.0 이상이 필요합니다.
+
+- 개발 실행: npm start
+- 기록 테스트: npm run test:history
+- 업데이트 테스트: npm run test:bundle
+- Windows 패키지 생성: npm run build:release
+
+빌드 결과 dist/YoBot.zip과 dist/YoBot.zip.sha256을 GitHub Release에 함께 첨부한 뒤 공개합니다. 구체적인 절차는 'git 배포 방법', 기록 기능은 CHAT_HISTORY.md를 참고하세요.
