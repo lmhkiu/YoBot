@@ -4,7 +4,7 @@ import os from 'node:os';
 import { normalizeHistoryMessage } from './normalizeHistoryMessage.js';
 
 export default class ChatHistoryStore {
-    constructor({ limit = 999, filePath = path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), '.local', 'share'), 'YoBot', 'data', 'chat-history.sqlite'), channels = {}, onError = console.error } = {}) {
+    constructor({ limit = 9999, filePath = path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), '.local', 'share'), 'YoBot', 'data', 'chat-history.sqlite'), channels = {}, onError = console.error } = {}) {
         if (!Number.isInteger(limit) || limit < 1 || limit > 9999) throw new Error('CHAT_HISTORY.MAX_MESSAGES_PER_USER는 1~9999 사이 정수여야 합니다.');
         this.channels = channels;
         this.onError = onError;

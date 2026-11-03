@@ -1,7 +1,7 @@
 // config.js
 const config = {
     "CHAT_HISTORY": {
-        "MAX_MESSAGES_PER_USER": 999
+        "MAX_MESSAGES_PER_USER": 9999
     },
     "SCENE_KEY": {
         "GAME": "SceneGame",

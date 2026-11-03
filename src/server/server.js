@@ -7,7 +7,8 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import GistBackup from './gist/GistBackup.js';
 import ChatHistoryStore from './history/ChatHistoryStore.js';
-import { createHistoryHandler } from './history/historyApi.js';
+import { migrateHistoryLimit } from './history/migrateHistoryLimit.js';
+import { createHistoryHandler, createNotesHandler } from './history/historyApi.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,11 +22,13 @@ let gistBackup = null;
 const app = express();
 app.use(express.json());
 const historyStore = new ChatHistoryStore({
-    limit: config.CHAT_HISTORY?.MAX_MESSAGES_PER_USER ?? 999,
+    limit: await migrateHistoryLimit(path.resolve(__dirname, '../..'), config.CHAT_HISTORY?.MAX_MESSAGES_PER_USER),
     channels: { chzzk: config.CHZZK.CHANNEL_ID, soop: config.SOOP.CHANNEL_ID, twitch: config.TWITCH.CHANNEL_ID }
 });
 await historyStore.ready;
 app.get('/api/chat-history', createHistoryHandler(historyStore));
+app.get('/api/chat-history/notes', createNotesHandler(historyStore));
+app.post('/api/chat-history/notes', createNotesHandler(historyStore));
 
 
 

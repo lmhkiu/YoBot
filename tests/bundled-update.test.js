@@ -35,10 +35,12 @@ test('reject traversal and corrupt packages', t => {
     fs.writeFileSync(path.join(source, 'src/server/server.js'), 'damaged');
     assert.throws(() => verifyPackage(source), /integrity/);
 });
-test('install complete package while preserving config and the active BAT', t => {
+test('install complete package including config while preserving the active BAT', t => {
     const { root } = fixture(t);
     assert(applyPreparedUpdate(root));
-    assert.equal(fs.readFileSync(path.join(root, 'config.js'), 'utf8'), 'personal settings');
+    const backup = fs.readdirSync(path.join(root, '.update')).find(name => name.startsWith('rollback-'));
+    assert.equal(fs.readFileSync(path.join(root, '.update', backup, 'config.js'), 'utf8'), 'personal settings');
+    assert.equal(fs.readFileSync(path.join(root, 'config.js'), 'utf8'), 'new config.js');
     assert.equal(fs.readFileSync(path.join(root, 'run.bat'), 'utf8'), 'stable launcher');
     assert.equal(fs.readFileSync(path.join(root, 'src/server/server.js'), 'utf8'), 'new src/server/server.js');
     assert.equal(JSON.parse(fs.readFileSync(path.join(root, 'release.json'), 'utf8')).version, '1.0.28');
@@ -46,7 +48,7 @@ test('install complete package while preserving config and the active BAT', t =>
 });
 test('installation failure rolls back app files', t => {
     const { root } = fixture(t);
-    assert.throws(() => applyPreparedUpdate(root, { beforeInstall(file) { if (file === 'node_modules') throw Error('disk failure'); } }));
+    assert.throws(() => applyPreparedUpdate(root, { beforeInstall(file) { if (file === 'launcher.ps1') throw Error('disk failure'); } }));
     assert.equal(fs.readFileSync(path.join(root, 'src/server/server.js'), 'utf8'), 'old server');
     assert.equal(fs.readFileSync(path.join(root, 'config.js'), 'utf8'), 'personal settings');
     assert(!fs.existsSync(path.join(root, 'release.json')));

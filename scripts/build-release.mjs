@@ -33,7 +33,7 @@ function sanitize(object) {
     }
 }
 sanitize(configuration);
-configuration.CHAT_HISTORY ??= { MAX_MESSAGES_PER_USER: 999 };
+configuration.CHAT_HISTORY ??= { MAX_MESSAGES_PER_USER: 9999 };
 fs.writeFileSync(path.join(bundle, 'config.js'), '// config.js\nconst config = ' + JSON.stringify(configuration, null, 4) + ';\nexport default config;\n');
 // Build-time npm only: the user never needs npm or an installed Node.js.
 execFileSync(process.env.ComSpec || 'C:/Windows/System32/cmd.exe', ['/d', '/c', 'npm ci --omit=dev --ignore-scripts --no-audit --no-fund'], { cwd: bundle, stdio: 'inherit', windowsHide: true });

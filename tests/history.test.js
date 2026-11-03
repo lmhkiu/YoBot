@@ -30,8 +30,8 @@ function open(t, filePath, capacity) {
     return db;
 }
 
-test('limit defaults to 999; invalid config values are rejected', () => {
-    assert.equal(validateHistoryLimit(), 999);
+test('limit defaults to 9999; invalid config values are rejected', () => {
+    assert.equal(validateHistoryLimit(), 9999);
     for (const value of [0, -1, 10000, 1.5, '999', null, NaN]) assert.throws(() => validateHistoryLimit(value));
     for (const value of [1, 999, 9999]) assert.equal(validateHistoryLimit(value), value);
 });
@@ -171,4 +171,41 @@ test('API validates input, enforces local access, caps pages and returns storage
     const failed = response();
     await createHistoryHandler({ query: async () => { throw new Error('disk failure'); } })({ query: { platform: 'soop', userId: 'a' } }, failed);
     assert.equal(failed.code, 503);
+});
+
+test('manager notes survive restart and chat retention, in order and per platform/account', t => {
+    const file = temporary(t);
+    const account = { platform: 'soop', userId: 'alice' };
+    const db = open(t, file, 1);
+    const first = db.addNote({ ...account, content: '첫 댓글' });
+    const second = db.addNote({ ...account, content: '두 번째 댓글' });
+    db.appendBatch([entry(1), entry(2)]);
+    const reopened = open(t, file, 9999);
+    assert.deepEqual(reopened.notes(account).map(note => ({ ...note })), [first, second]);
+    assert.deepEqual(reopened.notes({ ...account, platform: 'twitch' }), []);
+    assert.deepEqual(reopened.notes({ ...account, userId: 'bob' }), []);
+    assert.equal(reopened.query(account).total, 1);
+});
+
+test('migrate the old default once while preserving the rest of config.js', async t => {
+    const { migrateHistoryLimit } = await import('../src/server/history/migrateHistoryLimit.js');
+    const root = path.dirname(temporary(t));
+    const file = path.join(root, 'config.js');
+    const source = 'const config = { "CHAT_HISTORY": { "MAX_MESSAGES_PER_USER": 999 }, "CHANNEL_ID": "keep" };';
+    fs.writeFileSync(file, source);
+    assert.equal(await migrateHistoryLimit(root, 999), 9999);
+    assert.equal(fs.readFileSync(file, 'utf8'), source.replace('999', '9999'));
+    fs.writeFileSync(file, source);
+    assert.equal(await migrateHistoryLimit(root, 999), 999);
+    assert.equal(fs.readFileSync(file, 'utf8'), source);
+});
+
+test('leave a customized history limit untouched on first start', async t => {
+    const { migrateHistoryLimit } = await import('../src/server/history/migrateHistoryLimit.js');
+    const root = path.dirname(temporary(t));
+    const file = path.join(root, 'config.js');
+    const source = 'const config = { CHAT_HISTORY: { MAX_MESSAGES_PER_USER: 2500 } };';
+    fs.writeFileSync(file, source);
+    assert.equal(await migrateHistoryLimit(root, 2500), 2500);
+    assert.equal(fs.readFileSync(file, 'utf8'), source);
 });

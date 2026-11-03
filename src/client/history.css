@@ -1,21 +1,32 @@
 :root { color-scheme: dark; font-family: "Malgun Gothic", sans-serif; background: #0e0e10; color: #efeff1; }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; height: 100vh; display: flex; flex-direction: column; }
-header { padding: 18px 20px 8px; border-bottom: 1px solid #303039; }
+header { padding: 12px 16px 4px; }
 .heading { display: flex; align-items: center; gap: 10px; }
 #platform { color: #bfb3ff; font-size: 13px; }
-h1 { font-size: 20px; margin: 0; overflow-wrap: anywhere; }
-#identity { font-size: 12px; color: #aaaab6; overflow-wrap: anywhere; margin: 8px 0; }
-.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.hint, #status { color: #aaaab6; font-size: 12px; }
-#status { min-height: 18px; margin: 8px 20px; }
+h1 { font-size: 18px; margin: 0; overflow-wrap: anywhere; }
+#identity { font-size: 12px; color: #aaaab6; overflow-wrap: anywhere; margin: 4px 0; }
+nav { display: flex; border-bottom: 1px solid #303039; padding: 0 12px; }
+nav button { flex: 1; background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+nav button[aria-pressed="true"] { border-bottom-color: #ad86ff; color: #dfccff; }
+.panel { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+#status, #notes-status, #count { color: #aaaab6; font-size: 12px; }
+#status, #notes-status { margin: 0; padding: 6px 16px; }
+#status:empty, #notes-status:empty { display: none; }
 #status.error { color: #ff9b9b; }
-button { cursor: pointer; color: #f5f3ff; background: #383044; border: 1px solid #635278; border-radius: 6px; padding: 7px 12px; font: inherit; font-size: 13px; }
+button, textarea { color: #f5f3ff; background: #25222b; border: 1px solid #55505e; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: 13px; }
+button { cursor: pointer; }
 button:disabled { opacity: .5; cursor: default; }
-#viewport { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; }
-.record { height: 108px; border-bottom: 1px solid #25252d; padding: 10px 20px; }
-.record-meta { display: flex; gap: 8px; color: #aaaab6; font-size: 11px; white-space: nowrap; }
-.record-nickname { font-size: 12px; color: #d2c8ff; margin: 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.record-content { margin: 0; max-height: 52px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 25px; }
-.chat-message-emote { max-height: 26px; max-width: 100px; vertical-align: middle; object-fit: contain; }
-footer { padding: 10px 20px; display: flex; justify-content: space-between; border-top: 1px solid #303039; }
+.viewport { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; padding: 6px 16px; }
+#more { display: block; margin: 0 auto 6px; }
+.date-divider { display: flex; align-items: center; gap: 8px; margin: 8px 0 4px; color: #aaaab6; font-size: 12px; font-weight: normal; }
+.date-divider::before, .date-divider::after { content: ""; flex: 1; border-top: 1px solid #303039; }
+.record { padding: 2px 0; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
+.record-meta { color: #aaaab6; font-size: 11px; white-space: nowrap; margin-right: 4px; }
+.record-nickname { color: #c1b4df; }
+.record-content { white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-message-emote { height: 22px; max-width: 100px; vertical-align: middle; object-fit: contain; }
+.note { padding: 5px 0; border-bottom: 1px solid #25252d; font-size: 14px; }
+footer, form { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 7px 16px; border-top: 1px solid #303039; }
+textarea { flex: 1; min-width: 0; resize: vertical; min-height: 44px; max-height: 30vh; }

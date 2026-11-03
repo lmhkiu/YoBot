@@ -6,8 +6,15 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
-export async function verifyReleaseServer(bundle) {
+export async function verifyReleaseServer(source) {
     const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'yobot-release-smoke-'));
+    // Exercise migration on a disposable copy so runtime files never enter the archive.
+    const bundle = path.join(temporary, 'YoBot');
+    fs.cpSync(source, bundle, { recursive: true });
+    const configPath = path.join(bundle, 'config.js');
+    const configText = fs.readFileSync(configPath, 'utf8');
+    assert(configText.includes('"MAX_MESSAGES_PER_USER": 9999'));
+    fs.writeFileSync(configPath, configText.replace('"MAX_MESSAGES_PER_USER": 9999', '"MAX_MESSAGES_PER_USER": 999'));
     const listener = net.createServer();
     await new Promise((resolve, reject) => { listener.once('error', reject); listener.listen(0, '127.0.0.1', resolve); });
     const port = listener.address().port;
@@ -36,7 +43,17 @@ export async function verifyReleaseServer(bundle) {
             assert.equal((await fetch(base+route)).status,200,route);
         }
         const history=await fetch(base+'/api/chat-history?platform=soop&userId=smoke');
-        assert.equal(history.status,200);assert.equal((await history.json()).capacity,999);
+        assert.equal(history.status,200);assert.equal((await history.json()).capacity,9999);
+        assert(fs.readFileSync(configPath, 'utf8').includes('"MAX_MESSAGES_PER_USER": 9999'));
+        const notesUrl = base + '/api/chat-history/notes?platform=soop&userId=smoke';
+        const written = await fetch(notesUrl, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: '매니저 댓글 검증' })
+        });
+        assert.equal(written.status, 201);
+        const listed = await fetch(notesUrl);
+        assert.equal(listed.status, 200);
+        assert.deepEqual(await listed.json(), [await written.json()]);
         await fetch(base+'/shutdown',{method:'POST'});
         let timeout;
         try { assert.equal(await Promise.race([exited,new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('Shutdown timed out')),5000);})]),0); }

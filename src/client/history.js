@@ -11,18 +11,14 @@ const status = document.getElementById('status');
 const more = document.getElementById('more');
 const refresh = document.getElementById('refresh');
 const soop = new SoopFormatter();
-const records = [];
-const seen = new Set();
-const ROW_HEIGHT = 108;
+let loadedCount = 0;
 let nextCursor;
 let loading = false;
 let destroyed = false;
-let frame;
 let socket;
 let reconnectTimer;
 let controller;
 let generation = 0;
-let renderedRange = '';
 
 function setStatus(text, error = false) {
     status.textContent = text;
@@ -84,33 +80,46 @@ function renderContent(record, node) {
     }
 }
 
-function render() {
-    const start = Math.max(0, Math.floor(viewport.scrollTop / ROW_HEIGHT) - 5);
-    const end = Math.min(records.length, start + Math.ceil(viewport.clientHeight / ROW_HEIGHT) + 10);
-    const range = `${generation}:${records.length}:${start}:${end}`;
-    if (range === renderedRange) return;
-    renderedRange = range;
-    document.getElementById('top-spacer').style.height = `${start * ROW_HEIGHT}px`;
-    document.getElementById('bottom-spacer').style.height = `${Math.max(0, records.length - end) * ROW_HEIGHT}px`;
+const dateFormat = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
+const timeFormat = new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+
+function renderPage(page, reset) {
+    const oldTop = viewport.scrollTop;
+    const oldHeight = viewport.scrollHeight;
+    if (reset) messagesNode.replaceChildren();
     const fragment = document.createDocumentFragment();
-    for (let index = start; index < end; index++) {
-        const record = records[index];
+    let previousDate;
+    for (const record of [...page].reverse()) {
+        const date = dateFormat.format(record.receivedAt);
+        if (date !== previousDate) {
+            const divider = document.createElement('h2');
+            divider.className = 'date-divider';
+            divider.textContent = date;
+            fragment.append(divider);
+            previousDate = date;
+        }
         const row = document.createElement('article');
         row.className = 'record';
-        row.setAttribute('role', 'listitem');
-        const meta = document.createElement('div');
-        meta.className = 'record-meta';
-        meta.textContent = `${new Date(record.receivedAt).toLocaleString('ko-KR')} · 방송 ${record.channelId || '알 수 없음'}`;
-        const name = document.createElement('div');
+        const time = document.createElement('time');
+        time.className = 'record-meta';
+        time.dateTime = new Date(record.receivedAt).toISOString();
+        time.textContent = timeFormat.format(record.receivedAt);
+        if (record.channelId) time.title = '방송 ' + record.channelId;
+        const name = document.createElement('span');
         name.className = 'record-nickname';
         name.textContent = record.nickname;
-        const content = document.createElement('div');
+        const content = document.createElement('span');
         content.className = 'record-content';
         renderContent(record, content);
-        row.append(meta, name, content);
+        row.append(time, ' ', name, ' ', content);
         fragment.append(row);
     }
-    messagesNode.replaceChildren(fragment);
+    if (previousDate && messagesNode.firstElementChild?.textContent === previousDate) {
+        messagesNode.firstElementChild.remove();
+    }
+    messagesNode.prepend(fragment);
+    more.hidden = nextCursor === null;
+    viewport.scrollTop = reset ? viewport.scrollHeight : oldTop + viewport.scrollHeight - oldHeight;
 }
 
 async function load(reset = false) {
@@ -124,35 +133,129 @@ async function load(reset = false) {
     try {
         const query = new URLSearchParams({ platform, userId });
         if (!reset && nextCursor !== undefined) query.set('before', nextCursor);
-        const response = await fetch(`/api/chat-history?${query}`, { signal: controller.signal, cache: 'no-store' });
+        const response = await fetch('/api/chat-history?' + query, { signal: controller.signal, cache: 'no-store' });
         if (!response.ok) throw new Error((await response.json()).error || '기록을 불러오지 못했습니다.');
         const data = await response.json();
         if (requestGeneration !== generation || destroyed) return;
-        if (reset) { records.length = 0; seen.clear(); viewport.scrollTop = 0; }
-        for (const record of data.messages) {
-            if (!seen.has(record.sequence)) { records.push(record); seen.add(record.sequence); }
-        }
         nextCursor = data.nextCursor;
+        loadedCount = (reset ? 0 : loadedCount) + data.messages.length;
         document.getElementById('nickname').textContent = data.nickname;
-        document.getElementById('count').textContent = `저장 ${data.total.toLocaleString()} / ${data.capacity.toLocaleString()}개 · 불러옴 ${records.length.toLocaleString()}개`;
-        document.title = `${data.nickname} · ${labels[platform]} 채팅 기록`;
-        setStatus(records.length ? (nextCursor === null ? '저장된 기록을 모두 불러왔습니다.' : '') : '아직 저장된 채팅이 없습니다. 기능을 켠 이후 수신한 채팅부터 기록됩니다.');
-        render();
+        document.getElementById('count').textContent = '저장 ' + data.total.toLocaleString() + ' / ' + data.capacity.toLocaleString() + '개';
+        document.title = data.nickname + ' · ' + labels[platform] + ' 채팅 기록';
+        setStatus(loadedCount ? '' : '아직 저장된 채팅이 없습니다.');
+        renderPage(data.messages, reset);
+        if (reset && chatPanel.hidden) scrollChatToBottom = true;
     } catch (error) {
         if (error.name !== 'AbortError') setStatus(error.message, true);
     } finally {
-        if (requestGeneration === generation) { loading = false; more.disabled = nextCursor === null; }
+        if (requestGeneration === generation) {
+            loading = false;
+            more.disabled = nextCursor === null;
+        }
     }
 }
 
-viewport.addEventListener('scroll', () => {
-    if (!frame) frame = requestAnimationFrame(() => { frame = null; render(); });
-    if (viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 250) load();
+const chatPanel = document.getElementById('chat-panel');
+const notesPanel = document.getElementById('notes-panel');
+const chatTab = document.getElementById('chat-tab');
+const notesTab = document.getElementById('notes-tab');
+const notesList = document.getElementById('notes');
+const notesStatus = document.getElementById('notes-status');
+const noteForm = document.getElementById('note-form');
+const noteInput = document.getElementById('note-input');
+const noteSubmit = document.getElementById('note-submit');
+let notesBusy = false;
+let scrollChatToBottom = false;
+
+async function notesRequest(options) {
+    const query = new URLSearchParams({ platform, userId });
+    const response = await fetch('/api/chat-history/notes?' + query, options);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || '매니저 댓글을 처리하지 못했습니다.');
+    return data;
+}
+
+function appendNote(note) {
+    const row = document.createElement('article');
+    row.className = 'note';
+    const date = document.createElement('time');
+    date.className = 'record-meta';
+    date.dateTime = new Date(note.createdAt).toISOString();
+    date.textContent = dateFormat.format(note.createdAt) + ' ' + timeFormat.format(note.createdAt);
+    const content = document.createElement('div');
+    content.className = 'record-content';
+    content.textContent = note.content;
+    row.append(date, content);
+    notesList.append(row);
+}
+
+async function loadNotes() {
+    if (notesBusy) return;
+    notesBusy = true;
+    noteSubmit.disabled = true;
+    notesStatus.textContent = '댓글을 불러오는 중…';
+    try {
+        const notes = await notesRequest();
+        notesList.replaceChildren();
+        for (const note of notes) appendNote(note);
+        notesStatus.textContent = notes.length ? '' : '아직 작성한 매니저 댓글이 없습니다.';
+        notesList.scrollTop = notesList.scrollHeight;
+    } catch (error) {
+        notesStatus.textContent = error.message;
+    } finally {
+        notesBusy = false;
+        noteSubmit.disabled = false;
+    }
+}
+
+chatTab.addEventListener('click', () => {
+    chatPanel.hidden = false;
+    notesPanel.hidden = true;
+    chatTab.setAttribute('aria-pressed', 'true');
+    notesTab.setAttribute('aria-pressed', 'false');
+    if (scrollChatToBottom) {
+        viewport.scrollTop = viewport.scrollHeight;
+        scrollChatToBottom = false;
+    }
 });
-window.addEventListener('resize', render);
+notesTab.addEventListener('click', () => {
+    chatPanel.hidden = true;
+    notesPanel.hidden = false;
+    chatTab.setAttribute('aria-pressed', 'false');
+    notesTab.setAttribute('aria-pressed', 'true');
+    loadNotes();
+});
+noteForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const content = noteInput.value.trim();
+    if (notesBusy || !content) return;
+    notesBusy = true;
+    noteSubmit.disabled = true;
+    noteInput.readOnly = true;
+    try {
+        const note = await notesRequest({
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content })
+        });
+        appendNote(note);
+        noteInput.value = '';
+        notesStatus.textContent = '';
+        notesList.scrollTop = notesList.scrollHeight;
+    } catch (error) {
+        notesStatus.textContent = error.message;
+    } finally {
+        notesBusy = false;
+        noteSubmit.disabled = false;
+        noteInput.readOnly = false;
+    }
+});
+
+viewport.addEventListener('scroll', () => {
+    if (!chatPanel.hidden && viewport.scrollTop <= 100) load();
+});
 more.addEventListener('click', () => load());
 refresh.addEventListener('click', () => load(true));
-document.getElementById('top').addEventListener('click', () => { viewport.scrollTop = 0; });
 
 // Keep the server running even if the main chat window closes. This socket does
 // not subscribe to the full chat stream; only this user's new-chat notices arrive.
@@ -175,12 +278,12 @@ window.addEventListener('pagehide', () => {
     destroyed = true;
     controller?.abort();
     clearTimeout(reconnectTimer);
-    cancelAnimationFrame(frame);
     socket?.close(1000);
 });
 if (!labels[platform] || !userId) {
     more.disabled = true;
     refresh.disabled = true;
+    notesTab.disabled = true;
     setStatus('사용자 정보가 없습니다. 채팅 창에서 닉네임을 클릭해 주세요.', true);
 } else {
     document.getElementById('platform').textContent = labels[platform];

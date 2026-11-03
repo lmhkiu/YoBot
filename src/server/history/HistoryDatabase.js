@@ -2,7 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
 
-export function validateHistoryLimit(value = 999) {
+export function validateHistoryLimit(value = 9999) {
     if (!Number.isInteger(value) || value < 1 || value > 9999) {
         throw new Error('CHAT_HISTORY.MAX_MESSAGES_PER_USER는 1~9999 사이 정수여야 합니다.');
     }
@@ -24,10 +24,16 @@ export default class HistoryDatabase {
                 seq INTEGER NOT NULL, received_at INTEGER NOT NULL, nickname TEXT NOT NULL,
                 channel_id TEXT NOT NULL, source_id TEXT, payload TEXT NOT NULL,
                 PRIMARY KEY(platform, user_id, slot));
+            CREATE TABLE IF NOT EXISTS history_notes (
+                id INTEGER PRIMARY KEY, platform TEXT NOT NULL, user_id TEXT NOT NULL,
+                created_at INTEGER NOT NULL, content TEXT NOT NULL);
+            CREATE INDEX IF NOT EXISTS history_notes_user ON history_notes(platform,user_id,id);
             CREATE INDEX IF NOT EXISTS history_order ON history_messages(platform,user_id,seq DESC);
             CREATE INDEX IF NOT EXISTS history_source ON history_messages(platform,user_id,channel_id,source_id)
                 WHERE source_id IS NOT NULL;`);
         this.statements = {
+            notes: this.db.prepare('SELECT id, created_at AS createdAt, content FROM history_notes WHERE platform=? AND user_id=? ORDER BY id'),
+            addNote: this.db.prepare('INSERT INTO history_notes(platform,user_id,created_at,content) VALUES(?,?,?,?)'),
             user: this.db.prepare('SELECT * FROM history_users WHERE platform=? AND user_id=?'),
             create: this.db.prepare('INSERT INTO history_users(platform,user_id,nickname,capacity) VALUES(?,?,?,?)'),
             update: this.db.prepare('UPDATE history_users SET nickname=?,next_seq=? WHERE platform=? AND user_id=?'),
@@ -94,6 +100,16 @@ export default class HistoryDatabase {
         return { platform, userId, nickname: user?.nickname || userId, capacity: this.limit,
             total: this.statements.count.get(platform, userId).count, messages,
             nextCursor: hasMore ? messages.at(-1).sequence : null };
+    }
+
+    notes({ platform, userId }) {
+        return this.statements.notes.all(platform, userId);
+    }
+
+    addNote({ platform, userId, content }) {
+        const createdAt = Date.now();
+        const { lastInsertRowid } = this.statements.addNote.run(platform, userId, createdAt, content);
+        return { id: Number(lastInsertRowid), createdAt, content };
     }
 
     close() { this.db.close(); }

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-export const APPLICATION_FILES = ['src', 'node_modules', 'package.json', 'package-lock.json', 'update.js', 'installer.js', 'launch.js', 'launcher.ps1', 'release.json', 'run.html', 'run.css', 'LICENSE', 'README.md', 'CHAT_HISTORY.md'];
+export const APPLICATION_FILES = ['src', 'node_modules', 'config.js', 'package.json', 'package-lock.json', 'update.js', 'installer.js', 'launch.js', 'launcher.ps1', 'release.json', 'run.html', 'run.css', 'LICENSE', 'README.md', 'CHAT_HISTORY.md'];
 export function inside(root, relative) {
     if (typeof relative !== 'string' || !relative || relative.includes('\\') || path.isAbsolute(relative) || relative.split('/').some(part => !part || part === '.' || part === '..' || part.includes(':'))) throw Error('Unsafe package path');
     const target = path.resolve(root, relative);
@@ -80,7 +80,7 @@ export function applyPreparedUpdate(root, { beforeInstall } = {}) {
             beforeInstall?.(file);
             copyTree(incoming, target);
         }
-        // Configuration, memo files and local databases are never replaced.
+        // Memo files and local databases are outside the application file list.
         // Commit the selected runtime and version only after all app files succeed.
         const target = inside(root, 'release.json'), previous = inside(backup, 'release.json');
         const existed = fs.existsSync(target);

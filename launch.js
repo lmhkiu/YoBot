@@ -7,7 +7,7 @@ import { applyPreparedUpdate, inside } from './installer.js';
 const root = path.dirname(fileURLToPath(import.meta.url));
 process.chdir(root);
 const config = (await import('./config.js')).default;
-const baseUrl = `http://127.0.0.1:${Number(config.PORT.SERVER)}`;
+let baseUrl = `http://127.0.0.1:${Number(config.PORT.SERVER)}`;
 async function stopPreviousServer() {
     try {
         const response = await fetch(baseUrl + '/package.json', { signal: AbortSignal.timeout(1000) });
@@ -30,8 +30,13 @@ try {
     await stopPreviousServer();
     const update = spawnSync(process.execPath, [path.join(root, 'update.js')], { cwd: root, stdio: 'inherit', windowsHide: true });
     if (update.status !== 0) console.log('Update unavailable; starting the installed version.');
-    try { applyPreparedUpdate(root); }
-    catch (error) { console.error('Update rolled back: ' + error.message); }
+    let updated = false;
+    try { updated = applyPreparedUpdate(root); }
+    catch (error) { console.error('Update failed: ' + error.message); }
+    if (updated) {
+        const updatedConfig = (await import('./config.js?updated')).default;
+        baseUrl = `http://127.0.0.1:${Number(updatedConfig.PORT.SERVER)}`;
+    }
     const manifest = JSON.parse(fs.readFileSync(path.join(root, 'release.json'), 'utf8'));
     const node = inside(root, manifest.nodePath);
     if (process.env.YOBOT_VERIFY_ONLY === '1') {

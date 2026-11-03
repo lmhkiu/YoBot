@@ -10,6 +10,8 @@ parentPort.on('message', ({ id, action, data }) => {
         let result;
         if (action === 'append') store.appendBatch(data);
         else if (action === 'query') result = store.query(data);
+        else if (action === 'notes') result = store.notes(data);
+        else if (action === 'addNote') result = store.addNote(data);
         else if (action === 'close') store.close();
         else throw new Error('Unknown history operation');
         parentPort.postMessage({ id, result });
