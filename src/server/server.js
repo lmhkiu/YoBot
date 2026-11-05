@@ -156,7 +156,7 @@ app.post('/start-chat', async (req, res) => {
         });
 
         await chatHub.init();
-        if (gistBackup) await gistBackup.init(chatHub.getBroadcastDate());
+        if (gistBackup) await gistBackup.init();
 
         // gist 메모 백업 기능
         // 서버 시작 시 백업 초기화
