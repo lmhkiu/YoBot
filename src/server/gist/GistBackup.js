@@ -8,7 +8,6 @@ export default class GistBackup {
     constructor() {
 
         this.token = "ghp_" + config.UPDATE.GIST.TOKEN;
-        console.log('GistBackup token:', this.token);
         this.backupDir = path.join(process.cwd(), 'memo');
         this.backupFile = path.join(process.cwd(), 'gist_backups.json');
         this.broadcastStartDate = null;

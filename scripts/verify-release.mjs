@@ -15,6 +15,10 @@ export async function verifyReleaseServer(source) {
     const configText = fs.readFileSync(configPath, 'utf8');
     assert(configText.includes('"MAX_MESSAGES_PER_USER": 9999'));
     fs.writeFileSync(configPath, configText.replace('"MAX_MESSAGES_PER_USER": 9999', '"MAX_MESSAGES_PER_USER": 999'));
+    const rollback = path.join(bundle, '.update', 'rollback-1');
+    fs.mkdirSync(rollback, { recursive: true });
+    fs.writeFileSync(path.join(rollback, 'config.js'),
+        'export default { UPDATE: { GIST: { TOKEN: "release-test-token" } } };');
     const listener = net.createServer();
     await new Promise((resolve, reject) => { listener.once('error', reject); listener.listen(0, '127.0.0.1', resolve); });
     const port = listener.address().port;
@@ -32,6 +36,9 @@ export async function verifyReleaseServer(source) {
     try {
         for (let i=0;i<100&&!output.includes('Server running at')&&child.exitCode===null;i++) await new Promise(resolve=>setTimeout(resolve,100));
         assert(output.includes('Server running at'), 'Packaged server failed to start: '+output);
+        const restored = await import(pathToFileURL(configPath).href);
+        assert.equal(restored.default.UPDATE.GIST.TOKEN, 'release-test-token');
+        assert(!output.includes('release-test-token'));
         const base = 'http://127.0.0.1:'+port;
         const setup = await fetch(base+'/run.html');
         assert.equal(setup.status,200,'run.html');

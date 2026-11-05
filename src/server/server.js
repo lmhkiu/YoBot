@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import config from '../../config.js';
+import { restoreGistToken } from '../../installer.js';
 import { fileURLToPath } from 'url';
 import ChatHub from './chat/ChatHub.js';
 import fs from 'fs';
@@ -18,6 +19,14 @@ let chatHub = null;
 
 let gistBackup = null;
 
+
+try {
+    if (await restoreGistToken(path.resolve(__dirname, '../..'), config)) {
+        console.log('이전 설정에서 Gist 메모 백업 토큰을 복구했습니다.');
+    }
+} catch (error) {
+    console.error('Gist 메모 백업 토큰 복구 실패:', error.code || error.name);
+}
 
 const app = express();
 app.use(express.json());

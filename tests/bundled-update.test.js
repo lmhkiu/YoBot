@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { verifyPackage, applyPreparedUpdate, inside, digest } from '../installer.js';
+import { verifyPackage, applyPreparedUpdate, inside, digest, restoreGistToken } from '../installer.js';
 
 function fixture(t) {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yobot-bundle-test-'));
@@ -66,4 +66,34 @@ test('missing setup page and stylesheet are rejected before installation', t => 
     const {source}=fixture(t);
     fs.unlinkSync(path.join(source,'run.html'));
     assert.throws(()=>verifyPackage(source));
+});
+
+test('preserve the configured Gist token while updating the other settings', t => {
+    const { root, source, manifest } = fixture(t);
+    const incoming = path.join(source, 'config.js');
+    fs.writeFileSync(incoming, 'const config = { "UPDATE": { "GIST": { "TOKEN": "" } }, "OTHER": true }; export default config;');
+    manifest.files.find(file => file.path === 'config.js').sha256 = digest(incoming);
+    fs.writeFileSync(path.join(source, 'release.json'), JSON.stringify(manifest));
+
+    assert(applyPreparedUpdate(root, { gistToken: 'test-token' }));
+    assert.equal(fs.readFileSync(path.join(root, 'config.js'), 'utf8'),
+        'const config = { "UPDATE": { "GIST": { "TOKEN": "test-token" } }, "OTHER": true }; export default config;');
+    assert(fs.readFileSync(incoming, 'utf8').includes('"TOKEN": ""'));
+});
+
+test('recover the Gist token from the last usable rollback after a legacy update', async t => {
+    const { root } = fixture(t);
+    const config = { UPDATE: { GIST: { TOKEN: '' } } };
+    const file = path.join(root, 'config.js');
+    fs.writeFileSync(file, 'const config = { "UPDATE": { "GIST": { "TOKEN": "" } } }; export default config;');
+    for (const [stamp, token] of [[10, 'older-token'], [11, 'recovered-token'], [12, '']]) {
+        const directory = path.join(root, '.update', 'rollback-' + stamp);
+        fs.mkdirSync(directory);
+        fs.writeFileSync(path.join(directory, 'config.js'),
+            'export default { UPDATE: { GIST: { TOKEN: ' + JSON.stringify(token) + ' } } };');
+    }
+    assert(await restoreGistToken(root, config));
+    assert.equal(config.UPDATE.GIST.TOKEN, 'recovered-token');
+    assert(fs.readFileSync(file, 'utf8').includes('"TOKEN": "recovered-token"'));
+    assert.equal(await restoreGistToken(root, config), false);
 });
