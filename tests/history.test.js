@@ -209,3 +209,33 @@ test('leave a customized history limit untouched on first start', async t => {
     assert.equal(await migrateHistoryLimit(root, 2500), 2500);
     assert.equal(fs.readFileSync(file, 'utf8'), source);
 });
+
+test('exclude configured display names from new records on all platforms', async t => {
+    const filePath = temporary(t);
+    const chzzk = { messageType: 'chzzk', profile: { userIdHash: 'bot', nickname: ' 빵떡 ' }, msg: '치지직' };
+    const soop = { messageType: 'soop', userId: 'streamer', nickname: '지니주디', content: '숲' };
+    const twitch = { messageType: 'twitch', userId: '123', nickname: '빵떡', content: '트위치' };
+    const accounts = [
+        { platform: 'chzzk', userId: 'bot' },
+        { platform: 'soop', userId: 'streamer' },
+        { platform: 'twitch', userId: '123' }
+    ];
+    const store = new ChatHistoryStore({ filePath });
+    try {
+        for (const message of [chzzk, soop, twitch]) assert.equal(store.record(message), null);
+        assert(store.record({ ...twitch, nickname: '빵떡친구' }));
+        const pages = await Promise.all(accounts.map(account => store.query(account)));
+        assert.deepEqual(pages.map(page => page.total), [0, 0, 1]);
+    } finally {
+        await store.close();
+    }
+
+    const custom = new ChatHistoryStore({ filePath, excludedNicknames: ['빵떡친구'] });
+    try {
+        assert.equal(custom.record({ ...twitch, nickname: '빵떡친구' }), null);
+        assert(custom.record(twitch));
+        assert.equal((await custom.query(accounts[2])).total, 2);
+    } finally {
+        await custom.close();
+    }
+});

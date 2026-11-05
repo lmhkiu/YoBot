@@ -23,6 +23,7 @@ const app = express();
 app.use(express.json());
 const historyStore = new ChatHistoryStore({
     limit: await migrateHistoryLimit(path.resolve(__dirname, '../..'), config.CHAT_HISTORY?.MAX_MESSAGES_PER_USER),
+    excludedNicknames: config.CHAT_HISTORY?.EXCLUDED_NICKNAMES,
     channels: { chzzk: config.CHZZK.CHANNEL_ID, soop: config.SOOP.CHANNEL_ID, twitch: config.TWITCH.CHANNEL_ID }
 });
 await historyStore.ready;

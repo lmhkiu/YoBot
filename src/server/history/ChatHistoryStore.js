@@ -4,8 +4,12 @@ import os from 'node:os';
 import { normalizeHistoryMessage } from './normalizeHistoryMessage.js';
 
 export default class ChatHistoryStore {
-    constructor({ limit = 9999, filePath = path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), '.local', 'share'), 'YoBot', 'data', 'chat-history.sqlite'), channels = {}, onError = console.error } = {}) {
+    constructor({ limit = 9999, filePath = path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), '.local', 'share'), 'YoBot', 'data', 'chat-history.sqlite'), channels = {}, excludedNicknames = ['빵떡', '지니주디'], onError = console.error } = {}) {
         if (!Number.isInteger(limit) || limit < 1 || limit > 9999) throw new Error('CHAT_HISTORY.MAX_MESSAGES_PER_USER는 1~9999 사이 정수여야 합니다.');
+        if (!Array.isArray(excludedNicknames) || excludedNicknames.some(name => typeof name !== 'string')) {
+            throw new Error('CHAT_HISTORY.EXCLUDED_NICKNAMES는 닉네임 문자열의 배열이어야 합니다.');
+        }
+        this.excludedNicknames = new Set(excludedNicknames.map(name => name.trim().normalize()).filter(Boolean));
         this.channels = channels;
         this.onError = onError;
         this.queue = [];
@@ -54,7 +58,7 @@ export default class ChatHistoryStore {
 
     record(message) {
         const entry = normalizeHistoryMessage(message, this.channels);
-        if (!entry || this.closed || this.failure) return null;
+        if (!entry || this.closed || this.failure || this.excludedNicknames.has(entry.nickname.trim().normalize())) return null;
         // Bound memory during a stalled disk; do not silently discard records.
         if (this.queue.length >= 20000) {
             this.fail(new Error('채팅 기록 저장 대기열이 가득 찼습니다. 디스크 상태를 확인하세요.'));

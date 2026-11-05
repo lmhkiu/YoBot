@@ -1,7 +1,8 @@
 // config.js
 const config = {
     "CHAT_HISTORY": {
-        "MAX_MESSAGES_PER_USER": 9999
+        "MAX_MESSAGES_PER_USER": 9999,
+        "EXCLUDED_NICKNAMES": ["빵떡", "지니주디"]
     },
     "SCENE_KEY": {
         "GAME": "SceneGame",
