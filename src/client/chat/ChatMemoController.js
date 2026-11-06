@@ -367,9 +367,15 @@ export default class ChatMemoController {
             });
 
             if (response.ok) {
-                memoStatus.textContent = '메모가 저장되었습니다!';
-                memoStatus.style.color = '#4caf50';
-                memoInput.value = ''; // 입력창 비우기
+                const result = await response.json();
+                clearTimeout(this.memoBackupTimer);
+                this.memoBackupRevision = result.backup?.revision;
+                memoStatus.textContent = result.backup?.enabled
+                    ? '로컬 저장 완료 · 마지막 입력 후 ' + (result.backup.delayMs / 1000) + '초에 Gist 업로드'
+                    : '로컬 저장 완료 · ' + (result.backup?.message || 'Gist 백업이 꺼져 있습니다.');
+                memoStatus.style.color = result.backup?.enabled ? '#4caf50' : '#ffb74d';
+                memoInput.value = '';
+                if (result.backup?.enabled) this.checkMemoBackup(result.backup.revision);
             } else {
                 throw new Error('저장 실패');
             }
@@ -380,13 +386,39 @@ export default class ChatMemoController {
             memoStatus.style.color = '#ff4444';
         }
 
-        // 2초 후 상태 메시지 초기화
-        setTimeout(() => {
-            memoStatus.textContent = '';
-        }, 2000);
+
+    }
+
+    async checkMemoBackup(revision, attempts = 0) {
+        if (this.memoBackupRevision !== revision) return;
+        const status = document.getElementById('memo-status');
+        try {
+            const response = await fetch('/api/memo-backup-status', { cache: 'no-store' });
+            if (!response.ok) throw new Error('백업 상태 조회 실패');
+            const data = await response.json();
+            if (this.memoBackupRevision !== revision) return;
+            if (data.completedRevision >= revision) {
+                status.textContent = '로컬 저장 및 Gist 업로드 완료';
+                status.style.color = '#4caf50';
+                return;
+            }
+            if (!data.enabled || data.error?.revision >= revision) {
+                status.textContent = '로컬 저장 완료 · ' + (data.error?.message || data.message);
+                status.style.color = '#ffb74d';
+            }
+        } catch {
+            if (this.memoBackupRevision !== revision) return;
+            status.textContent = '로컬 저장 완료 · Gist 백업 상태를 확인하지 못했습니다.';
+            status.style.color = '#ffb74d';
+        }
+        if (attempts < 120 && this.memoBackupRevision === revision) {
+            this.memoBackupTimer = setTimeout(() => this.checkMemoBackup(revision, attempts + 1), 1000);
+        }
     }
 
     destroy() {
+        this.memoBackupRevision = null;
+        clearTimeout(this.memoBackupTimer);
         if (this.broadcastTimer) {
             clearInterval(this.broadcastTimer);
             this.broadcastTimer = null;

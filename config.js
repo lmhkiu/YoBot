@@ -54,7 +54,7 @@ const config = {
             "MAX_GISTS": 100,
             "SYNC_WITH_SERVER": true
         },
-        "BACKUP_INTERVAL": 60000
+        "BACKUP_INTERVAL": 5000
     },
     "BROADCAST_COMMANDS": {
         "COMMANDS_FILE": "broadcast_commands.txt",

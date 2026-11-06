@@ -14,7 +14,7 @@ export async function verifyReleaseServer(source) {
     const configPath = path.join(bundle, 'config.js');
     const configText = fs.readFileSync(configPath, 'utf8');
     assert(configText.includes('"MAX_MESSAGES_PER_USER": 9999'));
-    fs.writeFileSync(configPath, configText.replace('"MAX_MESSAGES_PER_USER": 9999', '"MAX_MESSAGES_PER_USER": 999'));
+    fs.writeFileSync(configPath, configText.replace('"MAX_MESSAGES_PER_USER": 9999', '"MAX_MESSAGES_PER_USER": 999').replace('"BACKUP_INTERVAL": 5000', '"BACKUP_INTERVAL": 60000'));
     const rollback = path.join(bundle, '.update', 'rollback-1');
     fs.mkdirSync(rollback, { recursive: true });
     fs.writeFileSync(path.join(rollback, 'config.js'),
@@ -38,6 +38,7 @@ export async function verifyReleaseServer(source) {
         assert(output.includes('Server running at'), 'Packaged server failed to start: '+output);
         const restored = await import(pathToFileURL(configPath).href);
         assert.equal(restored.default.UPDATE.GIST.TOKEN, 'release-test-token');
+        assert.equal(restored.default.UPDATE.BACKUP_INTERVAL, 5000);
         assert(!output.includes('release-test-token'));
         const base = 'http://127.0.0.1:'+port;
         const setup = await fetch(base+'/run.html');
@@ -61,6 +62,18 @@ export async function verifyReleaseServer(source) {
         const listed = await fetch(notesUrl);
         assert.equal(listed.status, 200);
         assert.deepEqual(await listed.json(), [await written.json()]);
+        const memo = await fetch(base + '/api/save-memo', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: '로컬 메모 API 검증', timestamp: '20261106 10:00:00' })
+        });
+        assert.equal(memo.status, 200);
+        const savedMemo = await memo.json();
+        assert(/^memo_\d{8}\.txt$/.test(savedMemo.fileName));
+        assert.equal(savedMemo.backup.enabled, false);
+        assert(fs.readFileSync(path.join(bundle, 'memo', savedMemo.fileName), 'utf8').includes('로컬 메모 API 검증'));
+        const memoStatus = await fetch(base + '/api/memo-backup-status');
+        assert.equal(memoStatus.status, 200);
+        assert.equal((await memoStatus.json()).enabled, false);
         await fetch(base+'/shutdown',{method:'POST'});
         let timeout;
         try { assert.equal(await Promise.race([exited,new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('Shutdown timed out')),5000);})]),0); }

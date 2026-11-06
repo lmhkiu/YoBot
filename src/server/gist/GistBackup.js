@@ -30,9 +30,10 @@ function mergeMemos(remote, local) {
 }
 
 export default class GistBackup {
-    constructor() {
+    constructor({ token = config.UPDATE.GIST.TOKEN } = {}) {
 
-        this.token = "ghp_" + config.UPDATE.GIST.TOKEN;
+        const storedToken = String(token || '').trim();
+        this.token = /^(ghp_|github_pat_)/.test(storedToken) ? storedToken : 'ghp_' + storedToken;
         this.backupDir = path.join(process.cwd(), 'memo');
         this.memoApi = axios.create({
             baseURL: 'https://api.github.com',
@@ -40,6 +41,8 @@ export default class GistBackup {
             headers: { Authorization: 'token ' + this.token, Accept: 'application/vnd.github+json' }
         });
         this.backupTask = Promise.resolve();
+        this.status = { revision: 0, completedRevision: 0, error: null };
+        this.closing = false;
         this.syncedMemos = new Map();
         this.backupTimer = null; // 타이머 변수 추가
         this.commands = new Map(); // 명령어 목록 저장용
@@ -178,19 +181,38 @@ export default class GistBackup {
 
 
     backupMemo(interval = 0) {
+        const revision = ++this.status.revision;
         if (this.backupTimer) {
             clearTimeout(this.backupTimer);
             this.backupTimer = null;
         }
         if (interval) {
+            console.log('Gist 메모 백업 예약:', interval + 'ms');
             this.backupTimer = setTimeout(() => {
                 this.backupTimer = null;
                 this.backupMemo();
             }, interval);
-            return;
+            return { revision, delayMs: interval };
         }
-        this.backupTask = this.backupTask.then(() => this.performBackup()).catch(error => {
-            console.error('Gist 메모 백업 실패:', error.response?.status || error.code || error.message);
+        this.backupTask = this.backupTask.then(async () => {
+            try {
+                await this.performBackup();
+                this.status.completedRevision = revision;
+                this.status.error = null;
+            } catch (error) {
+                const code = error.response?.status || error.code || error.name;
+                const message = [401, 403].includes(code)
+                    ? 'Gist 인증 또는 권한을 확인해 주세요. HTTP ' + code
+                    : 'Gist 업로드에 실패했습니다. 재시도 대기 중 (' + code + ')';
+                this.status.error = { revision, message };
+                console.error(message);
+                if (!this.closing && !this.backupTimer) {
+                    this.backupTimer = setTimeout(() => {
+                        this.backupTimer = null;
+                        this.backupMemo();
+                    }, 15000);
+                }
+            }
         });
         return this.backupTask;
     }
@@ -215,14 +237,17 @@ export default class GistBackup {
         if (!pending.length) return;
 
         const remote = await this.listMemoGists();
+        let failure;
         for (const { name, content, hash } of pending) {
             try {
                 await this.syncMemo(name, content, remote.get(name));
                 this.syncedMemos.set(name, hash);
             } catch (error) {
-                console.error('Gist 메모 백업 실패:', name, error.response?.status || error.code || error.message);
+                console.error('Gist 메모 백업 실패:', name, error.response?.status || error.code || error.name);
+                failure = error;
             }
         }
+        if (failure) throw failure;
     }
 
     async syncMemo(name, local, existing) {
@@ -246,6 +271,7 @@ export default class GistBackup {
     }
 
     async destroy() {
+        this.closing = true;
         await this.backupMemo();
     }
 }

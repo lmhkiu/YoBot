@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import config from '../../config.js';
-import { restoreGistToken } from '../../installer.js';
+import { restoreGistToken, migrateMemoBackupInterval } from '../../installer.js';
 import { fileURLToPath } from 'url';
 import ChatHub from './chat/ChatHub.js';
 import fs from 'fs';
@@ -21,11 +21,14 @@ let gistBackup = null;
 
 
 try {
+    if (migrateMemoBackupInterval(path.resolve(__dirname, '../..'), config)) {
+        console.log('메모 백업 대기 시간을 5초로 변경했습니다.');
+    }
     if (await restoreGistToken(path.resolve(__dirname, '../..'), config)) {
         console.log('이전 설정에서 Gist 메모 백업 토큰을 복구했습니다.');
     }
 } catch (error) {
-    console.error('Gist 메모 백업 토큰 복구 실패:', error.code || error.name);
+    console.error('Gist 메모 백업 설정 준비 실패:', error.code || error.name);
 }
 
 const app = express();
@@ -47,11 +50,21 @@ app.post('/api/chat-history/notes', createNotesHandler(historyStore));
 
 // 방송 날짜 기준 파일명 생성
 function getBroadcastDateFileName() {
-    const date = chatHub.getBroadcastDate();
-    return `memo_${date.replace(/-/g, '')}.txt`;
+    const broadcastDate = chatHub?.getBroadcastDate()?.replace(/-/g, '');
+    const now = new Date();
+    const today = String(now.getFullYear()) + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+    const date = /^\d{8}$/.test(broadcastDate || '') ? broadcastDate : today;
+    return `memo_${date}.txt`;
 }
 
 // 메모 저장 API 엔드포인트 수정
+app.get('/api/memo-backup-status', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.json(gistBackup
+        ? { enabled: true, ...gistBackup.status }
+        : { enabled: false, message: 'Gist 메모 백업 토큰을 확인한 뒤 YoBot을 재시작해 주세요.' });
+});
+
 app.post('/api/save-memo', async (req, res) => {
     try {
         const { content, timestamp } = req.body;
@@ -76,15 +89,18 @@ app.post('/api/save-memo', async (req, res) => {
 
         console.log(`메모 저장됨: ${fileName} - ${content}`);
 
-        // Gist에 백업
+        let backup = { enabled: false, message: 'Gist 메모 백업 토큰을 확인한 뒤 YoBot을 재시작해 주세요.' };
         if (gistBackup) {
-            await gistBackup.backupMemo(config.UPDATE.BACKUP_INTERVAL);
+            const delayMs = config.UPDATE.BACKUP_INTERVAL ?? 5000;
+            gistBackup.backupMemo(delayMs);
+            backup = { enabled: true, revision: gistBackup.status.revision, delayMs };
         }
 
 
         res.json({
             success: true,
             message: '메모가 저장되었습니다.',
+            backup,
             fileName: fileName
         });
 

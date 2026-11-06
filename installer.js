@@ -53,13 +53,29 @@ function writeGistToken(configPath, token) {
     const gistToken = /("GIST"\s*:\s*\{\s*"TOKEN"\s*:\s*)"(?:\\.|[^"\\])*"/;
     if (!gistToken.test(source)) throw Error('Gist 토큰을 저장할 설정 항목이 없습니다.');
     const updated = source.replace(gistToken, (_, prefix) => prefix + JSON.stringify(token));
-    const temporary = configPath + '.gist-' + crypto.randomUUID() + '.tmp';
+    writeConfigFile(configPath, updated);
+}
+
+function writeConfigFile(configPath, updated) {
+    const temporary = configPath + '.update-' + crypto.randomUUID() + '.tmp';
     try {
         fs.writeFileSync(temporary, updated, { flag: 'wx' });
         fs.renameSync(temporary, configPath);
     } finally {
         fs.rmSync(temporary, { force: true });
     }
+}
+
+export function migrateMemoBackupInterval(root, config) {
+    if (config.UPDATE?.BACKUP_INTERVAL !== 60000) return false;
+    const file = inside(root, 'config.js');
+    const source = fs.readFileSync(file, 'utf8');
+    const updated = source.replace(/((?:"BACKUP_INTERVAL"|'BACKUP_INTERVAL'|\bBACKUP_INTERVAL)\s*:\s*)60000(?=\s*[,}])/,
+        (_, prefix) => prefix + '5000');
+    if (updated === source) throw Error('메모 백업 대기 시간 설정을 찾지 못했습니다.');
+    writeConfigFile(file, updated);
+    config.UPDATE.BACKUP_INTERVAL = 5000;
+    return true;
 }
 
 export async function restoreGistToken(root, config) {
