@@ -27,7 +27,7 @@ function extract(zip, directory) {
         { windowsHide: true, env: { ...process.env, YOBOT_ARCHIVE: zip, YOBOT_EXTRACT: directory } });
 }
 const sourceZip = path.join(staging, 'source.zip');
-execFileSync('git', ['archive', '--format=zip', '--output=' + sourceZip, 'HEAD', '--',
+execFileSync('git', ['-c', 'core.autocrlf=false', 'archive', '--format=zip', '--output=' + sourceZip, 'HEAD', '--',
     'src', 'package.json', 'package-lock.json', 'update.js', 'installer.js', 'launch.js',
     'launcher.ps1', 'run.bat', 'run.html', 'run.css', 'LICENSE', 'README.md', 'CHAT_HISTORY.md'], { cwd: project });
 extract(sourceZip, bundle);

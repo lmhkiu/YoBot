@@ -32,7 +32,7 @@ try {
     const zip = path.join(temporary, 'main.zip');
     const extracted = path.join(temporary, 'extracted');
     const tree = git(['write-tree']).trim();
-    git(['archive', '--format=zip', '--output=' + zip, tree]);
+    git(['-c', 'core.autocrlf=false', 'archive', '--format=zip', '--output=' + zip, tree]);
     const powershell = path.join(process.env.SystemRoot || 'C:/Windows', 'System32/WindowsPowerShell/v1.0/powershell.exe');
     execFileSync(powershell, ['-NoProfile', '-NonInteractive', '-Command',
         "$ErrorActionPreference='Stop'; Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($env:YOBOT_ARCHIVE,$env:YOBOT_EXTRACT)"],
