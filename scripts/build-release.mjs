@@ -23,7 +23,7 @@ fs.mkdirSync(bundle, { recursive: true });
 const copy = file => fs.cpSync(path.join(project, file), path.join(bundle, file), { recursive: true,
     filter: filename => !filename.endsWith('.log') && path.basename(filename) !== 'log' });
 for (const file of ['src', 'package.json', 'package-lock.json', 'update.js', 'installer.js', 'launch.js', 'launcher.ps1', 'run.bat', 'run.html', 'run.css', 'LICENSE', 'README.md', 'CHAT_HISTORY.md']) copy(file);
-// Package repository defaults rather than runtime settings, and remove all credentials.
+// Use repository defaults and include the configured Gist token in the release.
 const configSource = execFileSync('git', ['show', 'HEAD:config.js'], { cwd: project, encoding: 'utf8' });
 const configuration = vm.runInNewContext(configSource.replace('export default config;', 'config;'));
 function sanitize(object) {
@@ -33,6 +33,11 @@ function sanitize(object) {
     }
 }
 sanitize(configuration);
+const localSource = fs.readFileSync(path.join(project, 'config.js'), 'utf8');
+const local = vm.runInNewContext(localSource.replace('export default config;', 'config;'));
+const gistToken = local.UPDATE?.GIST?.TOKEN;
+if (typeof gistToken !== 'string' || !gistToken.trim()) throw Error('Configure UPDATE.GIST.TOKEN in local config.js before building');
+configuration.UPDATE.GIST.TOKEN = gistToken;
 configuration.CHAT_HISTORY ??= { MAX_MESSAGES_PER_USER: 9999 };
 fs.writeFileSync(path.join(bundle, 'config.js'), '// config.js\nconst config = ' + JSON.stringify(configuration, null, 4) + ';\nexport default config;\n');
 // Build-time npm only: the user never needs npm or an installed Node.js.

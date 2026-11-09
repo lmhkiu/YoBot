@@ -27,5 +27,6 @@ Node.js와 필요한 라이브러리가 포함되어 있어 별도 설치는 필
 - 기록 테스트: npm run test:history
 - 업데이트 테스트: npm run test:bundle
 - Windows 패키지 생성: npm run build:release
+- 배포 ZIP에는 로컬 config.js의 Gist 토큰이 포함됩니다. 공개 릴리스에서 ZIP을 받는 사람은 이 토큰도 볼 수 있습니다.
 
 빌드 결과 dist/YoBot.zip과 dist/YoBot.zip.sha256을 GitHub Release에 함께 첨부한 뒤 공개합니다. 구체적인 절차는 'git 배포 방법', 기록 기능은 CHAT_HISTORY.md를 참고하세요.

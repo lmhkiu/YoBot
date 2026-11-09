@@ -29,7 +29,8 @@ export async function verifyReleaseServer(source) {
     fs.writeFileSync(configPath, configText
         .replace(/"SERVER": \d+/, '"SERVER": ' + port)
         .replace('"MAX_MESSAGES_PER_USER": 9999', '"MAX_MESSAGES_PER_USER": 999')
-        .replace('"BACKUP_INTERVAL": 5000', '"BACKUP_INTERVAL": 60000'));
+        .replace('"BACKUP_INTERVAL": 5000', '"BACKUP_INTERVAL": 60000')
+        .replace(/("TOKEN": )"(?:\\.|[^"\\])*"/g, '$1""'));
 
     const manifest = JSON.parse(fs.readFileSync(path.join(bundle, 'release.json'), 'utf8'));
     const opened = path.join(temporary, 'browser-url.txt');
