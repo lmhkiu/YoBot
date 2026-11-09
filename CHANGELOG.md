@@ -1,5 +1,10 @@
 # 업데이트 기록
 
+## 1.0.35 — 2026-11-09
+
+- GitHub main의 Download ZIP과 릴리스 YoBot.zip에 같은 Windows 실행 파일, 의존성, 설정을 포함합니다.
+- 두 ZIP 모두 압축을 풀고 run.bat으로 시작할 수 있습니다.
+
 ## 1.0.34 — 2026-11-09
 
 - 릴리스 YoBot.zip의 config.js에 Gist 메모 백업 토큰을 포함합니다.

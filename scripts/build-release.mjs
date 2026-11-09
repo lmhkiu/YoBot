@@ -20,9 +20,17 @@ fs.mkdirSync(output, { recursive: true });
 if (path.dirname(staging) !== output || path.basename(staging) !== 'package') throw Error('Unsafe staging path');
 if (fs.existsSync(staging)) fs.rmSync(staging, { recursive: true, force: true });
 fs.mkdirSync(bundle, { recursive: true });
-const copy = file => fs.cpSync(path.join(project, file), path.join(bundle, file), { recursive: true,
-    filter: filename => !filename.endsWith('.log') && path.basename(filename) !== 'log' });
-for (const file of ['src', 'package.json', 'package-lock.json', 'update.js', 'installer.js', 'launch.js', 'launcher.ps1', 'run.bat', 'run.html', 'run.css', 'LICENSE', 'README.md', 'CHAT_HISTORY.md']) copy(file);
+const powershell = path.join(process.env.SystemRoot || 'C:/Windows', 'System32/WindowsPowerShell/v1.0/powershell.exe');
+function extract(zip, directory) {
+    execFileSync(powershell, ['-NoProfile', '-NonInteractive', '-Command',
+        "$ErrorActionPreference='Stop'; Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($env:YOBOT_ARCHIVE,$env:YOBOT_EXTRACT)"],
+        { windowsHide: true, env: { ...process.env, YOBOT_ARCHIVE: zip, YOBOT_EXTRACT: directory } });
+}
+const sourceZip = path.join(staging, 'source.zip');
+execFileSync('git', ['archive', '--format=zip', '--output=' + sourceZip, 'HEAD', '--',
+    'src', 'package.json', 'package-lock.json', 'update.js', 'installer.js', 'launch.js',
+    'launcher.ps1', 'run.bat', 'run.html', 'run.css', 'LICENSE', 'README.md', 'CHAT_HISTORY.md'], { cwd: project });
+extract(sourceZip, bundle);
 // Use repository defaults and include the configured Gist token in the release.
 const configSource = execFileSync('git', ['show', 'HEAD:config.js'], { cwd: project, encoding: 'utf8' });
 const configuration = vm.runInNewContext(configSource.replace('export default config;', 'config;'));
@@ -58,8 +66,7 @@ if (!fs.existsSync(cache) || hash(cache) !== expected) fs.writeFileSync(cache, a
 if (hash(cache) !== expected) throw Error('Official Node.js download checksum mismatch');
 const runtimeTemp = path.join(staging, 'node-extracted');
 fs.mkdirSync(runtimeTemp, { recursive: true });
-const powershell = path.join(process.env.SystemRoot || 'C:/Windows', 'System32/WindowsPowerShell/v1.0/powershell.exe');
-execFileSync(powershell, ['-NoProfile', '-NonInteractive', '-Command', "$ErrorActionPreference='Stop'; Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($env:YOBOT_NODE_ZIP,$env:YOBOT_NODE_TEMP)"], { windowsHide: true, env: { ...process.env, YOBOT_NODE_ZIP: cache, YOBOT_NODE_TEMP: runtimeTemp } });
+extract(cache, runtimeTemp);
 const runtimeName = `node-v${nodeVersion}-win-${arch}`;
 const runtime = path.join(bundle, 'runtime', runtimeName);
 fs.mkdirSync(runtime, { recursive: true });

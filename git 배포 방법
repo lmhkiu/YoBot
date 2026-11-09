@@ -2,30 +2,11 @@ Git 배포 방법
 
 1. 코드를 수정하고 관련 검증을 실행한다.
 2. package.json과 package-lock.json의 프로젝트 버전을 함께 올린다.
-3. CHANGELOG.md에 버전, 날짜, 업데이트 내용과 검증 결과를 기록한다.
-4. src/client/index.html의 업데이트 안내(29줄 부근)에 같은 버전과 주요 변경 사항을 적는다.
-5. git diff와 git status로 배포할 파일을 확인한다. 개인 설정, 토큰, 실행 중 생성된 메모·캐시·백업 정보는 포함하지 않는다.
-6. 배포할 파일을 지정해 추가하고, 버전과 업데이트 내용이 담긴 커밋을 만든다.
-7. main 브랜치를 origin에 푸시하고, 같은 커밋에 버전 태그를 생성해 푸시한다.
-8. GitHub Releases에서 해당 태그로 Release를 발행하고 CHANGELOG.md의 내용을 설명에 기록한다.
-   자동 업데이트는 /releases/latest를 확인하므로 태그 푸시만으로는 배포가 완료되지 않는다.
+3. CHANGELOG.md에 버전, 날짜, 변경 사항과 검증 결과를 기록하고 src/client/index.html의 업데이트 안내에도 주요 변경을 적는다.
+4. 소스와 문서 변경만 골라 커밋한다. 개인 방송 설정, 메모, 캐시, 로컬 기록 DB는 추가하지 않는다.
+5. npm run build:release로 방금 커밋한 소스의 Windows 실행 ZIP을 만든다. 로컬 config.js의 Gist 토큰은 배포 설정에 포함한다.
+6. npm run stage:main을 실행한다. 배포 ZIP과 같은 config.js, release.json, 내장 Node.js와 운영 의존성을 Git에 추가하고 main 다운로드 ZIP의 전체 구성을 검증한다.
+7. 스테이징 내용을 확인해 번들을 커밋한다. 이 최종 커밋에 버전 태그를 붙이고 main과 태그를 푸시한다.
+8. GitHub에서 해당 태그의 초안 릴리스를 만들고 dist/YoBot.zip과 dist/YoBot.zip.sha256을 첨부한다. 파일 체크섬을 확인한 뒤 최신 릴리스로 공개한다.
 
-예시 (배포할 때마다 버전과 파일 목록을 확인한다):
-
-git add package.json package-lock.json CHANGELOG.md src/client/index.html
-git add src/client/chat/ChatDisplay.js src/client/chat/soop/SoopFormatter.js src/client/chat/soop/SoopEmoticons.js
-git add "git 배포 방법"
-git commit -m "Release version 1.0.25" -m "재연결 개선, 닉네임 색상 반영, 숲 이모티콘 392개 지원"
-git push origin main
-git tag -a v1.0.25 -m "Release version 1.0.25"
-git push origin v1.0.25
-
-이후 GitHub Releases에서 v1.0.25를 선택해 Release를 발행한다.
-
-내부 Node.js 포함 배포 추가 절차
-
-1. npm run build:release로 dist/YoBot.zip과 dist/YoBot.zip.sha256을 생성한다.
-2. GitHub Release를 먼저 draft로 만들고 두 파일을 모두 첨부한 뒤 공개한다.
-3. 이후 자동 업데이트는 첨부 파일 YoBot.zip을 사용한다. 소스 ZIP만으로 배포하지 않는다.
-4. runtime/, node_modules/, 개인 설정, 기록 DB는 Git에 추가하지 않는다. 라이브러리는 빌드 중 npm ci로 설치되고 ZIP에 포함된다.
-5. 최초 전환 사용자는 새 ZIP을 별도 폴더에 풀고 기존 config.js를 옮긴 후 run.bat을 실행한다.
+사용자는 main의 Code → Download ZIP 또는 릴리스의 YoBot.zip을 압축 해제하고 run.bat을 실행한다. 자동 업데이트는 최신 릴리스의 YoBot.zip을 내려받는다.

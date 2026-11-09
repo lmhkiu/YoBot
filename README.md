@@ -4,7 +4,7 @@
 
 ## Windows에서 실행
 
-1. GitHub Release의 첨부 파일 **YoBot.zip**을 내려받습니다. Source code ZIP은 실행 환경을 포함하지 않습니다.
+1. GitHub에서 **Code → Download ZIP** 또는 **Releases → YoBot.zip**으로 다운로드합니다. 두 ZIP에 같은 실행 파일과 설정이 들어 있습니다.
 2. 별도 폴더에 압축을 풀고, 안에 있는 **run.bat**을 실행합니다.
 3. 설정 화면에서 채널 ID를 확인하고 시작합니다.
 
@@ -29,4 +29,4 @@ Node.js와 필요한 라이브러리가 포함되어 있어 별도 설치는 필
 - Windows 패키지 생성: npm run build:release
 - 배포 ZIP에는 로컬 config.js의 Gist 토큰이 포함됩니다. 공개 릴리스에서 ZIP을 받는 사람은 이 토큰도 볼 수 있습니다.
 
-빌드 결과 dist/YoBot.zip과 dist/YoBot.zip.sha256을 GitHub Release에 함께 첨부한 뒤 공개합니다. 구체적인 절차는 'git 배포 방법', 기록 기능은 CHAT_HISTORY.md를 참고하세요.
+소스 변경을 커밋하고 npm run build:release로 ZIP을 만듭니다. npm run stage:main으로 같은 실행 파일을 Git에 스테이징하고 main ZIP의 파일이 배포 ZIP과 일치하는지 검증합니다. 번들을 커밋한 뒤 같은 커밋을 태그하고 dist/YoBot.zip과 dist/YoBot.zip.sha256을 릴리스에 첨부합니다. 구체적인 절차는 'git 배포 방법', 기록 기능은 CHAT_HISTORY.md를 참고하세요.

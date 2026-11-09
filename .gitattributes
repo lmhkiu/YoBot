@@ -1,2 +1,18 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
+# GitHub's branch ZIP contains the same files as the runnable release.
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.vscode export-ignore
+/CHANGELOG.md export-ignore
+/YoBot.exe.bak export-ignore
+/chatAnalyze export-ignore
+/gist_backups.json export-ignore
+"/git 배포 방법" export-ignore
+/icon.ico export-ignore
+/memo export-ignore
+/scripts export-ignore
+/soop_chat_info_cache.json export-ignore
+/src/server/log export-ignore
+/tests export-ignore
+node_modules/** -text !eol
