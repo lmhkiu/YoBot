@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import net from 'node:net';
+import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
@@ -14,36 +15,69 @@ export async function verifyReleaseServer(source) {
     const configPath = path.join(bundle, 'config.js');
     const configText = fs.readFileSync(configPath, 'utf8');
     assert(configText.includes('"MAX_MESSAGES_PER_USER": 9999'));
-    fs.writeFileSync(configPath, configText.replace('"MAX_MESSAGES_PER_USER": 9999', '"MAX_MESSAGES_PER_USER": 999').replace('"BACKUP_INTERVAL": 5000', '"BACKUP_INTERVAL": 60000'));
-    const rollback = path.join(bundle, '.update', 'rollback-1');
-    fs.mkdirSync(rollback, { recursive: true });
-    fs.writeFileSync(path.join(rollback, 'config.js'),
-        'export default { UPDATE: { GIST: { TOKEN: "release-test-token" } } };');
     const listener = net.createServer();
-    await new Promise((resolve, reject) => { listener.once('error', reject); listener.listen(0, '127.0.0.1', resolve); });
+    const displayListener = net.createServer();
+    for (const socket of [listener, displayListener]) {
+        await new Promise((resolve, reject) => {
+            socket.once('error', reject);
+            socket.listen(0, '127.0.0.1', resolve);
+        });
+    }
     const port = listener.address().port;
-    await new Promise(resolve => listener.close(resolve));
+    const displayPort = displayListener.address().port;
+    await Promise.all([listener, displayListener].map(socket => new Promise(resolve => socket.close(resolve))));
+    fs.writeFileSync(configPath, configText
+        .replace(/"SERVER": \d+/, '"SERVER": ' + port)
+        .replace('"MAX_MESSAGES_PER_USER": 9999', '"MAX_MESSAGES_PER_USER": 999')
+        .replace('"BACKUP_INTERVAL": 5000', '"BACKUP_INTERVAL": 60000'));
+
     const manifest = JSON.parse(fs.readFileSync(path.join(bundle, 'release.json'), 'utf8'));
-    const configUrl = pathToFileURL(path.join(bundle, 'config.js')).href;
-    const serverUrl = pathToFileURL(path.join(bundle, 'src/server/server.js')).href;
+    const opened = path.join(temporary, 'browser-url.txt');
     const bootstrap = path.join(temporary, 'verify.mjs');
-    fs.writeFileSync(bootstrap, `const {default:config}=await import(${JSON.stringify(configUrl)});config.PORT.SERVER=${port};process.env.LOCALAPPDATA=${JSON.stringify(temporary)};await import(${JSON.stringify(serverUrl)});`);
-    const child = spawn(path.join(bundle, manifest.nodePath), [bootstrap], { cwd: bundle, windowsHide: true, stdio: ['ignore','pipe','pipe'] });
+    fs.writeFileSync(bootstrap, [
+        "import { createRequire, syncBuiltinESMExports } from 'node:module';",
+        "import fs from 'node:fs';",
+        "import path from 'node:path';",
+        "const cp = createRequire(import.meta.url)('node:child_process');",
+        'const spawnActual = cp.spawn;',
+        'cp.spawn = (file, args, options) => {',
+        "  if (path.basename(file).toLowerCase() !== 'explorer.exe') return spawnActual(file, args, options);",
+        '  fs.writeFileSync(process.env.YOBOT_SMOKE_OPEN_URL, args[0]);',
+        '  return { unref() {} };',
+        '};',
+        'syncBuiltinESMExports();',
+        'const request = globalThis.fetch;',
+        'globalThis.fetch = async (url, options) => {',
+        '  const address = new URL(url);',
+        "  if (address.hostname === '127.0.0.1') return request(url, options);",
+        "  if (address.hostname === 'api.github.com' && address.pathname.endsWith('/releases/latest')) {",
+        '    return Response.json({ tag_name: ' + JSON.stringify('v' + manifest.version) + ' });',
+        '  }',
+        "  throw new Error('Platform offline in launcher smoke test');",
+        '};'
+    ].join('\n'));
+    const child = spawn(process.env.ComSpec || 'C:/Windows/System32/cmd.exe', ['/d', '/c', 'run.bat'], {
+        cwd: bundle, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, LOCALAPPDATA: temporary, YOBOT_SMOKE_OPEN_URL: opened,
+            NODE_OPTIONS: '--import=' + pathToFileURL(bootstrap).href }
+    });
     let output = '';
     child.stdout.on('data', data => { output += data; });
     child.stderr.on('data', data => { output += data; });
-    const exited = new Promise(resolve => child.once('exit', resolve));
+    const exited = new Promise(resolve => child.once('close', resolve));
     try {
-        for (let i=0;i<100&&!output.includes('Server running at')&&child.exitCode===null;i++) await new Promise(resolve=>setTimeout(resolve,100));
-        assert(output.includes('Server running at'), 'Packaged server failed to start: '+output);
-        const restored = await import(pathToFileURL(configPath).href);
-        assert.equal(restored.default.UPDATE.GIST.TOKEN, 'release-test-token');
-        assert.equal(restored.default.UPDATE.BACKUP_INTERVAL, 5000);
-        assert(!output.includes('release-test-token'));
-        const base = 'http://127.0.0.1:'+port;
-        const setup = await fetch(base+'/run.html');
-        assert.equal(setup.status,200,'run.html');
-        assert((await setup.text()).includes('id="chzzkChannelId"'),'Missing setup form');
+        for (let i = 0; i < 100 && !fs.existsSync(opened) && child.exitCode === null; i++) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        const base = 'http://127.0.0.1:' + port;
+        assert(fs.existsSync(opened), 'run.bat did not launch the settings page: ' + output);
+        assert.equal(fs.readFileSync(opened, 'utf8'), base + '/run.html');
+        const { default: installedConfig } = await import(pathToFileURL(configPath).href);
+        assert.equal(installedConfig.UPDATE.BACKUP_INTERVAL, 5000);
+        const setup = await fetch(base + '/run.html');
+        assert.equal(setup.status, 200);
+        const setupHtml = await setup.text();
+        assert(setupHtml.includes('id="chzzkChannelId"'));
         const css = await fetch(base+'/run.css');
         assert.equal(css.status,200,'run.css');
         assert(css.headers.get('content-type').includes('text/css'));
@@ -74,14 +108,62 @@ export async function verifyReleaseServer(source) {
         const memoStatus = await fetch(base + '/api/memo-backup-status');
         assert.equal(memoStatus.status, 200);
         assert.equal((await memoStatus.json()).enabled, false);
+        const fields = Object.fromEntries(Object.entries({
+            serverPort: port,
+            chatDisplayPort: displayPort,
+            maxMessages: installedConfig.MAX_MESSAGES,
+            chzzkChannelId: 'offline-smoke-channel',
+            chzzkUrl: installedConfig.CHZZK.URL,
+            chzzkWsUrl: installedConfig.CHZZK.WS_URL,
+            soopBjId: '',
+            soopWsUrl: installedConfig.SOOP.WS_URL,
+            soopPlayerApi: installedConfig.SOOP.PLAYER_API_URL,
+            twitchChannelId: ''
+        }).map(([id, value]) => [id, { value: String(value) }]));
+        fields.statusMessage = { style: {} };
+        fields.startButton = { disabled: false };
+        let navigation;
+        const page = vm.createContext({
+            document: { getElementById: id => fields[id] },
+            window: { addEventListener() {}, location: { replace(url) { navigation = url; } } },
+            fetch: (url, options) => fetch(base + url, options)
+        });
+        vm.runInContext(setupHtml.split('<script>')[1].split('</script>')[0], page);
+        await vm.runInContext('startChat()', page);
+        assert.equal(navigation, '/', fields.statusMessage.textContent);
+        const browserConfig = await (await fetch(base + '/config.js')).text();
+        assert(browserConfig.includes('"CHAT_DISPLAY": ' + displayPort));
+        assert(browserConfig.includes('"CHANNEL_ID": "offline-smoke-channel"'));
+        await new Promise((resolve, reject) => {
+            const ws = new WebSocket('ws://127.0.0.1:' + displayPort);
+            const timeout = setTimeout(() => { ws.close(); reject(Error('Chat WebSocket did not answer')); }, 3000);
+            ws.onopen = () => ws.send(JSON.stringify({ messageType: 'ping' }));
+            ws.onmessage = event => {
+                clearTimeout(timeout);
+                ws.close();
+                if (JSON.parse(event.data).messageType === 'pong') resolve();
+                else reject(Error('Unexpected chat WebSocket reply'));
+            };
+            ws.onerror = () => {
+                clearTimeout(timeout);
+                reject(Error('Chat WebSocket connection failed'));
+            };
+        });
         await fetch(base+'/shutdown',{method:'POST'});
         let timeout;
         try { assert.equal(await Promise.race([exited,new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('Shutdown timed out')),5000);})]),0); }
         finally { clearTimeout(timeout); }
-        console.log('Packaged HTTP smoke test passed: setup page, stylesheet, platform icons, chat/history pages and history API');
+        console.log('Packaged run.bat smoke test passed: setup, same-tab chat start, saved WebSocket port, and memo/history APIs');
+    } catch (error) {
+        console.error(output);
+        throw error;
     } finally {
-        if(child.exitCode===null){child.kill();await exited;}
+        if (child.exitCode === null) {
+            await fetch('http://127.0.0.1:' + port + '/shutdown', { method: 'POST', signal: AbortSignal.timeout(2000) }).catch(() => {});
+            if (child.exitCode === null) child.kill();
+            await exited;
+        }
         if(path.dirname(temporary)!==path.resolve(os.tmpdir())||!path.basename(temporary).startsWith('yobot-release-smoke-'))throw Error('Unsafe test cleanup');
-        fs.rmSync(temporary,{recursive:true,force:true});
+        fs.rmSync(temporary,{recursive:true,force:true,maxRetries:8,retryDelay:150});
     }
 }

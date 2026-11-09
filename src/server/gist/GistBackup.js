@@ -78,6 +78,7 @@ export default class GistBackup {
         try {
             const gistId = config.BROADCAST_COMMANDS.gistId;
             const fileName = config.BROADCAST_COMMANDS.COMMANDS_FILE;
+            if (!gistId || !fileName) return;
             console.log('Gist에서 명령어 목록을 가져오기:', gistId, fileName);
             // Gist에서 명령어 파일 가져오기
             const response = await fetch(`https://api.github.com/gists/${gistId}`, {

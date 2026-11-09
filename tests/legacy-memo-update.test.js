@@ -9,15 +9,15 @@ import test from 'node:test';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const hash = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const snapshot = (version, file) => version === '1.0.32'
+const snapshot = (version, file) => version === '1.0.33'
     ? fs.readFileSync(path.join(project, file), 'utf8')
     : execFileSync('git', ['--work-tree=.', 'show', 'v' + version + ':' + file], { cwd: project, encoding: 'utf8' });
 
 for (const versions of [
-    ['1.0.32'],
-    ['1.0.31', '1.0.32'],
-    ['1.0.29', '1.0.30', '1.0.31', '1.0.32']
-]) test('v1.0.27 updates through ' + versions.join(' -> ') + ' retain memo credentials', { skip: process.platform !== 'win32' }, async t => {
+    ['1.0.33'],
+    ['1.0.32', '1.0.33'],
+    ['1.0.29', '1.0.30', '1.0.31', '1.0.32', '1.0.33']
+]) test('v1.0.27 updates through ' + versions.join(' -> ') + ' install the packaged config and retain memo files', { skip: process.platform !== 'win32' }, async t => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'yobot-legacy-memo-'));
     t.after(() => {
         assert.equal(path.dirname(directory), path.resolve(os.tmpdir()));
@@ -48,7 +48,7 @@ for (const versions of [
             if (file === 'installer.js' || file === 'update.js') content = snapshot(version, file);
             if (file === 'package.json') content = JSON.stringify({ type: 'module', version });
             if (file === 'config.js') content = 'const config = ' + JSON.stringify({
-                UPDATE: { AUTO_UPDATE: true, GITHUB_OWNER: 'test', GITHUB_REPO: 'test', GIST: { TOKEN: '' }, BACKUP_INTERVAL: version === '1.0.32' ? 5000 : 60000 }
+                UPDATE: { AUTO_UPDATE: true, GITHUB_OWNER: 'test', GITHUB_REPO: 'test', GIST: { TOKEN: '' }, BACKUP_INTERVAL: ['1.0.32', '1.0.33'].includes(version) ? 5000 : 60000 }
             }, null, 4) + '; export default config;';
             fs.writeFileSync(target, content);
         }
@@ -85,13 +85,17 @@ for (const versions of [
         fs.writeFileSync(probe, [
             "import config from './config.js';",
             "import * as installer from './installer.js';",
+            'if (installer.finishConfigUpdate?.(process.cwd())) Object.assign(config, (await import("./config.js?updated")).default);',
             'if (installer.migrateMemoBackupInterval) installer.migrateMemoBackupInterval(process.cwd(), config);',
             'if (installer.restoreGistToken) await installer.restoreGistToken(process.cwd(), config);',
             'console.log(JSON.stringify({token:config.UPDATE.GIST.TOKEN,interval:config.UPDATE.BACKUP_INTERVAL}));'
         ].join('\n'));
         const result = JSON.parse(execFileSync(process.execPath, [probe], { cwd: root, windowsHide: true, encoding: 'utf8' }));
         // v1.0.30 could clear the token until v1.0.31 restores it.
-        if (version !== '1.0.30') assert.equal(result.token, 'legacy-test-token', version);
+        if (version === '1.0.33') {
+            assert.equal(result.token, '');
+            assert.deepEqual(fs.readFileSync(path.join(root, 'config.js')), fs.readFileSync(path.join(bundle, 'config.js')));
+        } else if (version !== '1.0.30') assert.equal(result.token, 'legacy-test-token', version);
         if (version === '1.0.32') assert.equal(result.interval, 5000);
         assert.equal(fs.readFileSync(path.join(root, 'memo', 'memo_20261106.txt'), 'utf8'), 'local memo');
     }

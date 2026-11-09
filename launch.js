@@ -31,7 +31,7 @@ try {
     const update = spawnSync(process.execPath, [path.join(root, 'update.js')], { cwd: root, stdio: 'inherit', windowsHide: true });
     if (update.status !== 0) console.log('Update unavailable; starting the installed version.');
     let updated = false;
-    try { updated = applyPreparedUpdate(root, { gistToken: config.UPDATE?.GIST?.TOKEN }); }
+    try { updated = applyPreparedUpdate(root); }
     catch (error) { console.error('Update failed: ' + error.message); }
     if (updated) {
         const updatedConfig = (await import('./config.js?updated')).default;

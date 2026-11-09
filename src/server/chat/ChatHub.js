@@ -41,9 +41,16 @@ export default class ChatHub {
         this.twitchScrapper = new TwitchScrapper();
         await this.twitchScrapper.init(this);
 
-        await this.chzzkScrapper.connectToChzzkChat();
-        await this.soopScrapper.connectToSoopChat();
-        await this.twitchScrapper.connectToTwitchChat();
+        // Let the local chat window open even when a platform is offline.
+        if (config.CHZZK.CHANNEL_ID) {
+            this.chzzkScrapper.connectToChzzkChat().catch(error => console.error('치지직 채팅 연결 실패:', error.message));
+        }
+        if (config.SOOP.CHANNEL_ID) {
+            this.soopScrapper.connectToSoopChat().catch(error => console.error('숲 채팅 연결 실패:', error.message));
+        }
+        if (config.TWITCH.CHANNEL_ID) {
+            this.twitchScrapper.connectToTwitchChat().catch(error => console.error('트위치 채팅 연결 실패:', error.message));
+        }
 
 
     }
@@ -74,7 +81,7 @@ export default class ChatHub {
                 switch (data.messageType) {
                     case 'request_broad_time':
                         // 방송 시간 정보 전송
-                        this.soopScrapper.sendBroadTime();
+                        this.soopScrapper?.sendBroadTime();
                         break;
 
                     case 'ping':
@@ -123,6 +130,13 @@ export default class ChatHub {
 
     
 
+        await new Promise((resolve, reject) => {
+            this.wss.once('error', reject);
+            this.wss.once('listening', () => {
+                this.wss.off('error', reject);
+                resolve();
+            });
+        });
         console.log(`WebSocket 서버 대기 중: ws://localhost:${config.PORT.CHAT_DISPLAY}`);
 
     }

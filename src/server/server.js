@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import config from '../../config.js';
-import { restoreGistToken, migrateMemoBackupInterval } from '../../installer.js';
+import { finishConfigUpdate, migrateMemoBackupInterval, writeConfigFile } from '../../installer.js';
 import { fileURLToPath } from 'url';
 import ChatHub from './chat/ChatHub.js';
 import fs from 'fs';
@@ -21,14 +21,17 @@ let gistBackup = null;
 
 
 try {
-    if (migrateMemoBackupInterval(path.resolve(__dirname, '../..'), config)) {
+    const root = path.resolve(__dirname, '../..');
+    if (finishConfigUpdate(root)) {
+        const { default: updated } = await import('../../config.js?release');
+        for (const key of Object.keys(config)) delete config[key];
+        Object.assign(config, updated);
+    }
+    if (migrateMemoBackupInterval(root, config)) {
         console.log('메모 백업 대기 시간을 5초로 변경했습니다.');
     }
-    if (await restoreGistToken(path.resolve(__dirname, '../..'), config)) {
-        console.log('이전 설정에서 Gist 메모 백업 토큰을 복구했습니다.');
-    }
 } catch (error) {
-    console.error('Gist 메모 백업 설정 준비 실패:', error.code || error.name);
+    console.error('설정 준비 실패:', error.code || error.name);
 }
 
 const app = express();
@@ -114,34 +117,47 @@ app.post('/api/save-memo', async (req, res) => {
 
 
 
-// 설정 저장 엔드포인트
-app.post('/save-config', async (req, res) => {
+function configSource(settings) {
+    return '// config.js\nconst config = ' + JSON.stringify(settings, null, 4) + ';\nexport default config;\n';
+}
+
+app.get('/config.js', (_req, res) => {
+    const browserConfig = { ...config, UPDATE: { ...config.UPDATE, GIST: { ...config.UPDATE.GIST, TOKEN: '' } } };
+    res.set('Cache-Control', 'no-store').type('js').send(configSource(browserConfig));
+});
+
+app.post('/save-config', (req, res) => {
+    if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress)) {
+        return res.status(403).json({ message: 'YoBot을 실행한 PC에서 설정을 저장해 주세요.' });
+    }
+    if (chatHub) return res.status(409).json({ message: '채팅을 종료한 뒤 설정을 변경해 주세요.' });
+
+    const { serverPort, chatDisplayPort, maxMessages, chzzkChannelId, chzzkUrl, chzzkWsUrl,
+        soopBjId, soopWsUrl, soopPlayerApi, twitchChannelId } = req.body;
+    if (![serverPort, chatDisplayPort].every(port => Number.isInteger(port) && port >= 1000 && port <= 65535) ||
+        chatDisplayPort === serverPort || chatDisplayPort === server.address()?.port ||
+        !Number.isInteger(maxMessages) || maxMessages < 1 || maxMessages > 1000 ||
+        ![chzzkChannelId, chzzkUrl, chzzkWsUrl, soopBjId, soopWsUrl, soopPlayerApi, twitchChannelId]
+            .every(value => typeof value === 'string')) {
+        return res.status(400).json({ message: '채널 설정과 서로 다른 유효한 포트 번호를 확인해 주세요.' });
+    }
+
+    const updated = {
+        ...config,
+        MAX_MESSAGES: maxMessages,
+        PORT: { ...config.PORT, SERVER: serverPort, CHAT_DISPLAY: chatDisplayPort },
+        CHZZK: { ...config.CHZZK, CHANNEL_ID: chzzkChannelId.trim(), URL: chzzkUrl.trim(), WS_URL: chzzkWsUrl.trim() },
+        SOOP: { ...config.SOOP, CHANNEL_ID: soopBjId.trim(), WS_URL: soopWsUrl.trim(), PLAYER_API_URL: soopPlayerApi.trim() },
+        TWITCH: { ...config.TWITCH, CHANNEL_ID: twitchChannelId.trim() }
+    };
+
     try {
-        const { config } = req.body;
-
-        if (!config) {
-            return res.status(400).json({
-                success: false,
-                message: '설정 데이터가 없습니다.'
-            });
-        }
-
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-
-        await fsPromises.writeFile(path.join(__dirname, '../../config.js'), config, 'utf8');
-
-        res.json({
-            success: true,
-            message: '설정이 성공적으로 저장되었습니다.'
-        });
-
+        writeConfigFile(path.resolve(__dirname, '../../config.js'), configSource(updated));
+        Object.assign(config, updated);
+        res.json({ success: true });
     } catch (error) {
-        console.error('설정 저장 중 오류:', error);
-        res.status(500).json({
-            success: false,
-            message: '설정 저장에 실패했습니다: ' + error.message
-        });
+        console.error('설정 저장 중 오류:', error.code || error.name);
+        res.status(500).json({ message: '이 YoBot 폴더에 설정을 저장할 수 없습니다.' });
     }
 });
 
@@ -156,7 +172,6 @@ app.post('/start-chat', async (req, res) => {
         }
 
 
-        await loadChannelIDs();
         historyStore.channels = { chzzk: config.CHZZK.CHANNEL_ID, soop: config.SOOP.CHANNEL_ID, twitch: config.TWITCH.CHANNEL_ID };
 
         //const ChatHub = (await import('./chat/ChatHub.js')).default;
@@ -185,7 +200,9 @@ app.post('/start-chat', async (req, res) => {
 
     } catch (error) {
         console.error('채팅 시작 중 오류:', error);
+        chatHub?.destroy();
         chatHub = null;
+        gistBackup = null;
         res.status(500).json({
             success: false,
             message: '채팅 시작에 실패했습니다: ' + error.message
@@ -282,27 +299,6 @@ app.post('/api/command', async (req, res) => {
 });
 
 
-// CHANNEL_ID만 읽어 업데이트하는 함수
-async function loadChannelIDs() {
-    try {
-        const configPath = path.join(__dirname, '../../config.js');
-        const configText = await fsPromises.readFile(configPath, 'utf8');
-
-        // 정규식으로 CHANNEL_ID 추출 (CHZZK, SOOP, TWITCH)
-        const chzzkMatch = configText.match(/"CHZZK":\s*\{[^}]*"CHANNEL_ID":\s*"([^"]+)"/);
-        const soopMatch = configText.match(/"SOOP":\s*\{[^}]*"CHANNEL_ID":\s*"([^"]+)"/);
-        const twitchMatch = configText.match(/"TWITCH":\s*\{[^}]*"CHANNEL_ID":\s*"([^"]+)"/);
-
-        if (chzzkMatch) config.CHZZK.CHANNEL_ID = chzzkMatch[1];
-        if (soopMatch) config.SOOP.CHANNEL_ID = soopMatch[1];
-        if (twitchMatch) config.TWITCH.CHANNEL_ID = twitchMatch[1];
-
-        console.log('CHANNEL_ID 값들 업데이트됨');
-    } catch (error) {
-        console.error('CHANNEL_ID 로드 실패:', error);
-    }
-}
-
 // 로그 디렉토리 생성
 const logDir = path.join(__dirname, 'log');
 if (!fs.existsSync(logDir)) {
@@ -323,29 +319,23 @@ function logServerError(error, context = '') {
 }
 
 
-// 정적 파일 서빙
-app.use(express.static(path.join(__dirname, '../client'))); //client 경로에 접근 권한 부여
-app.use(express.static(path.join(__dirname, '../../'))); //root 경로에 접근 권한 부여, server.js의 입장에서 상대적 경로이다.
-// 루트 경로 처리
-app.get('/', (_req, res) => {   //브라우저에 localhost:13101/ 를 입력해도 index.html가 서빙 되도록 하는 역할.
-    res.sendFile(path.join(__dirname, '../client/index.html')); //client 경로의 index.html 파일 제공
-});
-
-
-
-// 기타 경로 처리 (필요시)
-app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, _req.path));
-});
+const clientDirectory = path.join(__dirname, '../client');
+app.use('/src/client', express.static(clientDirectory));
+app.use(express.static(clientDirectory));
+for (const file of ['run.html', 'run.css', 'package.json']) {
+    app.get('/' + file, (_req, res) => res.sendFile(path.resolve(__dirname, '../..', file)));
+}
 
 server = app.listen(config.PORT.SERVER, async () => {
     console.log(`Server running at http://localhost:${config.PORT.SERVER}/`);
 
     //서버가 최초 실행된 상태에서 사용자가 run.html 의 시작 버튼 동작을 통해 ChatHub를 생성하고 연결을 시도한다.
 
-}).on('error', (error) => {
+}).on('error', async error => {
     console.error('Server error:', error);
     logServerError(error, 'Server');
+    process.exitCode = 1;
+    await historyStore.close();
 });
 
 // 전역 오류 처리

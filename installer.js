@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { pathToFileURL } from 'node:url';
 
 export const APPLICATION_FILES = ['src', 'node_modules', 'config.js', 'package.json', 'package-lock.json', 'update.js', 'installer.js', 'launch.js', 'launcher.ps1', 'release.json', 'run.html', 'run.css', 'LICENSE', 'README.md', 'CHAT_HISTORY.md'];
 export function inside(root, relative) {
@@ -48,15 +47,7 @@ export function verifyPackage(directory) {
     return manifest;
 }
 
-function writeGistToken(configPath, token) {
-    const source = fs.readFileSync(configPath, 'utf8');
-    const gistToken = /("GIST"\s*:\s*\{\s*"TOKEN"\s*:\s*)"(?:\\.|[^"\\])*"/;
-    if (!gistToken.test(source)) throw Error('Gist 토큰을 저장할 설정 항목이 없습니다.');
-    const updated = source.replace(gistToken, (_, prefix) => prefix + JSON.stringify(token));
-    writeConfigFile(configPath, updated);
-}
-
-function writeConfigFile(configPath, updated) {
+export function writeConfigFile(configPath, updated) {
     const temporary = configPath + '.update-' + crypto.randomUUID() + '.tmp';
     try {
         fs.writeFileSync(temporary, updated, { flag: 'wx' });
@@ -78,32 +69,31 @@ export function migrateMemoBackupInterval(root, config) {
     return true;
 }
 
-export async function restoreGistToken(root, config) {
-    if (config.UPDATE?.GIST?.TOKEN || !config.UPDATE?.GIST) return false;
-    const directory = inside(root, '.update');
-    if (!fs.existsSync(directory)) return false;
-    const backups = fs.readdirSync(directory, { withFileTypes: true })
-        .filter(entry => entry.isDirectory() && /^rollback-\d+$/.test(entry.name))
-        .sort((a, b) => Number(b.name.slice(9)) - Number(a.name.slice(9)));
-    for (const backup of backups) {
-        const file = path.join(directory, backup.name, 'config.js');
-        if (!fs.existsSync(file) || !fs.lstatSync(file).isFile()) continue;
-        let token;
-        try {
-            const { default: previous } = await import(pathToFileURL(file).href);
-            token = previous.UPDATE?.GIST?.TOKEN;
-        } catch {
-            continue;
-        }
-        if (typeof token !== 'string' || !token.trim()) continue;
-        writeGistToken(inside(root, 'config.js'), token);
-        config.UPDATE.GIST.TOKEN = token;
-        return true;
-    }
-    return false;
+export function finishConfigUpdate(root) {
+    const staged = inside(root, '.update/extracted/YoBot');
+    const stagedRelease = path.join(staged, 'release.json');
+    const installedRelease = inside(root, 'release.json');
+    if (!fs.existsSync(stagedRelease) || !fs.existsSync(installedRelease)) return false;
+
+    const installed = fs.readFileSync(installedRelease, 'utf8');
+    if (fs.readFileSync(stagedRelease, 'utf8') !== installed) return false;
+    const manifest = JSON.parse(installed);
+    if (!/^\d+\.\d+\.\d+$/.test(manifest.version)) return false;
+    const marker = inside(root, '.update/config-applied-' + manifest.version);
+    if (fs.existsSync(marker)) return false;
+
+    const expected = manifest.files.find(file => file.path === 'config.js')?.sha256;
+    const incoming = path.join(staged, 'config.js');
+    if (!expected || digest(incoming) !== expected) throw Error('Update config integrity check failed');
+    const configPath = inside(root, 'config.js');
+    const changed = !fs.existsSync(configPath) || digest(configPath) !== expected;
+    // Older launchers may preserve or modify config.js during the first upgrade.
+    if (changed) writeConfigFile(configPath, fs.readFileSync(incoming, 'utf8'));
+    fs.writeFileSync(marker, '');
+    return changed;
 }
 
-export function applyPreparedUpdate(root, { beforeInstall, gistToken } = {}) {
+export function applyPreparedUpdate(root, { beforeInstall } = {}) {
     const pendingPath = path.join(root, '.update', 'pending.json');
     if (!fs.existsSync(pendingPath)) return false;
     const pending = JSON.parse(fs.readFileSync(pendingPath, 'utf8'));
@@ -135,9 +125,6 @@ export function applyPreparedUpdate(root, { beforeInstall, gistToken } = {}) {
             moved.push({ target, previous, existed });
             beforeInstall?.(file);
             copyTree(incoming, target);
-            if (file === 'config.js' && typeof gistToken === 'string' && gistToken.trim()) {
-                writeGistToken(target, gistToken);
-            }
         }
         // Memo files and local databases are outside the application file list.
         // Commit the selected runtime and version only after all app files succeed.
