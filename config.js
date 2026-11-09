@@ -2,7 +2,10 @@
 const config = {
     "CHAT_HISTORY": {
         "MAX_MESSAGES_PER_USER": 9999,
-        "EXCLUDED_NICKNAMES": ["빵떡", "지니주디"]
+        "EXCLUDED_NICKNAMES": [
+            "빵떡",
+            "지니주디"
+        ]
     },
     "SCENE_KEY": {
         "GAME": "SceneGame",
@@ -58,7 +61,7 @@ const config = {
     },
     "BROADCAST_COMMANDS": {
         "COMMANDS_FILE": "broadcast_commands.txt",
-        "gistId": "d0e8937cfe41b4be97ded7c4905218ee",
+        "gistId": "",
         "url": "https://gist.github.com/lmhkiu/d0e8937cfe41b4be97ded7c4905218ee",
         "COMMANDS_SEPARATOR": " ",
         "COMMANDS_PREFIX": "!",
@@ -81,5 +84,4 @@ const config = {
         "SHUTDOWN_DELAY": 5000
     }
 };
- 
 export default config;
