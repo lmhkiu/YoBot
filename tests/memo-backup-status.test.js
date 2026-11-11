@@ -28,3 +28,19 @@ test('memo UI reports confirmed upload and ignores an obsolete backup response',
     assert.equal(status.textContent, '새 메모 예약 중');
     controller.destroy();
 });
+
+test('!게임모드 invokes the mode switch without storing a memo or invoking broadcast commands', async t => {
+    const input = { value: '  !게임모드  ' };
+    const status = { textContent: '이전 상태', style: {} };
+    const previous = globalThis.document;
+    globalThis.document = { getElementById: id => ({ 'memo-input': input, 'memo-status': status, broad_time: { textContent: '00:00:00' } })[id] };
+    t.after(() => { globalThis.document = previous; });
+    let entries = 0;
+    const controller = new ChatMemoController({ onGameMode: () => entries++ });
+    controller.processCommand = () => assert.fail('The game command must be handled locally first');
+    t.mock.method(globalThis, 'fetch', () => assert.fail('The game command must not be uploaded'));
+    await controller.saveMemo();
+    assert.equal(entries, 1);
+    assert.equal(input.value, '');
+    assert.equal(status.textContent, '');
+});

@@ -8,7 +8,7 @@ test('ChatHub records original receive once, does not record browser replay, and
         .replace(/^import .*;\r?\n/gm, '').replace('export default class ChatHub', 'class ChatHub');
     const recorded = [];
     const config = { CHAT_DISPLAY: { MESSAGE_BUFFER_DURATION: 300000 } };
-    const Hub = vm.runInNewContext(source + '\nChatHub', { config, console: { log() {} }, WebSocket: { OPEN: 1 } });
+    const Hub = vm.runInNewContext(source + '\nChatHub', { config, console: { log() {} }, WebSocket: { OPEN: 1 }, PeperoGame: class { acceptChat() {} destroy() {} } });
     const hub = new Hub({ record(message) { recorded.push(message); return { platform: 'twitch', userId: '123' }; } });
     const client = historyUser => ({ readyState: 1, historyUser, received: [], send(value) { this.received.push(JSON.parse(value)); } });
     const main = client(null), mine = client({ platform: 'twitch', userId: '123' }), other = client({ platform: 'soop', userId: '123' });

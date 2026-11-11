@@ -6,6 +6,7 @@ import ChzzkScraper from './chzzk/ChzzkScrapper.js';
 import SoopScraper from './soop/SoopScrapper.js';
 import TwitchScrapper from './twitch/TwitchScrapper.js';
 import config from '../../../config.js';
+import PeperoGame from '../game/PeperoGame.js';
 import WebSocket, { WebSocketServer } from 'ws';
 
 export default class ChatHub {
@@ -17,6 +18,9 @@ export default class ChatHub {
         this.twitchScrapper = null;
         this.wss = null;
         this.clients = [];
+        this.gameHost = null;
+        this.game = null;
+
 
 
         this.messageBuffer = new Map(); // messageId → message
@@ -67,16 +71,42 @@ export default class ChatHub {
         this.wss.on('connection', (ws, request) => {
             this.cancelShutdownTimer();
             const query = new URL(request.url, 'http://localhost').searchParams;
+            ws.gameClient = query.get('game') === 'pepero';
+            if (ws.gameClient && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(request.socket.remoteAddress) && !this.gameHost) {
+                this.gameHost = ws;
+                if (!this.game) {
+                    this.game = new PeperoGame({
+                        excludedNicknames: config.CHAT_HISTORY?.EXCLUDED_NICKNAMES,
+                        onChange: state => this.sendGameState(state)
+                    });
+                }
+            }
             ws.historyUser = query.get('history') === '1' ? { platform: query.get('platform'), userId: query.get('userId') } : null;
             console.log('chatDisplay 클라이언트 연결됨');
             this.clients.push(ws);
+            if (ws.gameClient && this.game) this.sendGameState(this.game.snapshot());
 
             this.clientLastSeen.set(ws, 0);
 
         
             ws.on('message', (message) => {
                 
-                const data = JSON.parse(message);
+                let data;
+                try { data = JSON.parse(message); } catch { return; }
+                if (!data || typeof data !== 'object') return;
+                if (data.messageType === 'pepero_action') {
+                    if (ws === this.gameHost) {
+                        if (data.action === 'leave') {
+                            this.game?.destroy();
+                            this.game = null;
+                            this.gameHost = null;
+                            for (const client of this.clients) {
+                                if (client.gameClient) client.close(1000, 'Game mode ended');
+                            }
+                        } else this.game?.action(data.action, data.lane);
+                    }
+                    return;
+                }
                 console.log('chatDisplay 메시지 수신:', data);
                 switch (data.messageType) {
                     case 'request_broad_time':
@@ -107,8 +137,17 @@ export default class ChatHub {
 
 
             ws.on('close', () => {
+                if (this.gameHost === ws) {
+                    this.gameHost = null;
+                    this.game?.pause();
+                }
                 console.log('chatDisplay 클라이언트 연결 종료');
                 this.clients = this.clients.filter(client => client !== ws);
+                if (!this.clients.some(client => client.gameClient)) {
+                    this.game?.destroy();
+                    this.game = null;
+                    this.gameHost = null;
+                }
 
                 // 마지막 확인 시간 기록
                 this.clientLastSeen.delete(ws);
@@ -142,6 +181,7 @@ export default class ChatHub {
     }
     // shutdown 스케줄링 메서드
     scheduleShutdown() {
+        if (this.destroyed) return;
         this.cancelShutdownTimer(); // 기존 타이머 취소
         this.shutdownTimer = setTimeout(() => {
             if (this.clients.length === 0 && this.onShutdownCallback) {
@@ -164,6 +204,7 @@ export default class ChatHub {
         console.log('ChatHub clients count:', this.clients.length);
         console.log('Broadcasting message:', message);
 
+        this.game?.acceptChat(message);
         const historyUser = this.historyStore?.record(message);
         const messageWithId = {
             ...message,
@@ -180,6 +221,7 @@ export default class ChatHub {
 
         this.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
+                if (client.gameClient) return;
                 if (client.historyUser) {
                     if (historyUser && client.historyUser.platform === historyUser.platform && client.historyUser.userId === historyUser.userId) {
                         client.send(JSON.stringify({ messageType: 'history_changed' }));
@@ -190,6 +232,14 @@ export default class ChatHub {
                 this.clientLastSeen.set(client, Date.now());
             }
         });
+    }
+
+    sendGameState(state) {
+        for (const client of this.clients) {
+            if (client.gameClient && client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({ messageType: 'pepero_state', state, canControl: client === this.gameHost }));
+            }
+        }
     }
 
     generateMessageId() {
@@ -229,6 +279,8 @@ export default class ChatHub {
 
     destroy() {
         console.log('ChatHub 자원 해제 시작...');
+        this.destroyed = true;
+        this.game?.destroy();
         this.cancelShutdownTimer();
         this.onShutdownCallback = null;
         

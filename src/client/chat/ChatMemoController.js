@@ -2,7 +2,8 @@ import config from '../../config.js';
 
 export default class ChatMemoController {
 
-    constructor() {
+    constructor({ onGameMode = () => {} } = {}) {
+        this.onGameMode = onGameMode;
         this.memoFileName = null;
         this.broadcastTimer = null;
         this.broadcastStartTime = null;
@@ -306,7 +307,7 @@ export default class ChatMemoController {
             const html = 
             `<div class="chat-message">
                 <div class="chat-message-platform-icon-container">
-                    <img src="/favicon.png" alt="favicon" style="width: 20px; height: 20px;">
+                    <img src="/favicon.svg" alt="favicon" style="width: 20px; height: 20px;">
                 </div>
                 <div class="chat-message-nickname-container">
                     <img class="chat-message-badge" src="./assets/chat/badge/fan_03.png" alt="badge" style="display: none;">
@@ -331,6 +332,17 @@ export default class ChatMemoController {
 
 
         const inputText = memoInput.value.trim();
+        if (inputText === '!게임모드') {
+            try {
+                await this.onGameMode();
+                memoInput.value = '';
+                memoStatus.textContent = '';
+            } catch (error) {
+                memoStatus.textContent = error.message;
+                memoStatus.style.color = '#ff4444';
+            }
+            return;
+        }
  
         // 명령어 처리 먼저 확인
         const isCommand = await this.processCommand(inputText);
