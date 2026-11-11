@@ -36,7 +36,7 @@ const configSource = execFileSync('git', ['show', 'HEAD:config.js'], { cwd: proj
 const configuration = vm.runInNewContext(configSource.replace('export default config;', 'config;'));
 function sanitize(object) {
     for (const key of Object.keys(object)) {
-        if (/TOKEN|SECRET|PASSWORD|GISTID/i.test(key)) object[key] = '';
+        if (/TOKEN|SECRET|PASSWORD/i.test(key)) object[key] = '';
         else if (object[key] && typeof object[key] === 'object') sanitize(object[key]);
     }
 }

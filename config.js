@@ -61,7 +61,7 @@ const config = {
     },
     "BROADCAST_COMMANDS": {
         "COMMANDS_FILE": "broadcast_commands.txt",
-        "gistId": "",
+        "gistId": "d0e8937cfe41b4be97ded7c4905218ee",
         "url": "https://gist.github.com/lmhkiu/d0e8937cfe41b4be97ded7c4905218ee",
         "COMMANDS_SEPARATOR": " ",
         "COMMANDS_PREFIX": "!",
