@@ -1,5 +1,5 @@
 {
-  "version": "1.0.36",
+  "version": "1.0.37",
   "arch": "x64",
   "nodePath": "runtime/node-v24.13.0-win-x64/node.exe",
   "files": [
@@ -9,7 +9,7 @@
     },
     {
       "path": "config.js",
-      "sha256": "3790b94f01650c04d04c196a9258924200879a95f03d59ddb3b6c19bbfd05949"
+      "sha256": "6033bd6b32736e330d1685dc760bd7347885c4d73b6b8e887a79e732dff3135f"
     },
     {
       "path": "installer.js",
@@ -41,7 +41,7 @@
     },
     {
       "path": "node_modules/.package-lock.json",
-      "sha256": "435eec88ac860ccf4cec7d28ce202ebe7dc1338132e8ab0ea769afcf7d5e5426"
+      "sha256": "8863e85bbb016f38b4c0bbcdc7bbe1e0e5cf4b0ea5b50164dbf4ab279f700516"
     },
     {
       "path": "node_modules/accepts/HISTORY.md",
@@ -3993,11 +3993,11 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "566eebbe9a1472c0ce02a7fb9478b0c3e7df49f9dc27dc7076647650ed515ba6"
+      "sha256": "f3b244de5bbdb28153f5f085ece624369a4d409a79853f2a4a00f2222e22654a"
     },
     {
       "path": "package.json",
-      "sha256": "bf8aaea8c0ac91b8fb46d33f8d2e75e91ee5463c64263ce6e49b35ddbe389851"
+      "sha256": "07ea48dfca5a7c5c4f9ea4ef02963f198b724ac8ea8364c126e4a488a0ddcad6"
     },
     {
       "path": "README.md",
@@ -4149,7 +4149,7 @@
     },
     {
       "path": "src/client/index.html",
-      "sha256": "bae58504589179e4d934ce0ce741ac791fbe9a9278ee14cf50d7c96a5d0bd812"
+      "sha256": "246616aeda6016ce19ab61fac04f6095f8e483118e30cf2967818b6526b045f5"
     },
     {
       "path": "src/client/lib/phaser.js",
