@@ -1,5 +1,5 @@
 {
-  "version": "1.0.35",
+  "version": "1.0.36",
   "arch": "x64",
   "nodePath": "runtime/node-v24.13.0-win-x64/node.exe",
   "files": [
@@ -41,7 +41,7 @@
     },
     {
       "path": "node_modules/.package-lock.json",
-      "sha256": "93aee82a58220be71b36d58c5ef39c65be781d63e70150ed738da0445ac074a5"
+      "sha256": "435eec88ac860ccf4cec7d28ce202ebe7dc1338132e8ab0ea769afcf7d5e5426"
     },
     {
       "path": "node_modules/accepts/HISTORY.md",
@@ -3993,15 +3993,15 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "7a09c9fe729db93ad40f005ab8c13666c566525059f408b28abf0ebc8a404819"
+      "sha256": "566eebbe9a1472c0ce02a7fb9478b0c3e7df49f9dc27dc7076647650ed515ba6"
     },
     {
       "path": "package.json",
-      "sha256": "458a801ce62d8f99da88c349155647322d7640e2c0d368adaab9e2fb4cf41cba"
+      "sha256": "bf8aaea8c0ac91b8fb46d33f8d2e75e91ee5463c64263ce6e49b35ddbe389851"
     },
     {
       "path": "README.md",
-      "sha256": "b66b9ffc932e8885a0b5d6323e995ba4d890200ff12bc0f2a712e8b494626e68"
+      "sha256": "2e16b81f21144e39be383748a780c52bf8bb35940408a900ad71a7a0dde63793"
     },
     {
       "path": "run.bat",
@@ -4025,7 +4025,7 @@
     },
     {
       "path": "src/client/app.js",
-      "sha256": "28e703e411e4880b086fca48006decba0de06f042c275270e8f92672a569fdf2"
+      "sha256": "6c2aff0a0aeefb343a663f2d77883f14afdce742eccf4f9d96b5ceb8cf3f4bb6"
     },
     {
       "path": "src/client/assets/chat/badge/fan_03.png",
@@ -4056,6 +4056,22 @@
       "sha256": "0b3e5ede7d87f195b44a61171c12e3a29caa7b3139aae387911df8f0169e8d93"
     },
     {
+      "path": "src/client/assets/game/pepero/arena.png",
+      "sha256": "f7de4516ca6849be2b2d60046ace358a30a263712baab875c5be24190d1e1e68"
+    },
+    {
+      "path": "src/client/assets/game/pepero/arena.prompt.txt",
+      "sha256": "5a95e554a026100b514ba4bbb0aa79c42a402ad3e9fcc5f0ee1f120ea81dfd19"
+    },
+    {
+      "path": "src/client/assets/game/pepero/characters.png",
+      "sha256": "a75aef7e98241379ad221e270dea5ca8251a4c5192cb962fee4dbc502b76031c"
+    },
+    {
+      "path": "src/client/assets/game/pepero/characters.prompt.txt",
+      "sha256": "6388702edc059e39d7cb2beb327a26a35c45770f12b47a841cd0c124303cbee4"
+    },
+    {
       "path": "src/client/assets/game/player/squirrel.png",
       "sha256": "87e406807ed7e6338271608e5245d8bf9755fc9cf118c766c3a3e3892aedef34"
     },
@@ -4073,7 +4089,7 @@
     },
     {
       "path": "src/client/chat/ChatMemoController.js",
-      "sha256": "713228dc20478ada95f57865fa8f494678252fc3dbb62f0062086d6113cb8ee8"
+      "sha256": "649fb89ecd89442b8c0d081c0e5d6a5ee6d8a045c6bf51495d0d791e57f4d86f"
     },
     {
       "path": "src/client/chat/chzzk/ChzzkFormatter.js",
@@ -4096,8 +4112,16 @@
       "sha256": "4163051b84827186071c37bdfdfbd33d2331b226ce5dda37baf04ca525a6aa00"
     },
     {
+      "path": "src/client/favicon.svg",
+      "sha256": "39d06715a9b92e096d624e7e959e78b6b143479e663ab6aac1ddae38426f0856"
+    },
+    {
       "path": "src/client/game/GameController.js",
-      "sha256": "b7da31117a6e874fc21809c41582152f0d839db547ea39042554f05cb48fd345"
+      "sha256": "13afbcb06779f00c12df4d165e3b055fc4c8f36c23d3808a7934232349b3307d"
+    },
+    {
+      "path": "src/client/game/scenes/game/PeperoScene.js",
+      "sha256": "b0548a1a7514413b14c47ab925f758d5a8632bc493e45ce95dea4386ff8e9a45"
     },
     {
       "path": "src/client/game/scenes/game/SceneGame.js",
@@ -4121,11 +4145,11 @@
     },
     {
       "path": "src/client/index.css",
-      "sha256": "a4dfb80873af0bfc37ac9281bccff929ddfdc2294edfb5d5e3c4f9ea24d1b702"
+      "sha256": "5664be2e5b3c9ca301d01d7ea8e16705dcf2b81cd7efd5387cac9c9b214aedac"
     },
     {
       "path": "src/client/index.html",
-      "sha256": "a720e60898e73f53e50acfb7eef18538f1354d3c50cdd0340e734a83fda26d5c"
+      "sha256": "bae58504589179e4d934ce0ce741ac791fbe9a9278ee14cf50d7c96a5d0bd812"
     },
     {
       "path": "src/client/lib/phaser.js",
@@ -4141,7 +4165,7 @@
     },
     {
       "path": "src/server/chat/ChatHub.js",
-      "sha256": "07f9d1120df590f176dca2a94908dd22e848f7a246ffa097ade337d95db0d069"
+      "sha256": "09d42cfb5c08350ae4d52389f662048cea7ca715e2b5093f5767be99a57a3caf"
     },
     {
       "path": "src/server/chat/chzzk/ChzzkScrapper.js",
@@ -4162,6 +4186,10 @@
     {
       "path": "src/server/favicon.png",
       "sha256": "751fa6e803b400cbf1555cf180672472637c9f07abb724617c5759f5cb7d43e4"
+    },
+    {
+      "path": "src/server/game/PeperoGame.js",
+      "sha256": "c5e82414fa136ced3c9a71427d22c6cd06b5510c3ced7d78de2c93f53e15962d"
     },
     {
       "path": "src/server/gist/GistBackup.js",
