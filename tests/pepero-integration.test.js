@@ -18,8 +18,8 @@ test('game socket receives live chat participants and only its host can control 
     await hub.createWebSocketDisplay();
     assert.equal(hub.game, null);
     const url = 'ws://127.0.0.1:' + hub.wss.address().port + '/?game=pepero';
-    const connect = async () => {
-        const socket = new WebSocket(url);
+    const connect = async (type = 'pepero') => {
+        const socket = new WebSocket(url.replace('game=pepero', 'game=' + type));
         sockets.push(socket);
         const messages = [];
         socket.on('message', data => messages.push(JSON.parse(data)));
@@ -74,4 +74,21 @@ test('game socket receives live chat participants and only its host can control 
     assert.notEqual(hub.game, previousGame);
     fresh.socket.close();
     await until(() => hub.game === null);
+    const marble = await connect('marble');
+    await until(() => marble.messages.at(-1)?.messageType === 'marble_state');
+    assert.equal(marble.messages.at(-1).state.kind, 'marble');
+    assert.equal(hub.game.timer, null);
+    marble.socket.send(JSON.stringify({ messageType: 'pepero_action', action: 'start' }));
+    marble.socket.send(JSON.stringify({ messageType: 'ping' }));
+    await until(() => marble.messages.some(m => m.messageType === 'pong'));
+    assert.equal(hub.game.state.phase, 'idle');
+    marble.socket.send(JSON.stringify({ messageType: 'marble_action', action: 'start' }));
+    await until(() => hub.game.state.phase === 'recruiting');
+    hub.broadcast({ messageType: 'twitch', userId: '479119137', nickname: '우유함유', content: '!참가' });
+    hub.broadcast({ messageType: 'twitch', userId: '479119137', nickname: '우유함유', content: '!참여' });
+    assert.equal(hub.game.entrants.size, 1);
+    const race = hub.game;
+    marble.socket.send(JSON.stringify({ messageType: 'marble_action', action: 'leave' }));
+    await until(() => hub.game === null);
+    assert.equal(race.timer, null);
 });

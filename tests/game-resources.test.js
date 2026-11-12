@@ -13,11 +13,11 @@ function environment() {
     let script;
     const classes = new Set();
     const document = {
-        body: { classList: { add: name => classes.add(name), remove: name => classes.delete(name) } },
+        body: { classList: { add: name => classes.add(name), remove: (...names) => names.forEach(name => classes.delete(name)), toggle: (name, on) => on ? classes.add(name) : classes.delete(name) } },
         createElement: () => ({}),
         head: { append: node => { script = node; calls.scripts++; } },
-        getElementById: () => ({ addEventListener() {} }),
-        querySelectorAll: () => []
+        getElementById: () => ({ addEventListener() {}, setAttribute() {}, toggleAttribute() {} }),
+        querySelectorAll: () => ['pause', 'next', 'launch', 'start', 'reset'].map(action => ({ dataset: { gameAction: action }, addEventListener() {} }))
     };
     class Socket {
         static OPEN = 1;

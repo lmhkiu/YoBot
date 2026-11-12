@@ -319,6 +319,16 @@ function logServerError(error, context = '') {
 }
 
 
+// Only enrolled users in the active marble game can request their official profile image.
+app.get('/api/game/avatar/:platform/:userId', async (req, res) => {
+    const game = chatHub?.gameType === 'marble' ? chatHub.game : null;
+    const person = game?.entrants.get(req.params.platform + ':' + req.params.userId);
+    if (!person?.avatarUrl) { res.sendStatus(404); return; }
+    const avatar = await game.avatars.get(person.avatarUrl);
+    if (!avatar || chatHub?.game !== game) { res.sendStatus(404); return; }
+    res.set('Cache-Control', 'private, max-age=3600').type(avatar.type).send(avatar.data);
+});
+
 const clientDirectory = path.join(__dirname, '../client');
 app.use('/src/client', express.static(clientDirectory));
 app.use(express.static(clientDirectory));

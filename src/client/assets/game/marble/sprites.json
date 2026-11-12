@@ -1,0 +1,99 @@
+{
+  "frames": {
+    "ball": {
+      "frame": {
+        "x": 84,
+        "y": 82,
+        "w": 461,
+        "h": 466
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 461,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 461,
+        "h": 466
+      }
+    },
+    "bumper": {
+      "frame": {
+        "x": 685,
+        "y": 76,
+        "w": 477,
+        "h": 480
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 477,
+        "h": 480
+      },
+      "sourceSize": {
+        "w": 477,
+        "h": 480
+      }
+    },
+    "bar": {
+      "frame": {
+        "x": 48,
+        "y": 903,
+        "w": 532,
+        "h": 85
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 532,
+        "h": 85
+      },
+      "sourceSize": {
+        "w": 532,
+        "h": 85
+      }
+    },
+    "boost": {
+      "frame": {
+        "x": 691,
+        "y": 700,
+        "w": 477,
+        "h": 483
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 477,
+        "h": 483
+      },
+      "sourceSize": {
+        "w": 477,
+        "h": 483
+      }
+    },
+    "pixel": {
+      "frame": {
+        "x": 510,
+        "y": 433,
+        "w": 1,
+        "h": 1
+      }
+    }
+  },
+  "meta": {
+    "image": "sprites.png",
+    "size": {
+      "w": 1254,
+      "h": 1254
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import GameController from "./game/GameController.js";
+import GameController from "./game/GameMenuController.js";
 import ChatDisplay from "./chat/ChatDisplay.js";
 import ChatMemoController from "./chat/ChatMemoController.js";
 

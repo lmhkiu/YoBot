@@ -255,3 +255,42 @@ body:not(.game-mode) #streamer-cam { display: none; }
 body:not(.game-mode) #broadcast-sidebar { width: 100%; min-width: 0; flex: 1 1 auto; border: 0; }
 .game-heading-actions { display: flex; align-items: center; gap: 12px; }
 #game-exit { border: 1px solid #a97487; border-radius: 7px; padding: 7px 12px; background: #654353; color: #ffeaf0; cursor: pointer; white-space: nowrap; }
+
+[hidden] { display: none !important; }
+#game-play { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 9px; }
+#game-menu { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0; }
+.menu-intro { color: #e7c5cf; font-size: 17px; }
+.game-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.game-card { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 22px; min-height: 340px; padding: 28px; border: 1px solid #947384; border-radius: 20px; color: #ffeaf1; background: linear-gradient(150deg, #684554, #382d3c); cursor: pointer; font: inherit; transition: transform .15s, border-color .15s; }
+.game-card:hover { transform: translateY(-4px); border-color: #ffe0ea; }
+.marble-card { background: linear-gradient(150deg, #234757, #1c283d); border-color: #558c95; color: #dffcf4; }
+.card-icon { font-size: 64px; line-height: 1; color: #e3a0b6; }
+.marble-card .card-icon { color: #85e1c7; text-shadow: 16px 9px #edb270, -15px 18px #9b97dc; }
+.card-kicker { font-size: 10px; letter-spacing: 1px; opacity: .75; }
+.game-card strong { font-size: clamp(23px, 2.5vw, 38px); }
+.game-card > span:not(.card-icon):not(.card-kicker) { font-size: 13px; line-height: 1.9; opacity: .8; }
+.game-card b { font-size: 13px; margin-top: auto; }
+.menu-footnote { color: #ad9eab; font-size: 12px; margin-top: 24px; }
+#game-menu-error { color: #ffa7b6; }
+#game-menu-back { border: 1px solid #88768e; border-radius: 7px; padding: 7px 12px; background: #34303e; color: #e8dfea; cursor: pointer; white-space: nowrap; }
+body.marble-mode #pepero-panel { background: radial-gradient(ellipse at top, #253d4d, #161d2b 75%); }
+body.marble-mode #game-container { background: #0d1c2b; }
+body.marble-mode .game-actions button:first-child { background: #307e76; }
+@media (max-width: 1050px) { .game-card { padding: 18px; gap: 15px; min-height: 300px; } .game-heading-actions { gap: 5px; } }
+
+#marble-settings { display: flex; align-items: center; gap: 10px; color: #c7e7e1; font-size: 12px; }
+#marble-settings input { width: 74px; padding: 7px 9px; border: 1px solid #548e96; border-radius: 7px; background: #132c3c; color: #e4fff8; font: inherit; }
+#marble-settings span { color: #839fa9; font-size: 10px; }
+
+.game-stage { display: flex; gap: 10px; flex: 1 0 310px; min-height: 310px; height: 0; }
+.game-stage #game-container { flex: 1; min-width: 0; }
+#marble-results { flex: 0 0 170px; min-width: 0; min-height: 0; height: 100%; max-height: 100%; overflow-y: auto; background: #0e1e2c; border: 1px solid #416371; border-radius: 12px; padding: 12px; }
+#marble-results h2 { font-size: 14px; margin: 0 0 14px; color: #bcebdd; }
+#marble-finish-count { float: right; font-size: 11px; color: #83aeb3; }
+#marble-finish-empty { color: #78909e; font-size: 11px; line-height: 1.8; }
+#marble-finish-list { padding: 0; margin: 0; list-style: none; }
+#marble-finish-list li { display: grid; grid-template-columns: 27px minmax(0,1fr); gap: 4px; padding: 9px 0; border-bottom: 1px solid #ffffff13; color: #d9edf2; font-size: 12px; }
+#marble-finish-list b { grid-row: span 2; color: #8be3bf; }
+#marble-finish-list span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#marble-finish-list small { color: #849fab; font-size: 10px; }
+@media (max-width:1050px) { #marble-results { flex-basis:135px; padding:9px; } }
