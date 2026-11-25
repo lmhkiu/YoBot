@@ -1,5 +1,5 @@
 {
-  "version": "1.0.38",
+  "version": "1.0.39",
   "arch": "x64",
   "nodePath": "runtime/node-v24.13.0-win-x64/node.exe",
   "files": [
@@ -41,7 +41,7 @@
     },
     {
       "path": "node_modules/.package-lock.json",
-      "sha256": "74fb1104bf0b9743ec0ad7928fa0a108cee9564b49a03dca9663abd1e894cabc"
+      "sha256": "61f13ab77f2737b4542f1a5b6987f91eee4f7d167802fb08fcbf5d46ac1d8824"
     },
     {
       "path": "node_modules/accepts/HISTORY.md",
@@ -3993,15 +3993,15 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "74a7ab1d241804fc3710e45001352ac7c7ef73e4d165c1386d80be38fd53cb66"
+      "sha256": "ad077d4f7115f38d2391899a666aae774f4e7779040ddde063d9d2260db66f4a"
     },
     {
       "path": "package.json",
-      "sha256": "fe28e9c7a0c3c822d6a68806d9a464b6feb17f968f1cf50411c90ae39ed04390"
+      "sha256": "3508f569cce05f2cb602fff3f8622e786e247a121519fd6ab0674fad8ca68188"
     },
     {
       "path": "README.md",
-      "sha256": "799f964ac470f2d8162546050fc00481470e404c16c4ff62af0c3cae837a54e2"
+      "sha256": "148891b5ae449cb032b0c3208c28d2619f8963306424f9d3d8cd079a2e187f9e"
     },
     {
       "path": "run.bat",
@@ -4068,22 +4068,6 @@
       "sha256": "6fa4f3401fe31c5950903a58009aca4c7adea30957cb1cb5eeea8e4243877ab2"
     },
     {
-      "path": "src/client/assets/game/pepero/arena.png",
-      "sha256": "f7de4516ca6849be2b2d60046ace358a30a263712baab875c5be24190d1e1e68"
-    },
-    {
-      "path": "src/client/assets/game/pepero/arena.prompt.txt",
-      "sha256": "5a95e554a026100b514ba4bbb0aa79c42a402ad3e9fcc5f0ee1f120ea81dfd19"
-    },
-    {
-      "path": "src/client/assets/game/pepero/characters.png",
-      "sha256": "a75aef7e98241379ad221e270dea5ca8251a4c5192cb962fee4dbc502b76031c"
-    },
-    {
-      "path": "src/client/assets/game/pepero/characters.prompt.txt",
-      "sha256": "6388702edc059e39d7cb2beb327a26a35c45770f12b47a841cd0c124303cbee4"
-    },
-    {
       "path": "src/client/assets/game/player/squirrel.png",
       "sha256": "87e406807ed7e6338271608e5245d8bf9755fc9cf118c766c3a3e3892aedef34"
     },
@@ -4097,7 +4081,7 @@
     },
     {
       "path": "src/client/chat/ChatDisplay.js",
-      "sha256": "3402b5f94d02df285db1474e6b13d36a4e9ba7662f17cbe1b905065576009a80"
+      "sha256": "994c19eb671a08e44ba585e4de94e07c735d6bed4efca65573d9a870e63c7599"
     },
     {
       "path": "src/client/chat/ChatMemoController.js",
@@ -4129,15 +4113,19 @@
     },
     {
       "path": "src/client/game/AvatarTextures.js",
-      "sha256": "70925eaf918931e14c52f08ee9b68fa1a9fed22953d43eeb027efe8a64374a52"
+      "sha256": "d9ebdad5a787f9a278f19a0093f02f2eacf4eecd4097fb3f9980c10b28dc83cb"
     },
     {
       "path": "src/client/game/GameController.js",
-      "sha256": "1da0b38c77a4cb638b34fc7c06c876adf64de437348c298206661ff2649f725f"
+      "sha256": "6b86eb6674ef72784716719f3e098bd0b1acff85f5309947fac3a59fd8f3ba9c"
     },
     {
       "path": "src/client/game/GameMenuController.js",
-      "sha256": "9085b86cdb2b52549a5ef673db6f589f0813859b86efed1f6e43a9a757b9144a"
+      "sha256": "391eb6748d55d85da550709e0d6972a5da2bcbc4630623fb38cf0e7aebd11de7"
+    },
+    {
+      "path": "src/client/game/MarblePhysics.js",
+      "sha256": "d4aaf30b2cad550b2b81b82664b0b573b4bbf4dd82eaf656180d8a5595525c4a"
     },
     {
       "path": "src/client/game/marbleTrack.js",
@@ -4145,11 +4133,7 @@
     },
     {
       "path": "src/client/game/scenes/game/MarbleScene.js",
-      "sha256": "0fa7ec71be1eafb790cd5f478bcc505219229b864b922539826df0fc872ad5a7"
-    },
-    {
-      "path": "src/client/game/scenes/game/PeperoScene.js",
-      "sha256": "b0548a1a7514413b14c47ab925f758d5a8632bc493e45ce95dea4386ff8e9a45"
+      "sha256": "ff1fafdf9668392f582747bb43482523098b9ee96390bfe77da6db0a8476d138"
     },
     {
       "path": "src/client/game/scenes/game/SceneGame.js",
@@ -4173,11 +4157,11 @@
     },
     {
       "path": "src/client/index.css",
-      "sha256": "3030f5d5974614f68cc37f4c46b3490a67509030a337486b13db8a987fcd3fc0"
+      "sha256": "ec2ef198b9d92deec7be167aac5c019b1ef17e6afd41a0bd15dd2389c688f907"
     },
     {
       "path": "src/client/index.html",
-      "sha256": "76ee104d7bbcfd531d9f7baa9f239179cf690b8757a4ef622a333ddb93647805"
+      "sha256": "bc6934fc5da22ce1249ca909ea991b45c721ebbad386a122ef003d8017f5d4c3"
     },
     {
       "path": "src/client/lib/phaser.js",
@@ -4193,7 +4177,7 @@
     },
     {
       "path": "src/server/chat/ChatHub.js",
-      "sha256": "9f8dd81aaddd5f7541bf8321334893ac1b5cb43af80803733a04852d574f1105"
+      "sha256": "39ddcbd7a26af3103cfdb2b98ab845966e0d45b80503a4459d5f1d9872217778"
     },
     {
       "path": "src/server/chat/chzzk/ChzzkScrapper.js",
@@ -4217,15 +4201,11 @@
     },
     {
       "path": "src/server/game/AvatarStore.js",
-      "sha256": "2da10d28606d8e948ac866c890e1da9641c6eaa43e0fc07fe224f80a0a107364"
+      "sha256": "afc84934e14a5b107e4baa10f464c8c486c5255d14c12626b210d0c3dc6a90da"
     },
     {
       "path": "src/server/game/MarbleGame.js",
-      "sha256": "0a9d913235cdfd1a250899dab0d4b38054f4c429116f3d3743f47d9015459b5f"
-    },
-    {
-      "path": "src/server/game/PeperoGame.js",
-      "sha256": "c5e82414fa136ced3c9a71427d22c6cd06b5510c3ced7d78de2c93f53e15962d"
+      "sha256": "afdd7b107622723477ae3d0900000f9eac83d5724fa3d60054b48f76d566c655"
     },
     {
       "path": "src/server/gist/GistBackup.js",
@@ -4257,7 +4237,7 @@
     },
     {
       "path": "src/server/server.js",
-      "sha256": "dc095f9afcee3014b3a0e5279fc78b0fd8e085c61728662615c6f174968eedd4"
+      "sha256": "a666aed9d1e2b0efd6bdc2b916b8a3ddbb411091739466aa06f50a65ac975ec2"
     },
     {
       "path": "update.js",
