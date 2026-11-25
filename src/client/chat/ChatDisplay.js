@@ -131,11 +131,30 @@ export default class ChatDisplay {
 
     setScrollListener() {
         const chatMessages = document.getElementById('chat-messages');
-        chatMessages.addEventListener('scroll', () => {
-            // 스크롤이 가장 아래에 있는지 확인
+        const jumpButton = document.getElementById('chat-jump-to-latest');
+        this.scrollListeners = new AbortController();
+        const { signal } = this.scrollListeners;
+
+        const updateScrollState = () => {
             const isAtBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - config.SCROLL.BOTTOM_TOLERANCE;
             this.autoScrollEnabled = isAtBottom;
+            jumpButton.hidden = isAtBottom;
+        };
+
+        chatMessages.addEventListener('scroll', updateScrollState, { signal });
+        jumpButton.addEventListener('click', () => {
+            chatMessages.focus({ preventScroll: true });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            updateScrollState();
+        }, { signal });
+
+        this.chatResizeObserver = new ResizeObserver(() => {
+            if (this.autoScrollEnabled) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            updateScrollState();
         });
+        this.chatResizeObserver.observe(chatMessages);
     }
 
     // 최초 접속과 주기적 교체 모두 같은 이벤트 등록 경로를 사용한다.
@@ -460,6 +479,8 @@ export default class ChatDisplay {
     }
 
     destroy() {
+        this.scrollListeners?.abort();
+        this.chatResizeObserver?.disconnect();
         if (this.historyClickHandler) {
             const container = document.getElementById('chat-messages');
             container.removeEventListener('click', this.historyClickHandler);

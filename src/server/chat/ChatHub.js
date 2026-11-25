@@ -6,7 +6,6 @@ import ChzzkScraper from './chzzk/ChzzkScrapper.js';
 import SoopScraper from './soop/SoopScrapper.js';
 import TwitchScrapper from './twitch/TwitchScrapper.js';
 import config from '../../../config.js';
-import PeperoGame from '../game/PeperoGame.js';
 import MarbleGame from '../game/MarbleGame.js';
 import WebSocket, { WebSocketServer } from 'ws';
 
@@ -72,14 +71,12 @@ export default class ChatHub {
         this.wss.on('connection', (ws, request) => {
             this.cancelShutdownTimer();
             const query = new URL(request.url, 'http://localhost').searchParams;
-            ws.gameType = query.get('game');
-            ws.gameClient = ['pepero', 'marble'].includes(ws.gameType);
-            if (ws.gameClient && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(request.socket.remoteAddress) && !this.gameHost) {
+            ws.gameClient = query.get('game') === 'marble';
+            ws.localGameClient = ws.gameClient && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(request.socket.remoteAddress);
+            if (ws.localGameClient && !this.gameHost) {
                 this.gameHost = ws;
                 if (!this.game) {
-                    const Game = ws.gameType === 'marble' ? MarbleGame : PeperoGame;
-                    this.gameType = ws.gameType;
-                    this.game = new Game({
+                    this.game = new MarbleGame({
                         excludedNicknames: config.CHAT_HISTORY?.EXCLUDED_NICKNAMES,
                         onChange: state => this.sendGameState(state)
                     });
@@ -88,10 +85,7 @@ export default class ChatHub {
             ws.historyUser = query.get('history') === '1' ? { platform: query.get('platform'), userId: query.get('userId') } : null;
             console.log('chatDisplay 클라이언트 연결됨');
             this.clients.push(ws);
-            if (ws.gameClient && this.game) {
-                if (ws.gameType !== this.gameType) ws.close(1000, 'Another game is active');
-                else this.sendGameState(this.game.snapshot());
-            }
+            if (ws.gameClient && this.game) this.sendGameState(this.game.snapshot());
 
             this.clientLastSeen.set(ws, 0);
 
@@ -101,8 +95,16 @@ export default class ChatHub {
                 let data;
                 try { data = JSON.parse(message); } catch { return; }
                 if (!data || typeof data !== 'object') return;
-                if (data.messageType === 'pepero_action' || data.messageType === 'marble_action') {
-                    if (ws === this.gameHost && data.messageType === this.gameType + '_action') {
+                if (data.messageType === 'marble_action') {
+                    if (data.action === 'take_control') {
+                        if (ws.localGameClient && this.game && this.game.state.phase !== 'racing') {
+                            this.gameHost = ws;
+                            if (this.game.state.phase === 'finished') this.game.reset();
+                            else this.sendGameState(this.game.snapshot());
+                        }
+                        return;
+                    }
+                    if (ws === this.gameHost) {
                         if (data.action === 'leave') {
                             this.game?.destroy();
                             this.game = null;
@@ -110,7 +112,7 @@ export default class ChatHub {
                             for (const client of this.clients) {
                                 if (client.gameClient) client.close(1000, 'Game mode ended');
                             }
-                        } else this.game?.action(data.action, this.gameType === 'marble' ? data.maxPlayers : data.lane);
+                        } else this.game?.action(data.action, data.maxPlayers);
                     }
                     return;
                 }
@@ -144,12 +146,14 @@ export default class ChatHub {
 
 
             ws.on('close', () => {
+                this.clients = this.clients.filter(client => client !== ws);
                 if (this.gameHost === ws) {
-                    this.gameHost = null;
-                    this.game?.pause();
+                    this.gameHost = this.clients.find(client => client.localGameClient && client.readyState === WebSocket.OPEN) ?? null;
+                    if (this.game?.state.phase === 'racing') this.game.abortRace();
+                    else if (this.game?.state.phase === 'finished') this.game.reset();
+                    else if (this.gameHost && this.game) this.sendGameState(this.game.snapshot());
                 }
                 console.log('chatDisplay 클라이언트 연결 종료');
-                this.clients = this.clients.filter(client => client !== ws);
                 if (!this.clients.some(client => client.gameClient)) {
                     this.game?.destroy();
                     this.game = null;
@@ -243,8 +247,12 @@ export default class ChatHub {
 
     sendGameState(state) {
         for (const client of this.clients) {
-            if (client.gameClient && client.gameType === this.gameType && client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({ messageType: this.gameType + '_state', state, canControl: client === this.gameHost }));
+            if (client.gameClient && client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({
+                    messageType: 'marble_state', state,
+                    canControl: client === this.gameHost,
+                    canTakeControl: client.localGameClient && client !== this.gameHost && state.phase !== 'racing'
+                }));
             }
         }
     }

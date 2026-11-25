@@ -17,3 +17,5 @@
 /tests export-ignore
 node_modules/** -text !eol
 runtime/** -text !eol
+
+/config.js -text !eol

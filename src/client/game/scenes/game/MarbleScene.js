@@ -87,42 +87,59 @@ export default class MarbleScene extends Phaser.Scene {
                 const image = this.add.image(0, 0, 'marble-art', 'ball').setDisplaySize(24, 24).setTint(colors[ball.color % colors.length]);
                 const label = this.add.text(0, -24, Array.from(ball.nickname).slice(0, 12).join(''), { fontFamily: font, fontSize: '16px', color: '#eaf4fa', stroke: '#102032', strokeThickness: 4 }).setOrigin(0.5);
                 actor = this.add.container(ball.x, ball.y, [image, label]).setDepth(5);
+                actor.rollDirection = 1;
                 this.actors.set(ball.key, actor);
                 this.avatarTextures.get(ball).then(key => {
                     if (key && this.actors.get(ball.key) === actor && image.scene) image.setTexture(key).clearTint().setDisplaySize(28, 28);
                 });
                 this.mapDots.set(ball.key, this.add.image(927, 100, 'marble-art', 'ball').setDisplaySize(6, 6).setTint(colors[ball.color % colors.length]).setScrollFactor(0).setDepth(22));
             }
-            actor.fromX = actor.x; actor.fromY = actor.y; actor.target = ball;
-            if(ball.rank && actor.exitAt==null)actor.exitAt=performance.now();
+            actor.target = ball;
         }
-        if (state.phase === 'finished' && this.previousPhase !== 'finished') this.controller.sound('win');
         this.previousPhase = state.phase;
     }
     update(_time, delta) {
         const state = this.controller?.state;
         if (!state || !this.actors) return;
-        const alpha = state.paused ? 1 : Phaser.Math.Clamp((performance.now() - this.controller.receivedAt) / 100, 0, 1);
+        const alpha = this.controller.advanceRace(delta);
+        let firstLive;
         for (const [key, actor] of this.actors) {
             const ball = actor.target;
-            if (!ball.rank) { actor.x = Phaser.Math.Linear(actor.fromX, ball.x, alpha); actor.y = Phaser.Math.Linear(actor.fromY, ball.y, alpha); }
+            const previousX = actor.x;
+            const previousY = actor.y;
+            if (!ball.rank) {
+                actor.x = Phaser.Math.Linear(ball.previousX, ball.x, alpha);
+                actor.y = Phaser.Math.Linear(ball.previousY, ball.y, alpha);
+                if (!firstLive || actor.y > firstLive.y) firstLive = actor;
+            }
             if(ball.rank) {
-                const falling=(performance.now()-actor.exitAt)/1000;
+                actor.exitAt ??= _time;
+                const falling = (_time - actor.exitAt) / 1000;
                 actor.x=ball.x;actor.y=ball.y+falling*700;actor.setVisible(falling<0.7);
             } else actor.setVisible(true);
-            if (!ball.avatarUrl) actor.list[0].rotation=actor.y/28;
+            if (!state.paused && actor.visible) {
+                const dx = actor.x - previousX;
+                const dy = actor.y - previousY;
+                const horizontalDistanceSquared = dx * dx;
+                const distanceSquared = horizontalDistanceSquared + dy * dy;
+                if (distanceSquared > 0) {
+                    if (horizontalDistanceSquared * 16 > distanceSquared) actor.rollDirection = Math.sign(dx);
+                    const image = actor.list[0];
+                    image.rotation += actor.rollDirection * Math.sqrt(distanceSquared) / (image.displayWidth / 2);
+                }
+            }
             this.mapDots.get(key).setPosition(912+(ball.x-66)/828*30,100+Math.min(1,ball.y/TRACK.height)*520).setAlpha(ball.rank?0:1);
         }
-        const elapsed = state.elapsed + (state.phase === 'racing' && !state.paused ? Math.min(0.1, (performance.now() - this.controller.receivedAt) / 1000) : 0);
+        const elapsed = state.elapsed;
         for (const { obstacle, sprite } of this.obstacleSprites) if (['spinner','spiral'].includes(obstacle.type)) sprite.rotation = obstacle.angle + obstacle.speed * elapsed;
-        const firstLive = state.ranking.find(ball => !ball.rank);
+        const leaderY = firstLive?.y ?? 200;
         const tracked = this.heldBall && this.actors.get(this.heldBall);
-        let target = this.cameraMode === 'manual' ? this.manualY : (state.results?.length ? TRACK.finish + 180 : firstLive?.y ?? 200) - 390;
+        let target = this.cameraMode === 'manual' ? this.manualY : (state.results?.length ? TRACK.finish + 180 : leaderY) - 390;
         if (tracked) target = tracked.y - 360;
         const camera = this.cameras.main;
         camera.scrollY = Phaser.Math.Linear(camera.scrollY, Phaser.Math.Clamp(target, -120, TRACK.height - 720), Math.min(1, delta / 140));
         this.mapView.y = 100 + (camera.scrollY + 360) / TRACK.height * 520;
-        const label = tracked ? '누르는 동안 추적 · ' + tracked.target.nickname : this.cameraMode === 'manual' ? '미니맵 탐색 · 선두 추적으로 복귀' : state.results?.length ? '결승 통과 · ' + state.results.length + '명 완주' : '선두 자동 추적 · ' + (firstLive?.nickname || '출발 대기');
+        const label = tracked ? '누르는 동안 추적 · ' + tracked.target.nickname : this.cameraMode === 'manual' ? '미니맵 탐색 · 선두 추적으로 복귀' : state.results?.length ? '결승 통과 · ' + state.results.length + '명 완주' : '선두 자동 추적 · ' + (firstLive?.target.nickname || '출발 대기');
         if (this.cameraLabel.text !== label) this.cameraLabel.setText(label);
         if (!this.hudAt || _time - this.hudAt >= 150) { this.hudAt = _time; this.controller.updateHud(); }
     }

@@ -19,8 +19,8 @@ export default class GameMenuController {
         document.getElementById('game-connection').textContent = '게임 선택';
     }
     async select(type) {
-        if (this.destroyed || this.session || !['pepero', 'marble'].includes(type)) return;
-        const controller = new GameController(type); this.session = controller;
+        if (this.destroyed || this.session || type !== 'marble') return;
+        const controller = new GameController(); this.session = controller;
         document.getElementById('game-menu').hidden = true;
         document.getElementById('game-play').hidden = false;
         document.getElementById('game-menu-back').hidden = false;

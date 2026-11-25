@@ -13,7 +13,8 @@
     <aside id="broadcast-sidebar">
     <div id="chat-container">
         <h3>통합 채팅</h3>
-        <div id="chat-messages">
+        <div id="chat-feed">
+        <div id="chat-messages" tabindex="0" aria-label="통합 채팅 메시지">
             <div class="chat-message">
                 <div class="chat-message-platform-icon-container">
                     <img src="/favicon.svg" alt="favicon" style="width: 20px; height: 20px;">
@@ -22,8 +23,8 @@
                     <div class="chat-message-nickname">꾸덕이</div>
                 </div>
                 <div class="chat-message-content-container">
-                    <strong>1.0.38 업데이트사항</strong><br>
-                    !게임모드에서 빼빼로·굴려굴려게임을 선택하세요. 굴려굴려는 모집 중 !참여·!참가로 등록하고 스트리머가 경주를 시작합니다.
+                    <strong>1.0.39 업데이트사항</strong><br>
+                    !게임모드에서 굴려굴려게임을 열 수 있습니다. 시청자는 모집 중 !참여·!참가로 등록하고 스트리머가 경주를 시작합니다.
                 </div>
             </div>
             <div class="chat-message">
@@ -37,6 +38,12 @@
                     오늘도 즐거운 방송!!
                 </div>
             </div>
+        </div>
+        <button id="chat-jump-to-latest" type="button" aria-label="최신 채팅으로 이동" aria-controls="chat-messages" hidden>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
         </div>
         <div id="chat-controller">
             <div id="broad_time">00:00:00</div>
@@ -54,7 +61,7 @@
             <div><strong>JUDY CAM</strong><span>스트리머 캠 배치 영역</span></div>
         </section>
     </aside>
-    <main id="pepero-panel">
+    <main id="game-panel">
         <header class="game-heading">
             <div><span class="game-eyebrow" id="game-eyebrow">JUDY’S PLAYROOM</span><h1 id="game-title">게임 선택</h1></div>
             <div class="game-heading-actions"><span id="game-connection">서버 연결 중…</span><button id="game-menu-back" type="button" hidden>게임 선택</button><button id="game-exit" type="button">게임 종료</button></div>
@@ -62,40 +69,40 @@
         <section id="game-menu" hidden>
             <p class="menu-intro">시청자와 함께하는 주디의 게임방</p>
             <div class="game-cards">
-                <button type="button" class="game-card pepero-card" data-game-select="pepero"><span class="card-icon">▥</span><span class="card-kicker">DEFENSE · 스트리머 vs 시청자</span><strong>빼빼로게임</strong><span>달콤한 빼빼로를 지켜라!<br>채팅으로 공격하고 키보드로 수비해요.</span><b>게임 열기 →</b></button>
                 <button type="button" class="game-card marble-card" data-game-select="marble"><span class="card-icon">●</span><span class="card-kicker">MARBLE RACE · 끝까지 모르는 승부</span><strong>굴려굴려게임</strong><span>공 하나에 내 닉네임을 싣고,<br>돌고 튕기는 장애물을 지나 결승선까지!</span><b>게임 열기 →</b></button>
             </div>
             <p class="menu-footnote">채팅 · 캠 위치는 그대로, 원하는 게임을 선택하세요.</p><p id="game-menu-error" role="status"></p>
         </section>
         <div id="game-play" hidden>
-        <div id="marble-settings" hidden><label for="marble-max-players">최대 참가 인원</label><input id="marble-max-players" type="number" min="1" max="100" step="1" value="10"><span>명 · 1~100명 · 시작 전에 설정</span></div>
+        <p id="game-control-warning" role="status" hidden>다른 YoBot 탭 또는 창에서 게임을 조작 중입니다. 이 화면에서 진행하려면 ‘조작권 가져오기’를 누르세요.</p>
+        <div id="marble-settings"><label for="marble-max-players">최대 참가 인원</label><input id="marble-max-players" type="number" min="1" max="100" step="1" value="10"><span>명 · 1~100명 · 시작 전에 설정</span></div>
         <div class="game-stats">
-            <div><span id="game-stat-one">남은 빼빼로</span><strong id="game-health">10 / 10</strong></div>
-            <div><span id="game-stat-two">웨이브</span><strong id="game-wave">0 / 3</strong></div>
-            <div><span id="game-stat-three">막은 공격</span><strong id="game-blocked">0</strong></div>
+            <div><span id="game-stat-one">참가자</span><strong id="game-health">0명</strong></div>
+            <div><span id="game-stat-two">경주 시간</span><strong id="game-wave">0.0초</strong></div>
+            <div><span id="game-stat-three">완주</span><strong id="game-blocked">0</strong></div>
         </div>
-        <div class="game-stage">
-            <div id="game-container" aria-label="빼빼로 게임 화면"></div>
-            <aside id="marble-results" hidden aria-label="도착 순서 기록"><h2>도착 순서 <span id="marble-finish-count">0명</span></h2><p id="marble-finish-empty">먼저 빠져나온 순서대로 기록됩니다.</p><ol id="marble-finish-list"></ol></aside>
+        <div class="game-stage" id="game-stage" hidden>
+            <div id="game-container" aria-label="굴려굴려 경주 화면"></div>
+            <aside id="marble-results" aria-label="도착 순서 기록"><h2>도착 순서 <span id="marble-finish-count">0명</span></h2><p id="marble-finish-empty">먼저 빠져나온 순서대로 기록됩니다.</p><ol id="marble-finish-list"></ol></aside>
         </div>
         <div class="game-actions">
-            <button data-game-action="start" disabled>게임 시작</button>
-            <button data-game-action="launch" disabled>모집 마감</button>
-            <button data-game-action="next" disabled>다음 웨이브</button>
+            <button data-game-action="start" disabled>참가 모집</button>
+            <button id="game-take-control" type="button" hidden>조작권 가져오기</button>
+            <button data-game-action="launch" disabled>경주 시작</button>
             <button data-game-action="pause" disabled>일시정지</button>
             <button data-game-action="reset" disabled>처음으로</button>
-            <button id="marble-follow" hidden>선두 추적</button><button id="game-sound">소리 켜짐</button>
+            <button id="marble-follow">선두 추적</button><button id="game-sound">소리 켜짐</button>
         </div>
         <section class="game-notice">
             <p id="game-phase">게임 서버에 연결하고 있습니다.</p>
-            <p id="game-avatar-status" class="game-help" hidden></p>
-            <p class="game-help" id="game-help">주디 · ↑↓ / W·S / 1·2·3 또는 길 클릭 &nbsp; | &nbsp; 시청자 · 모집 중 채팅하면 자동 참가</p>
+            <p id="game-avatar-status" class="game-help"></p>
+            <p class="game-help" id="game-help">!참여 또는 !참가로 참가 · 미니맵 클릭/드래그로 이동 · 공을 누르고 있는 동안 추적</p>
         </section>
         <section class="game-lineup">
-            <div class="lineup-heading"><strong id="game-lineup-title">이번 공격대</strong><span id="game-participants">시청자 우선 · 중복 없이 10자리</span></div>
+            <div class="lineup-heading"><strong id="game-lineup-title">참가한 시청자</strong><span id="game-participants">0명</span></div>
             <div id="game-roster"></div>
         </section>
-        <p id="game-scores">시청자의 공격 기록이 여기에 표시됩니다.</p>
+        <p id="game-scores">출발하면 실시간 순위가 표시됩니다.</p>
         </div>
     </main>
 

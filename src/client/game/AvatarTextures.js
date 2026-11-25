@@ -1,3 +1,7 @@
+export function avatarImagePath(person) {
+    return '/api/game/avatar/' + encodeURIComponent(person.platform) + '/' + encodeURIComponent(person.userId);
+}
+
 // One bounded, cached circular texture per participant; never clip or mask every frame.
 export default class AvatarTextures {
     constructor(scene, { fetchImage = (...args) => fetch(...args), decodeImage = (...args) => createImageBitmap(...args) } = {}) {
@@ -5,7 +9,7 @@ export default class AvatarTextures {
         this.pending = new Map(); this.cache = new Map(); this.controllers = new Set(); this.queue = []; this.active = 0; this.destroyed = false;
     }
     get(person) {
-        if (!person.avatarUrl || this.destroyed) return Promise.resolve(null);
+        if ((!person.avatarUrl && !person.avatarLookup) || this.destroyed) return Promise.resolve(null);
         if (this.cache.has(person.key)) return Promise.resolve(this.cache.get(person.key));
         if (this.pending.has(person.key)) return this.pending.get(person.key);
         const promise = this.load(person).finally(() => this.pending.delete(person.key));
@@ -18,8 +22,8 @@ export default class AvatarTextures {
         const controller = new AbortController(); this.controllers.add(controller);
         let bitmap, key = null;
         try {
-            const response = await this.fetchImage('/api/game/avatar/' + encodeURIComponent(person.platform) + '/' + encodeURIComponent(person.userId), {
-                signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5000)])
+            const response = await this.fetchImage(avatarImagePath(person), {
+                signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10000)])
             });
             if (!response.ok) throw Error('No avatar');
             bitmap = await this.decodeImage(await response.blob(), { resizeWidth: 96, resizeQuality: 'medium' });

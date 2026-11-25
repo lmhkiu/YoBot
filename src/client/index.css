@@ -9,7 +9,7 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
 .cam-corner { position: absolute; width: 18px; height: 18px; border-color: #e1a7b7; border-style: solid; }
 .top-left { left: 14px; top: 14px; border-width: 2px 0 0 2px; }
 .bottom-right { right: 14px; bottom: 14px; border-width: 0 2px 2px 0; }
-#pepero-panel { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 9px; padding: 16px 22px 9px; overflow-y: auto; background: radial-gradient(ellipse at top, #42303b, #241f29 75%); }
+#game-panel { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 9px; padding: 16px 22px 9px; overflow-y: auto; background: radial-gradient(ellipse at top, #42303b, #241f29 75%); }
 .game-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .game-eyebrow { color: #d6a8a9; font-size: 10px; letter-spacing: 3px; }
 .game-heading h1 { margin: 4px 0 2px; font-size: clamp(18px, 2vw, 29px); color: #ffdfda; }
@@ -31,11 +31,14 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
 .game-lineup { background: #ffffff06; border: 1px solid #ffffff10; border-radius: 9px; padding: 8px 11px; }
 .lineup-heading { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: #e4c4d2; }
 .lineup-heading span { color: #b3a7b3; }
-#game-roster { display: flex; flex-wrap: wrap; gap: 5px; padding-top: 6px; max-height: 62px; overflow-y: auto; }
-.roster-chip { padding: 3px 7px; border-radius: 4px; background: #628e7633; color: #c4ead7; font-size: 10px; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.roster-chip.npc { color: #b7aab6; background: #ffffff09; }
+#game-roster { display: flex; flex-wrap: wrap; gap: 10px 6px; padding-top: 8px; max-height: 152px; overflow-y: auto; }
+.roster-player { display: flex; flex: 0 0 74px; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.roster-ball { display: block; width: 42px; height: 42px; box-sizing: border-box; overflow: hidden; border: 1px solid #d8f3ec; border-radius: 50%; background: radial-gradient(circle at 32% 26%, #c0ece6, #498d91 49%, #23424f 87%); }
+.roster-ball img { display: block; width: 100%; height: 100%; object-fit: cover; }
+#game-control-warning { margin: 0 0 9px; padding: 8px 12px; border: 1px solid #85652f; border-radius: 7px; background: #332a1d; color: #ffdfa0; font-size: 13px; }
+.roster-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #dcecf1; font-size: 12px; }
 #game-scores { color: #cdb4be; margin: 0; font-size: 10px; line-height: 16px; white-space: pre-wrap; }
-@media (max-width: 1000px) { #broadcast-sidebar { width: 270px; flex-basis: 270px; } #pepero-panel { padding: 10px; } .game-stats > div { padding: 6px 8px; gap: 6px; } }
+@media (max-width: 1000px) { #broadcast-sidebar { width: 270px; flex-basis: 270px; } #game-panel { padding: 10px; } .game-stats > div { padding: 6px 8px; gap: 6px; } }
 @media (max-width: 650px) { body.game-mode { min-width: 620px; overflow-x: auto; } #broadcast-sidebar { flex-basis: 240px; min-width: 240px; } }
 /* 채팅 컨테이너 스타일 */
 #chat-container {
@@ -67,11 +70,29 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
     margin: 0;
 }
 
+#chat-feed {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#chat-container,
+#chat-messages {
+    scrollbar-width: none;
+}
+
+#chat-container::-webkit-scrollbar,
+#chat-messages::-webkit-scrollbar {
+    display: none;
+}
+
 #chat-messages {
     flex: 1;            /* 실제 채팅들이 쌓이는 영역, 즉 채팅 제목과 분리된 몸통 부분. 이부분은 h3과 column 으로 구분되므로 flex : 1 즉 부모의 크
     부모의 크기에 영향을 받아 함께 줄어들고 늘어남*/
     
-    overflow-y: auto;   /* 당연히 채팅들이 많아질 때, 스크롤이 보여야 한다.*/
+    overflow-y: auto;
 
     display: flex;
     flex-direction: column;
@@ -83,6 +104,33 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
     align-items: stretch;   /* 자식들을 자신의 가로 너비에 맞춰 늘림. 즉 하나하나의 채팅 container이 chat-message의 가로 크기를
     chat-messages의 가로 크기에 맞춰 늘어남.*/
 
+}
+
+#chat-jump-to-latest {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #242426;
+    color: #dfe2ea;
+    box-shadow: 0 2px 6px #0008;
+    cursor: pointer;
+}
+
+#chat-jump-to-latest:hover {
+    background: #38383c;
+}
+
+#chat-messages:focus-visible,
+#chat-jump-to-latest:focus-visible {
+    outline: 2px solid #aeb7c8;
+    outline-offset: -2px;
 }
 
 /* 채팅 메시지 스타일 */
@@ -250,7 +298,7 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
 body.game-mode #chat-controller { display: none; }
 body.game-mode #streamer-cam { aspect-ratio: 1 / 1; }
 
-body:not(.game-mode) #pepero-panel,
+body:not(.game-mode) #game-panel,
 body:not(.game-mode) #streamer-cam { display: none; }
 body:not(.game-mode) #broadcast-sidebar { width: 100%; min-width: 0; flex: 1 1 auto; border: 0; }
 .game-heading-actions { display: flex; align-items: center; gap: 12px; }
@@ -273,7 +321,7 @@ body:not(.game-mode) #broadcast-sidebar { width: 100%; min-width: 0; flex: 1 1 a
 .menu-footnote { color: #ad9eab; font-size: 12px; margin-top: 24px; }
 #game-menu-error { color: #ffa7b6; }
 #game-menu-back { border: 1px solid #88768e; border-radius: 7px; padding: 7px 12px; background: #34303e; color: #e8dfea; cursor: pointer; white-space: nowrap; }
-body.marble-mode #pepero-panel { background: radial-gradient(ellipse at top, #253d4d, #161d2b 75%); }
+body.marble-mode #game-panel { background: radial-gradient(ellipse at top, #253d4d, #161d2b 75%); }
 body.marble-mode #game-container { background: #0d1c2b; }
 body.marble-mode .game-actions button:first-child { background: #307e76; }
 @media (max-width: 1050px) { .game-card { padding: 18px; gap: 15px; min-height: 300px; } .game-heading-actions { gap: 5px; } }
@@ -289,8 +337,9 @@ body.marble-mode .game-actions button:first-child { background: #307e76; }
 #marble-finish-count { float: right; font-size: 11px; color: #83aeb3; }
 #marble-finish-empty { color: #78909e; font-size: 11px; line-height: 1.8; }
 #marble-finish-list { padding: 0; margin: 0; list-style: none; }
-#marble-finish-list li { display: grid; grid-template-columns: 27px minmax(0,1fr); gap: 4px; padding: 9px 0; border-bottom: 1px solid #ffffff13; color: #d9edf2; font-size: 12px; }
+#marble-finish-list li { display: grid; grid-template-columns: 27px 24px minmax(0,1fr); align-items: center; gap: 4px; padding: 9px 0; border-bottom: 1px solid #ffffff13; color: #d9edf2; font-size: 12px; }
 #marble-finish-list b { grid-row: span 2; color: #8be3bf; }
+#marble-finish-list .roster-ball { grid-row: span 2; width: 24px; height: 24px; }
 #marble-finish-list span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #marble-finish-list small { color: #849fab; font-size: 10px; }
 @media (max-width:1050px) { #marble-results { flex-basis:135px; padding:9px; } }
