@@ -9,9 +9,17 @@ export default class MarblePhysics {
         this.accumulator = 0;
         const people = [...roster];
         for (let i = people.length - 1; i > 0; i--) { const j = Math.floor(this.random() * (i + 1)); [people[i], people[j]] = [people[j], people[i]]; }
-        const balls = people.map((person, i) => ({ ...person, x: 105 + (i % 20) * 39 + this.random() * 5,
-            y: 120 - Math.floor(i / 20) * 32, vx: (this.random() - 0.5) * 140, vy: 0, color: i % 12, rank: null, time: null,
-            progressAt: 0, progressY: 0 }));
+        const columns = Array.from({ length: 20 }, (_, index) => index);
+        const balls = people.map((person, i) => {
+            // Sample empty columns without replacement in each row.
+            const columnIndex = i % columns.length;
+            const choice = columnIndex + Math.floor(this.random() * (columns.length - columnIndex));
+            [columns[columnIndex], columns[choice]] = [columns[choice], columns[columnIndex]];
+            const x = 100 + columns[columnIndex] * 40 + (this.random() - 0.5) * 12;
+            const y = 210 - Math.floor(i / columns.length) * 40 + (this.random() - 0.5) * 10;
+            return { ...person, x, y, vx: (this.random() - 0.5) * 140, vy: 0,
+                color: i % 12, rank: null, time: null, progressAt: 0, progressY: 0 };
+        });
         for (const ball of balls) {
             ball.previousX = ball.x;
             ball.previousY = ball.y;
@@ -56,16 +64,7 @@ export default class MarblePhysics {
             }
             for (const obstacle of this.obstacles) {
                 if (obstacle.type === 'funnel' || obstacle.funnelWall) continue;
-                if (Math.abs(ball.y - obstacle.y) > (obstacle.type === 'spiral' ? 350 : obstacle.type === 'funnel' ? 330 : 170)) continue;
-                if (obstacle.type === 'spiral') {
-                    const angle = obstacle.angle + obstacle.speed * this.state.elapsed, cos = Math.cos(angle), sin = Math.sin(angle);
-                    for (const segment of obstacle.segments) {
-                        const ax = segment.ax * cos - segment.ay * sin, ay = segment.ax * sin + segment.ay * cos;
-                        const bx = segment.bx * cos - segment.by * sin, by = segment.bx * sin + segment.by * cos;
-                        this.collideSegment(ball, obstacle.x + ax, obstacle.y + ay, obstacle.x + bx, obstacle.y + by, obstacle);
-                    }
-                    continue;
-                }
+                if (Math.abs(ball.y - obstacle.y) > 170) continue;
                 if (obstacle.type === 'jump') {
                     if (ball.vy > 0 && Math.hypot(ball.x-obstacle.x,ball.y-obstacle.y)<obstacle.radius && !(ball.jumped||[]).includes(obstacle.id)) {
                         (ball.jumped??=[]).push(obstacle.id);ball.vy=-560;ball.vx+=(this.random()-0.5)*160;ball.lastJumpAt=this.state.elapsed;

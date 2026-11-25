@@ -23,8 +23,8 @@
                     <div class="chat-message-nickname">꾸덕이</div>
                 </div>
                 <div class="chat-message-content-container">
-                    <strong>1.0.40 업데이트사항</strong><br>
-                    굴려굴려게임은 경주를 시작하면 배경음악을 재생합니다. 시청자는 모집 중 !참여·!참가로 등록하고 스트리머가 경주를 시작합니다.
+                    <strong>1.0.41 업데이트사항</strong><br>
+                    굴려굴려게임에 실시간 랭킹, 참가자 추적, 역전 갈림길을 추가했습니다. 경주마다 출발 위치가 달라지고 배경음악은 따로 끌 수 있습니다.
                 </div>
             </div>
             <div class="chat-message">
@@ -75,15 +75,17 @@
         </section>
         <div id="game-play" hidden>
         <p id="game-control-warning" role="status" hidden>다른 YoBot 탭 또는 창에서 게임을 조작 중입니다. 이 화면에서 진행하려면 ‘조작권 가져오기’를 누르세요.</p>
-        <div id="marble-settings"><label for="marble-max-players">최대 참가 인원</label><input id="marble-max-players" type="number" min="1" max="100" step="1" value="10"><span>명 · 1~100명 · 시작 전에 설정</span></div>
-        <div class="game-stats">
-            <div><span id="game-stat-one">참가자</span><strong id="game-health">0명</strong></div>
-            <div><span id="game-stat-two">경주 시간</span><strong id="game-wave">0.0초</strong></div>
-            <div><span id="game-stat-three">완주</span><strong id="game-blocked">0</strong></div>
-        </div>
         <div class="game-stage" id="game-stage" hidden>
+            <div class="marble-toolbar" role="group" aria-label="경주 정보">
+                <div id="marble-settings"><label for="marble-max-players">최대 참가 인원</label><input id="marble-max-players" type="number" min="1" max="100" step="1" value="10"><span>명</span></div>
+                <div class="game-stats">
+                    <div><span id="game-stat-one">참가자</span><strong id="game-health">0명</strong></div>
+                    <div><span id="game-stat-two">경주 시간</span><strong id="game-wave">0.0초</strong></div>
+                    <div><span id="game-stat-three">완주</span><strong id="game-blocked">0</strong></div>
+                </div>
+            </div>
             <div id="game-container" aria-label="굴려굴려 경주 화면"></div>
-            <aside id="marble-results" aria-label="도착 순서 기록"><h2>도착 순서 <span id="marble-finish-count">0명</span></h2><p id="marble-finish-empty">먼저 빠져나온 순서대로 기록됩니다.</p><ol id="marble-finish-list"></ol></aside>
+            <aside id="marble-results" aria-label="실시간 랭킹"><h2>실시간 랭킹 <span id="marble-finish-count">0명 완주</span></h2><p id="marble-finish-empty">경주 시작 후 순위가 표시됩니다.</p><ol id="marble-finish-list"></ol></aside>
         </div>
         <div class="game-actions">
             <button data-game-action="start" disabled>참가 모집</button>
@@ -91,7 +93,8 @@
             <button data-game-action="launch" disabled>경주 시작</button>
             <button data-game-action="pause" disabled>일시정지</button>
             <button data-game-action="reset" disabled>처음으로</button>
-            <button id="marble-follow">선두 추적</button><button id="game-sound">소리 켜짐</button>
+            <button id="game-sound" type="button" aria-pressed="true">효과음 켜짐</button>
+            <button id="game-music" type="button" aria-pressed="true">배경음악 켜짐</button>
         </div>
         <section class="game-notice">
             <p id="game-phase">게임 서버에 연결하고 있습니다.</p>
@@ -100,9 +103,14 @@
         </section>
         <section class="game-lineup">
             <div class="lineup-heading"><strong id="game-lineup-title">참가한 시청자</strong><span id="game-participants">0명</span></div>
-            <div id="game-roster"></div>
+            <div class="roster-row">
+                <div class="roster-leader">
+                    <button id="marble-follow" class="roster-ball" type="button" aria-label="선두 추적" disabled>◎</button>
+                    <span class="roster-name">선두 추적</span>
+                </div>
+                <div id="game-roster"></div>
+            </div>
         </section>
-        <p id="game-scores">출발하면 실시간 순위가 표시됩니다.</p>
         </div>
     </main>
 

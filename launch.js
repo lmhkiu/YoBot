@@ -31,13 +31,19 @@ try {
     const update = spawnSync(process.execPath, [path.join(root, 'update.js')], { cwd: root, stdio: 'inherit', windowsHide: true });
     if (update.status !== 0) console.log('Update unavailable; starting the installed version.');
     let updated = false;
-    try { updated = applyPreparedUpdate(root); }
+    try {
+        if (fs.existsSync(inside(root, '.update/pending.json'))) {
+            console.log('[YoBot] 업데이트 설치 중...');
+            updated = applyPreparedUpdate(root);
+        }
+    }
     catch (error) { console.error('Update failed: ' + error.message); }
     if (updated) {
         const updatedConfig = (await import('./config.js?updated')).default;
         baseUrl = `http://127.0.0.1:${Number(updatedConfig.PORT.SERVER)}`;
     }
     const manifest = JSON.parse(fs.readFileSync(path.join(root, 'release.json'), 'utf8'));
+    if (updated) console.log(`[YoBot] 업데이트 완료 · v${manifest.version} 실행 중...`);
     const node = inside(root, manifest.nodePath);
     if (process.env.YOBOT_VERIFY_ONLY === '1') {
         const result = spawnSync(node, ['-e', "require('node:sqlite');require('express');require('ws');console.log('Bundled runtime and production dependencies OK')"], { cwd: root, stdio: 'inherit', windowsHide: true });
