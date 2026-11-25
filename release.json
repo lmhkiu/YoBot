@@ -1,5 +1,5 @@
 {
-  "version": "1.0.39",
+  "version": "1.0.40",
   "arch": "x64",
   "nodePath": "runtime/node-v24.13.0-win-x64/node.exe",
   "files": [
@@ -41,7 +41,7 @@
     },
     {
       "path": "node_modules/.package-lock.json",
-      "sha256": "61f13ab77f2737b4542f1a5b6987f91eee4f7d167802fb08fcbf5d46ac1d8824"
+      "sha256": "f46d7491ea1a07170c3eb0deb96e3fcaeb8c42e8ab80c90b16efe501fbcdb185"
     },
     {
       "path": "node_modules/accepts/HISTORY.md",
@@ -3993,11 +3993,11 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "ad077d4f7115f38d2391899a666aae774f4e7779040ddde063d9d2260db66f4a"
+      "sha256": "14321bb9d657fbad745744c8eafd0c8159c0ea3b2c036c2d6b30f369216e8137"
     },
     {
       "path": "package.json",
-      "sha256": "3508f569cce05f2cb602fff3f8622e786e247a121519fd6ab0674fad8ca68188"
+      "sha256": "da46e7c8c044deb8071943a4dd4b2547e3a6e63b828c7b89df009e4f0e92a2aa"
     },
     {
       "path": "README.md",
@@ -4054,6 +4054,10 @@
     {
       "path": "src/client/assets/game/bg/background.png",
       "sha256": "0b3e5ede7d87f195b44a61171c12e3a29caa7b3139aae387911df8f0169e8d93"
+    },
+    {
+      "path": "src/client/assets/game/marble/race-groove.mp3",
+      "sha256": "c16594aa7d21e2f5710db371e36a819fc3824d856fa17868bc3224974ccdb07d"
     },
     {
       "path": "src/client/assets/game/marble/sprites.json",
@@ -4117,7 +4121,7 @@
     },
     {
       "path": "src/client/game/GameController.js",
-      "sha256": "6b86eb6674ef72784716719f3e098bd0b1acff85f5309947fac3a59fd8f3ba9c"
+      "sha256": "dc31ecf2387d6f7540dcbfcc65461a8e6fef019b1a5049a66c7f4b86104bb9cb"
     },
     {
       "path": "src/client/game/GameMenuController.js",
@@ -4161,7 +4165,7 @@
     },
     {
       "path": "src/client/index.html",
-      "sha256": "bc6934fc5da22ce1249ca909ea991b45c721ebbad386a122ef003d8017f5d4c3"
+      "sha256": "3782b1d2c148766e66fcbb83bb3b4bc4d842bb457e4a343fedf34c4bc5669bf1"
     },
     {
       "path": "src/client/lib/phaser.js",
