@@ -6,6 +6,8 @@ const font = '"Malgun Gothic", sans-serif';
 const VIEW_CENTER_Y = MARBLE_VIEW_HEIGHT / 2;
 const MAP_TOP = 100;
 const MAP_HEIGHT = MARBLE_VIEW_HEIGHT - 200;
+const MIN_ZOOM = 0.8;
+const MAX_ZOOM = 1.8;
 
 export default class MarbleScene extends Phaser.Scene {
     constructor() { super('MarbleGame'); }
@@ -34,17 +36,27 @@ export default class MarbleScene extends Phaser.Scene {
         for(let i=0;i<4;i++)this.add.image(462+i*12,TRACK.finish,'marble-art','pixel').setDisplaySize(12,10).setTint(i%2?0xffffff:0x263347);
         this.add.text(480,18040,'FINISH · 도착 순서가 기록됩니다',{fontFamily:font,fontSize:'23px',color:'#8be3bf'}).setOrigin(0.5);
         this.add.text(480,42,'굴려굴려 · MARBLE RACE',{fontFamily:font,fontSize:'28px',fontStyle:'bold',color:'#e4f4f8'}).setOrigin(0.5);
+        this.worldLayer = this.add.layer(this.children.list.slice());
+        const camera = this.cameras.main;
+        const overlay = this.cameras.add(0, 0, TRACK.width, MARBLE_VIEW_HEIGHT);
+        overlay.inputEnabled = false;
+        overlay.ignore(this.worldLayer);
+        this.hudLayer = this.add.layer();
+        camera.ignore(this.hudLayer);
         this.cameraLabel = this.add.text(90, 15, '선두 자동 추적', { fontFamily: font, fontSize: '14px', color: '#8be3bf', backgroundColor: '#102032', padding: { x: 10, y: 7 } }).setScrollFactor(0).setDepth(20);
         this.add.image(927, VIEW_CENTER_Y, 'marble-art', 'pixel').setDisplaySize(50, MAP_HEIGHT).setTint(0x09131f).setScrollFactor(0).setDepth(20);
         this.add.text(927, MAP_TOP - 22, 'MAP', { fontFamily: font, fontSize: '12px', color: '#88b2c4' }).setOrigin(0.5).setScrollFactor(0).setDepth(20);
         this.mapView = this.add.image(927, MAP_TOP, 'marble-art', 'pixel').setDisplaySize(45, MARBLE_VIEW_HEIGHT / TRACK.height * MAP_HEIGHT).setTint(0xb9e9dc).setAlpha(0.19).setScrollFactor(0).setDepth(21);
         this.add.text(927, MAP_TOP + MAP_HEIGHT + 22, 'GOAL', { fontFamily: font, fontSize: '10px', color: '#8be3bf' }).setOrigin(0.5).setScrollFactor(0).setDepth(20);
+        this.hudLayer.add(this.children.list.filter(child => child !== this.worldLayer && child !== this.hudLayer));
+        this.input.on('wheel', (_pointer, _objects, _dx, dy) => this.adjustZoom(dy));
         this.input.on('pointerdown', pointer => {
             if (pointer.x > 897) { this.navigateMap(pointer); this.mapDragging = true; return; }
-            let nearest, distance = 48;
+            const world = camera.getWorldPoint(pointer.x, pointer.y);
+            let nearest, distance = 48 / camera.zoom;
             for (const [key, actor] of this.actors) {
                 if (!actor.visible) continue;
-                const d = Math.hypot(pointer.worldX - actor.x, pointer.worldY - actor.y);
+                const d = Math.hypot(world.x - actor.x, world.y - actor.y);
                 if (d < distance) { nearest = key; distance = d; }
             }
             if (nearest) this.heldBall = nearest;
@@ -52,11 +64,15 @@ export default class MarbleScene extends Phaser.Scene {
         this.input.on('pointermove', pointer => { if (pointer.isDown && this.mapDragging) this.navigateMap(pointer); });
         const release = () => { this.heldBall = null; this.mapDragging = false; };
         this.input.on('pointerup', release); this.input.on('gameout', release);
-        this.cameras.main.setBounds(0, -120, TRACK.width, TRACK.height + 120);
         const cleanup = () => { this.avatarTextures.destroy(); this.actors.clear(); this.mapDots.clear(); this.controller = null; };
         this.events.once('shutdown', cleanup);
         this.events.once('destroy', cleanup);
         this.receive(this.controller.state);
+    }
+    adjustZoom(deltaY) {
+        if (!deltaY) return;
+        const camera = this.cameras.main;
+        camera.setZoom(Phaser.Math.Clamp(camera.zoom * (deltaY < 0 ? 1.1 : 1 / 1.1), MIN_ZOOM, MAX_ZOOM));
     }
     navigateMap(pointer) {
         this.cameraMode = 'manual';
@@ -79,6 +95,7 @@ export default class MarbleScene extends Phaser.Scene {
                 if (obstacle.length) sprite.setDisplaySize(obstacle.length, 20).setRotation(obstacle.angle);
                 else sprite.setDisplaySize(obstacle.radius * 2, obstacle.radius * 2);
                 if(obstacle.type==='jump')sprite.setRotation(Math.PI).setTint(0xffa2d3);
+                this.worldLayer.add(sprite);
                 this.obstacleSprites.push({ obstacle, sprite });
             }
             this.trackDrawn = true;
@@ -94,12 +111,15 @@ export default class MarbleScene extends Phaser.Scene {
                 const image = this.add.image(0, 0, 'marble-art', 'ball').setDisplaySize(24, 24).setTint(colors[ball.color % colors.length]);
                 const label = this.add.text(0, -24, Array.from(ball.nickname).slice(0, 12).join(''), { fontFamily: font, fontSize: '16px', color: '#eaf4fa', stroke: '#102032', strokeThickness: 4 }).setOrigin(0.5);
                 actor = this.add.container(ball.x, ball.y, [image, label]).setDepth(5);
+                this.worldLayer.add(actor);
                 actor.rollDirection = 1;
                 this.actors.set(ball.key, actor);
                 this.avatarTextures.get(ball).then(key => {
                     if (key && this.actors.get(ball.key) === actor && image.scene) image.setTexture(key).clearTint().setDisplaySize(28, 28);
                 });
-                this.mapDots.set(ball.key, this.add.image(927, MAP_TOP, 'marble-art', 'ball').setDisplaySize(6, 6).setTint(colors[ball.color % colors.length]).setScrollFactor(0).setDepth(22));
+                const mapDot = this.add.image(927, MAP_TOP, 'marble-art', 'ball').setDisplaySize(6, 6).setTint(colors[ball.color % colors.length]).setScrollFactor(0).setDepth(22);
+                this.hudLayer.add(mapDot);
+                this.mapDots.set(ball.key, mapDot);
             }
             actor.target = ball;
         }
@@ -143,12 +163,20 @@ export default class MarbleScene extends Phaser.Scene {
         const participant = this.actors.get(this.followedParticipant);
         if (this.cameraMode === 'participant' && (state.phase !== 'racing' || !participant || participant.target.rank)) this.followLeader();
         const tracked = this.heldBall && this.actors.get(this.heldBall);
-        let target = this.cameraMode === 'manual' ? this.manualY : leaderY - (VIEW_CENTER_Y + 30);
-        if (this.cameraMode === 'participant') target = participant.y - VIEW_CENTER_Y;
-        if (tracked) target = tracked.y - VIEW_CENTER_Y;
         const camera = this.cameras.main;
-        camera.scrollY = Phaser.Math.Linear(camera.scrollY, Phaser.Math.Clamp(target, -120, TRACK.height - MARBLE_VIEW_HEIGHT), Math.min(1, delta / 140));
+        const focused = tracked || (this.cameraMode === 'participant' ? participant : null);
+        const targetY = focused ? focused.y - VIEW_CENTER_Y :
+            this.cameraMode === 'manual' ? this.manualY : leaderY - VIEW_CENTER_Y - 30 / camera.zoom;
+        const road = corridorAt(targetY + VIEW_CENTER_Y);
+        const targetX = focused?.x ?? (this.cameraMode === 'leader' ? firstLive?.x : undefined) ?? (road.left + road.right) / 2;
+        const horizontalLimit = Math.max(0, TRACK.width / 2 * (1 - 1 / camera.zoom));
+        const visibleHalfHeight = VIEW_CENTER_Y / camera.zoom;
+        const blend = Math.min(1, delta / 140);
+        camera.scrollX = Phaser.Math.Linear(camera.scrollX, Phaser.Math.Clamp(targetX - TRACK.width / 2, -horizontalLimit, horizontalLimit), blend);
+        camera.scrollY = Phaser.Math.Linear(camera.scrollY, Phaser.Math.Clamp(targetY, -120 + visibleHalfHeight - VIEW_CENTER_Y, TRACK.height - visibleHalfHeight - VIEW_CENTER_Y), blend);
         this.mapView.y = MAP_TOP + (camera.scrollY + VIEW_CENTER_Y) / TRACK.height * MAP_HEIGHT;
+        const mapWindowHeight = 2 * visibleHalfHeight / TRACK.height * MAP_HEIGHT;
+        if (this.mapView.displayHeight !== mapWindowHeight) this.mapView.displayHeight = mapWindowHeight;
         const label = tracked ? '누르는 동안 추적 · ' + tracked.target.nickname :
             this.cameraMode === 'manual' ? '미니맵 탐색 · 선두 추적으로 복귀' :
             this.cameraMode === 'participant' ? '참가자 추적 · ' + participant.target.nickname :
