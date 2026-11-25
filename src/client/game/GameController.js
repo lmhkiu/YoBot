@@ -3,6 +3,8 @@ import { avatarImagePath } from './AvatarTextures.js';
 import { createTrack } from './marbleTrack.js';
 import MarblePhysics from './MarblePhysics.js';
 
+const RACE_MUSIC = new URL('../assets/game/marble/race-groove.mp3', import.meta.url);
+
 export default class GameController {
     constructor() {
         this.game = null;
@@ -12,6 +14,7 @@ export default class GameController {
         this.canTakeControl = false;
         this.destroyed = false;
         this.audio = null;
+        this.music = null;
         this.soundEnabled = true;
         this.buttons = new Map();
         this.rosterEntries = new Map();
@@ -33,6 +36,7 @@ export default class GameController {
             this.soundEnabled = !this.soundEnabled;
             event.currentTarget.textContent = this.soundEnabled ? '소리 켜짐' : '소리 꺼짐';
             this.unlockSound();
+            this.syncMusic();
         }, { signal: this.events.signal });
         this.resetHud();
         document.getElementById('game-take-control').addEventListener('click', () => this.action('take_control'), { signal: this.events.signal });
@@ -111,6 +115,7 @@ export default class GameController {
             ...(this.physics?.state ?? { elapsed: 0, balls: [], results: [], timedOut: false }),
             track: { maxPlayers: session.maxPlayers }, obstacles
         };
+        this.syncMusic();
         if (this.canControl) {
             this.game?.scene?.keys?.MarbleGame?.receive(this.state);
             this.createRenderer().catch(() => {
@@ -130,6 +135,7 @@ export default class GameController {
         if (race.phase === 'finished') {
             this.state.phase = 'finished';
             this.state.timedOut = race.timedOut;
+            this.syncMusic();
             this.playFinishSound();
             this.action('finish');
         }
@@ -137,6 +143,7 @@ export default class GameController {
     }
 
     stopRenderer() {
+        this.stopMusic();
         this.game?.destroy(true);
         this.game = null;
         this.physics = null;
@@ -154,6 +161,9 @@ export default class GameController {
             payload.maxPlayers = Number(input.value);
         }
         this.socket.send(JSON.stringify(payload));
+        if (action === 'launch' && this.state?.phase === 'recruiting' && !this.state.paused && this.state.entrants > 0) {
+            this.syncMusic(true);
+        }
     }
 
     resetHud() {
@@ -273,6 +283,31 @@ export default class GameController {
             ball.append(image);
         }
         return ball;
+    }
+
+    syncMusic(startingRace = false) {
+        if (!this.canControl || (!startingRace && this.state?.phase !== 'racing')) {
+            this.stopMusic();
+            return;
+        }
+        if (!this.soundEnabled || this.state.paused) {
+            this.music?.pause();
+            return;
+        }
+        if (!this.music) {
+            this.music = new Audio(RACE_MUSIC.href);
+            this.music.loop = true;
+            this.music.volume = 0.22;
+        }
+        if (this.music.paused) this.music.play().catch(() => {});
+    }
+
+    stopMusic() {
+        if (!this.music) return;
+        this.music.pause();
+        this.music.removeAttribute('src');
+        this.music.load();
+        this.music = null;
     }
 
     unlockSound() {
