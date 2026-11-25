@@ -1,5 +1,5 @@
 {
-  "version": "1.0.40",
+  "version": "1.0.41",
   "arch": "x64",
   "nodePath": "runtime/node-v24.13.0-win-x64/node.exe",
   "files": [
@@ -17,7 +17,7 @@
     },
     {
       "path": "launch.js",
-      "sha256": "384739c67f5f3953d1ed20412ca03400d349131747c756ce2433088da12760dc"
+      "sha256": "3ecf289fc17d66e2d5b7f426e33aba1e8bd8effb241f94e4814ef1eeded36c88"
     },
     {
       "path": "launcher.ps1",
@@ -41,7 +41,7 @@
     },
     {
       "path": "node_modules/.package-lock.json",
-      "sha256": "f46d7491ea1a07170c3eb0deb96e3fcaeb8c42e8ab80c90b16efe501fbcdb185"
+      "sha256": "25075f737297861c94a222e1810762290cf8c7523a8ff2d712a7e36d53f11ffb"
     },
     {
       "path": "node_modules/accepts/HISTORY.md",
@@ -3993,15 +3993,15 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "14321bb9d657fbad745744c8eafd0c8159c0ea3b2c036c2d6b30f369216e8137"
+      "sha256": "12aa3e9ad1035b25e4afaa38738a724eb01a774c4dcd77706157256b8e641bd3"
     },
     {
       "path": "package.json",
-      "sha256": "da46e7c8c044deb8071943a4dd4b2547e3a6e63b828c7b89df009e4f0e92a2aa"
+      "sha256": "3e2609d2b0780fc4742714d8758d6d5416c2ae53164c2c7cf4c1bcca0487df63"
     },
     {
       "path": "README.md",
-      "sha256": "148891b5ae449cb032b0c3208c28d2619f8963306424f9d3d8cd079a2e187f9e"
+      "sha256": "52a486ac5851be5acdbacc2067eb122c367802fe4897b796116b07f878ca8d80"
     },
     {
       "path": "run.bat",
@@ -4121,7 +4121,7 @@
     },
     {
       "path": "src/client/game/GameController.js",
-      "sha256": "dc31ecf2387d6f7540dcbfcc65461a8e6fef019b1a5049a66c7f4b86104bb9cb"
+      "sha256": "0a4bf78f6453c2b393b6a1f51ef731bb5462c7bdc1beb3deeff1cfc377ca83f2"
     },
     {
       "path": "src/client/game/GameMenuController.js",
@@ -4129,15 +4129,15 @@
     },
     {
       "path": "src/client/game/MarblePhysics.js",
-      "sha256": "d4aaf30b2cad550b2b81b82664b0b573b4bbf4dd82eaf656180d8a5595525c4a"
+      "sha256": "f2db1eb386afc5941502a7f0eefd50284172e9ebb4f03eb55e8669456e9ad3f0"
     },
     {
       "path": "src/client/game/marbleTrack.js",
-      "sha256": "c046460df6e7a95760cedb3de4821ca866b44a96494ca7136e43b40d3124cac5"
+      "sha256": "9d55962ef5f33fabfc6865f35419dcb61023d2ea76066147f9060f12c93c6981"
     },
     {
       "path": "src/client/game/scenes/game/MarbleScene.js",
-      "sha256": "ff1fafdf9668392f582747bb43482523098b9ee96390bfe77da6db0a8476d138"
+      "sha256": "7e494425c46758eff809085fed538179a76cf9d56f33d99b7ca46da109a50217"
     },
     {
       "path": "src/client/game/scenes/game/SceneGame.js",
@@ -4161,11 +4161,11 @@
     },
     {
       "path": "src/client/index.css",
-      "sha256": "ec2ef198b9d92deec7be167aac5c019b1ef17e6afd41a0bd15dd2389c688f907"
+      "sha256": "12541387e9e5f3164c1aaac4811c9dd7a8abab6269cedffafac88357f139cb9d"
     },
     {
       "path": "src/client/index.html",
-      "sha256": "3782b1d2c148766e66fcbb83bb3b4bc4d842bb457e4a343fedf34c4bc5669bf1"
+      "sha256": "87b8dafc6847069f4474f3164b98a05038f1750fec2ab9310e53e3c9c629ce52"
     },
     {
       "path": "src/client/lib/phaser.js",
@@ -4245,7 +4245,7 @@
     },
     {
       "path": "update.js",
-      "sha256": "2fbb56144bb7169eeeda0a82207058eb8bc328e673730ed904d18b4b5e221cb8"
+      "sha256": "0f8dd73db2866c59b237dd8eea834ccd7201cfbb16676a3f05ba7c579f481e38"
     }
   ]
 }
