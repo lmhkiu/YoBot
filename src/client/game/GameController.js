@@ -228,15 +228,15 @@ export default class GameController {
         set('game-health', state.entrants + ' / ' + state.track.maxPlayers + '명');
         set('game-wave', state.elapsed.toFixed(1) + '초');
         set('game-blocked', state.results.length + ' / ' + state.balls.length);
-        const phase = { idle: '정원을 설정하고 참가 모집을 눌러 주세요.', recruiting: '!참여 / !참가로 접수 중 · 명단 확인 후 경주 시작을 눌러 주세요.',
-            racing: '회전 막대와 범퍼를 지나 결승선까지! 누가 먼저 도착할까요?', finished: state.timedOut ? '경주 종료 · 제한 시간 내 미완주자는 순위에서 제외됩니다.' : '전원 완주! 1등 · ' + (state.results[0]?.nickname || '') };
+        const phase = { idle: '', recruiting: '채팅 !참가 / !참여로 접수 중',
+            racing: '', finished: state.timedOut ? '제한 시간 종료' : '1등 · ' + (state.results[0]?.nickname || '') };
         set('game-phase', state.paused ? '일시정지 · 계속하기를 눌러 주세요.' : phase[state.phase]);
         this.updateRoster(state.roster, this.canControl && state.phase === 'racing', state.results);
         set('game-participants', state.entrants + '명 · 고유 ID 중복 제외 · NPC 없음');
         this.updateRanking(state);
         const avatars = this.game?.scene?.keys?.MarbleGame?.avatarTextures?.cache;
         const photos = state.balls.filter(person => avatars?.get(person.key)).length;
-        set('game-avatar-status', state.balls.length ? '사진 공 ' + photos + '개 · 기본 공 ' + (state.balls.length - photos) + '개' : '프로필 이미지는 원형 공으로, 없으면 색깔 공으로 참가합니다.');
+        set('game-avatar-status', state.balls.length ? '사진 ' + photos + ' · 기본 ' + (state.balls.length - photos) : '');
     }
 
     updateRanking(state) {

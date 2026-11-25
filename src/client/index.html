@@ -23,8 +23,8 @@
                     <div class="chat-message-nickname">꾸덕이</div>
                 </div>
                 <div class="chat-message-content-container">
-                    <strong>1.0.41 업데이트사항</strong><br>
-                    굴려굴려게임에 실시간 랭킹, 참가자 추적, 역전 갈림길을 추가했습니다. 경주마다 출발 위치가 달라지고 배경음악은 따로 끌 수 있습니다.
+                    <strong>1.0.42 업데이트사항</strong><br>
+                    굴려굴려게임 화면을 확대하고 왼쪽으로 경기 조작 버튼을 옮겼습니다. 지니주디도 모집 중 참가할 수 있습니다.
                 </div>
             </div>
             <div class="chat-message">
@@ -75,6 +75,7 @@
         </section>
         <div id="game-play" hidden>
         <p id="game-control-warning" role="status" hidden>다른 YoBot 탭 또는 창에서 게임을 조작 중입니다. 이 화면에서 진행하려면 ‘조작권 가져오기’를 누르세요.</p>
+        <button id="game-take-control" type="button" hidden>조작권 가져오기</button>
         <div class="game-stage" id="game-stage" hidden>
             <div class="marble-toolbar" role="group" aria-label="경주 정보">
                 <div id="marble-settings"><label for="marble-max-players">최대 참가 인원</label><input id="marble-max-players" type="number" min="1" max="100" step="1" value="10"><span>명</span></div>
@@ -83,24 +84,20 @@
                     <div><span id="game-stat-two">경주 시간</span><strong id="game-wave">0.0초</strong></div>
                     <div><span id="game-stat-three">완주</span><strong id="game-blocked">0</strong></div>
                 </div>
+                <div class="game-actions">
+                    <button data-game-action="start" disabled>참가 모집</button>
+                    <button data-game-action="launch" disabled>경주 시작</button>
+                    <button data-game-action="pause" disabled>일시정지</button>
+                    <button data-game-action="reset" disabled>처음으로</button>
+                    <button id="game-sound" type="button" aria-pressed="true">효과음 켜짐</button>
+                    <button id="game-music" type="button" aria-pressed="true">배경음악 켜짐</button>
+                </div>
+                <p id="game-phase">연결 중…</p>
+                <p id="game-avatar-status" class="game-help"></p>
             </div>
             <div id="game-container" aria-label="굴려굴려 경주 화면"></div>
             <aside id="marble-results" aria-label="실시간 랭킹"><h2>실시간 랭킹 <span id="marble-finish-count">0명 완주</span></h2><p id="marble-finish-empty">경주 시작 후 순위가 표시됩니다.</p><ol id="marble-finish-list"></ol></aside>
         </div>
-        <div class="game-actions">
-            <button data-game-action="start" disabled>참가 모집</button>
-            <button id="game-take-control" type="button" hidden>조작권 가져오기</button>
-            <button data-game-action="launch" disabled>경주 시작</button>
-            <button data-game-action="pause" disabled>일시정지</button>
-            <button data-game-action="reset" disabled>처음으로</button>
-            <button id="game-sound" type="button" aria-pressed="true">효과음 켜짐</button>
-            <button id="game-music" type="button" aria-pressed="true">배경음악 켜짐</button>
-        </div>
-        <section class="game-notice">
-            <p id="game-phase">게임 서버에 연결하고 있습니다.</p>
-            <p id="game-avatar-status" class="game-help"></p>
-            <p class="game-help" id="game-help">!참여 또는 !참가로 참가 · 미니맵 클릭/드래그로 이동 · 공을 누르고 있는 동안 추적</p>
-        </section>
         <section class="game-lineup">
             <div class="lineup-heading"><strong id="game-lineup-title">참가한 시청자</strong><span id="game-participants">0명</span></div>
             <div class="roster-row">

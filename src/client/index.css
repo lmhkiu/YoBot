@@ -25,8 +25,8 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
 .game-actions button:first-child { background: #c97188; color: #fff; }
 .game-actions button:hover:enabled { filter: brightness(1.2); }
 .game-actions button:disabled { opacity: .35; cursor: default; }
-.game-notice { text-align: center; }
-#game-phase { margin: 0 0 4px; color: #ffe3bd; font-size: 13px; min-height: 19px; }
+#game-phase { margin: 0; color: #ffe3bd; font-size: 11px; line-height: 1.45; }
+#game-phase:empty, #game-avatar-status:empty { display: none; }
 .game-help { margin: 0; font-size: 10px; color: #baa7b3; }
 .game-lineup { background: #ffffff06; border: 1px solid #ffffff10; border-radius: 9px; padding: 8px 11px; }
 .lineup-heading { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: #e4c4d2; }
@@ -327,7 +327,9 @@ body:not(.game-mode) #broadcast-sidebar { width: 100%; min-width: 0; flex: 1 1 a
 .menu-footnote { color: #ad9eab; font-size: 12px; margin-top: 24px; }
 #game-menu-error { color: #ffa7b6; }
 #game-menu-back { border: 1px solid #88768e; border-radius: 7px; padding: 7px 12px; background: #34303e; color: #e8dfea; cursor: pointer; white-space: nowrap; }
+#game-take-control { align-self: flex-start; border: 1px solid #548e96; border-radius: 7px; padding: 7px 12px; background: #245b62; color: #e7fffa; cursor: pointer; }
 body.marble-mode #game-panel { background: radial-gradient(ellipse at top, #253d4d, #161d2b 75%); }
+body.marble-mode .game-eyebrow { display: none; }
 body.marble-mode #game-container { background: #0d1c2b; }
 body.marble-mode .game-actions button:first-child { background: #307e76; }
 @media (max-width: 1050px) { .game-card { padding: 18px; gap: 15px; min-height: 300px; } .game-heading-actions { gap: 5px; } }
@@ -336,12 +338,15 @@ body.marble-mode .game-actions button:first-child { background: #307e76; }
 #marble-settings label { flex-basis: 100%; }
 #marble-settings input { width: 74px; padding: 7px 9px; border: 1px solid #548e96; border-radius: 7px; background: #132c3c; color: #e4fff8; font: inherit; }
 #marble-settings span { color: #839fa9; font-size: 10px; }
-.marble-toolbar { display: flex; flex: 0 0 170px; flex-direction: column; align-self: center; gap: 12px; }
-.marble-toolbar .game-stats { flex-direction: column; gap: 6px; }
-.marble-toolbar .game-stats > div { justify-content: space-between; }
+.marble-toolbar { display: flex; flex: 0 0 146px; flex-direction: column; align-self: center; gap: 8px; }
+.marble-toolbar .game-stats { flex-direction: column; gap: 3px; }
+.marble-toolbar .game-stats > div { justify-content: space-between; gap: 4px; padding: 4px 7px; border-radius: 6px; }
+.marble-toolbar .game-stats strong { font-size: 14px; }
+.marble-toolbar .game-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+.marble-toolbar .game-actions button { min-width: 0; padding: 5px 3px; font-size: 11px; }
 
 .game-stage { display: flex; justify-content: center; gap: 10px; flex: 1 0 350px; min-height: 350px; height: 0; container-type: size; }
-.game-stage #game-container { flex: 0 1 calc(100cqh * .96); min-width: 0; min-height: 0; }
+.game-stage #game-container { flex: 0 1 calc(100cqh * 8 / 7); min-width: 0; min-height: 0; }
 #marble-results { flex: 0 0 170px; min-width: 0; min-height: 0; height: 100%; max-height: 100%; overflow-y: auto; background: #0e1e2c; border: 1px solid #416371; border-radius: 12px; padding: 12px; }
 #marble-results h2 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 8px; font-size: 14px; margin: 0 0 8px; color: #bcebdd; }
 #marble-finish-count { float: right; font-size: 11px; color: #83aeb3; }
@@ -357,5 +362,6 @@ body.marble-mode .game-actions button:first-child { background: #307e76; }
     .marble-toolbar { grid-column: 1 / -1; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
     #marble-settings label { flex-basis: auto; }
     .marble-toolbar .game-stats { flex-direction: row; flex-wrap: wrap; }
+    .marble-toolbar .game-actions { display: flex; justify-content: flex-start; }
     #marble-results { padding: 9px; }
 }

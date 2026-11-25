@@ -11,7 +11,7 @@ const DEVELOPER_SOOP_JOIN_EMOTE = '/하하/';
 export default class MarbleGame {
     constructor({ onChange = () => {}, excludedNicknames = [] } = {}) {
         this.onChange = onChange;
-        this.excluded = new Set(excludedNicknames);
+        this.excluded = new Set(excludedNicknames.filter(name => name.trim().normalize() !== '지니주디'));
         this.entrants = new Map();
         this.avatars = new AvatarStore();
         this.maxPlayers = 10;

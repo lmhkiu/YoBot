@@ -1,5 +1,5 @@
 export const TRACK = { width: 960, height: 18600, finish: 17860, radius: 12, maxPlayers: 100 };
-export const MARBLE_VIEW_HEIGHT = 1000;
+export const MARBLE_VIEW_HEIGHT = 840;
 export const FORK = { start: 8050, end: 9350 };
 
 export function corridorAt(y) {
