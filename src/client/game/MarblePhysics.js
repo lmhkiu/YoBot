@@ -56,7 +56,7 @@ export default class MarblePhysics {
                 const cabin = this.gondolas[ball.gondola];
                 ball.x = cabin.x;
                 ball.y = cabin.y;
-                if (cabin.pastBottom < wheel.speed * dt) {
+                if (cabin.pastOpening < wheel.speed * dt) {
                     cabin.ball = null;
                     ball.gondola = undefined;
                     ball.y += 28;

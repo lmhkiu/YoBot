@@ -53,7 +53,12 @@ export default class GameMenuController {
     }
     destroy() {
         if (this.destroyed) return;
-        this.destroyed = true; this.events.abort(); this.session?.destroy(); this.session = null;
-        document.body.classList.remove('game-mode', 'marble-mode');
+        this.destroyed = true;
+        this.events.abort();
+        document.getElementById('game-menu').hidden = true;
+        document.getElementById('game-play').hidden = true;
+        document.body.classList.remove('game-mode', 'marble-mode', 'moon-mode');
+        this.session?.destroy();
+        this.session = null;
     }
 }

@@ -6,6 +6,8 @@ import MarblePhysics from './MarblePhysics.js';
 const RACE_MUSIC = new URL('../assets/game/marble/race-groove.mp3', import.meta.url);
 
 export default class GameController {
+    static musicVolume = 31;
+
     constructor(mapId) {
         this.requestedMap = getMarbleTrack(mapId);
         this.map = this.requestedMap;
@@ -53,6 +55,20 @@ export default class GameController {
             musicButton.textContent = this.musicEnabled ? '배경음악 켜짐' : '배경음악 꺼짐';
             musicButton.setAttribute('aria-pressed', String(this.musicEnabled));
             this.syncMusic();
+        }, { signal: this.events.signal });
+        const volumeSlider = document.getElementById('game-music-volume');
+        const volumeValue = document.getElementById('game-music-volume-value');
+        const updateVolume = () => {
+            const volume = GameController.musicVolume;
+            volumeValue.textContent = `${volume}%`;
+            volumeSlider.setAttribute('aria-valuetext', volumeValue.textContent);
+            if (this.music) this.music.volume = volume / 100;
+        };
+        volumeSlider.value = GameController.musicVolume;
+        updateVolume();
+        volumeSlider.addEventListener('input', () => {
+            GameController.musicVolume = volumeSlider.valueAsNumber;
+            updateVolume();
         }, { signal: this.events.signal });
         this.resetHud();
         document.getElementById('game-take-control').addEventListener('click', () => this.action('take_control'), { signal: this.events.signal });
@@ -165,11 +181,33 @@ export default class GameController {
 
     stopRenderer() {
         this.stopMusic();
+        const scene = this.game?.scene?.keys?.MarbleGame;
+        scene?.avatarTextures?.destroy();
+        if (scene?.load) this.cancelRendererLoads(scene.load);
         this.game?.destroy(true);
         this.game = null;
         this.physics = null;
         this.obstacles = null;
         this.state = null;
+    }
+
+    cancelRendererLoads(loader) {
+        // Phaser clears its loader sets on destroy without aborting the underlying requests.
+        for (const files of [loader.inflight, loader.queue]) {
+            for (const file of files?.entries ?? []) {
+                const xhr = file.xhrLoader;
+                if (typeof xhr?.abort === 'function') {
+                    xhr.onload = xhr.onerror = xhr.onprogress = xhr.ontimeout = null;
+                    xhr.abort();
+                }
+                const image = file.data;
+                if (image?.tagName === 'IMG') {
+                    image.onload = image.onerror = null;
+                    if (image.src.startsWith('blob:')) URL.revokeObjectURL(image.src);
+                    image.removeAttribute('src');
+                }
+            }
+        }
     }
 
     action(action) {
@@ -200,17 +238,24 @@ export default class GameController {
         set('game-phase', '서버 연결 중…');
         set('game-participants', '0명');
         set('game-avatar-status', '');
-        this.rosterEntries.clear();
-        this.rosterSignature = undefined;
-        document.getElementById('game-roster').replaceChildren();
+        this.clearParticipantLists();
         for (const button of this.buttons.values()) button.disabled = true;
         this.buttons.get('pause').textContent = '일시정지';
-        document.getElementById('marble-finish-list').replaceChildren();
-        this.rankingEntries.clear();
-        this.rankingSignature = undefined;
         document.getElementById('marble-follow').disabled = true;
         document.getElementById('marble-finish-empty').hidden = false;
         set('marble-finish-count', '0명 완주');
+    }
+
+    clearParticipantLists() {
+        for (const id of ['game-roster', 'marble-finish-list']) {
+            const list = document.getElementById(id);
+            for (const image of list.querySelectorAll('img[src]')) image.removeAttribute('src');
+            list.replaceChildren();
+        }
+        this.rosterEntries.clear();
+        this.rosterSignature = undefined;
+        this.rankingEntries.clear();
+        this.rankingSignature = undefined;
     }
 
     updateHud() {
@@ -248,31 +293,42 @@ export default class GameController {
     }
 
     updateRanking(state) {
+        const canTrack = this.canControl && state.phase === 'racing';
         const ranked = [...state.balls].sort((a, b) => (a.rank || Infinity) - (b.rank || Infinity) || b.progress - a.progress);
-        const signature = JSON.stringify([state.phase, ranked.map(ball => [ball.key, ball.rank, ball.time])]);
+        const signature = JSON.stringify([state.phase, canTrack, ranked.map(ball => [ball.key, ball.rank, ball.time])]);
         if (this.rankingSignature === signature) return;
         this.rankingSignature = signature;
+        const list = document.getElementById('marble-finish-list');
+        const focused = list.contains(document.activeElement) ? document.activeElement : null;
         const entries = new Map();
         const rows = ranked.map((ball, index) => {
             let entry = this.rankingEntries.get(ball.key);
             if (!entry) {
                 const row = document.createElement('li');
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.addEventListener('click', () => this.followParticipant(ball.key));
                 const rank = document.createElement('b');
                 const name = document.createElement('span');
                 const time = document.createElement('small');
                 name.textContent = ball.nickname;
                 name.title = ball.nickname;
-                row.append(rank, this.createProfileBall(ball), name, time);
-                entry = { row, rank, time };
+                button.append(rank, this.createProfileBall(ball), name, time);
+                row.append(button);
+                entry = { row, button, rank, time };
             }
             const missed = state.phase === 'finished' && !ball.rank;
             entry.rank.textContent = missed ? '–' : (ball.rank ?? index + 1) + '위';
             entry.time.textContent = ball.rank ? ball.time.toFixed(2) + '초' : missed ? '미완주' : '경주 중';
+            entry.button.disabled = !canTrack || Boolean(ball.rank);
+            const description = `${entry.rank.textContent} ${ball.nickname}, ${entry.time.textContent}`;
+            entry.button.setAttribute('aria-label', entry.button.disabled ? description : `${description}, 공 추적`);
             entries.set(ball.key, entry);
             return entry.row;
         });
         this.rankingEntries = entries;
-        document.getElementById('marble-finish-list').replaceChildren(...rows);
+        list.replaceChildren(...rows);
+        if (focused && !focused.disabled && list.contains(focused)) focused.focus({ preventScroll: true });
         document.getElementById('marble-finish-empty').hidden = rows.length > 0;
         document.getElementById('marble-finish-count').textContent = state.results.length + '명 완주';
     }
@@ -292,7 +348,7 @@ export default class GameController {
                 tile.className = 'roster-player';
                 tile.title = person.nickname;
                 tile.setAttribute('aria-label', person.nickname + ' 공 추적');
-                tile.addEventListener('click', () => this.game?.scene?.keys?.MarbleGame?.followParticipant(person.key));
+                tile.addEventListener('click', () => this.followParticipant(person.key));
 
                 const name = document.createElement('span');
                 name.className = 'roster-name';
@@ -305,6 +361,10 @@ export default class GameController {
         }
         this.rosterEntries = entries;
         document.getElementById('game-roster').replaceChildren(...Array.from(entries.values(), entry => entry.tile));
+    }
+
+    followParticipant(key) {
+        this.game?.scene?.keys?.MarbleGame?.followParticipant(key);
     }
 
     createProfileBall(person) {
@@ -333,7 +393,7 @@ export default class GameController {
         if (!this.music) {
             this.music = new Audio(RACE_MUSIC.href);
             this.music.loop = true;
-            this.music.volume = 0.22;
+            this.music.volume = GameController.musicVolume / 100;
         }
         if (this.music.paused) this.music.play().catch(() => {});
     }
@@ -375,8 +435,8 @@ export default class GameController {
         this.action('leave');
         this.destroyed = true;
         this.events.abort();
-        this.rosterEntries.clear();
-        document.getElementById('game-roster').replaceChildren();
+        document.getElementById('game-stage').hidden = true;
+        this.clearParticipantLists();
         document.body.classList.remove('game-mode', 'marble-mode', 'moon-mode');
         clearTimeout(this.retry);
         this.socket?.close(1000);

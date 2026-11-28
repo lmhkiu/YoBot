@@ -23,8 +23,8 @@
                     <div class="chat-message-nickname">꾸덕이</div>
                 </div>
                 <div class="chat-message-content-container">
-                    <strong>1.0.44 업데이트사항</strong><br>
-                    메모 저장 아래의 게임 버튼으로 굴려굴려게임을 열고 달빛 놀이공원 맵을 선택할 수 있습니다.
+                    <strong>1.0.45 업데이트사항</strong><br>
+                    달빛 놀이공원의 목재 코스를 새로 꾸몄습니다. 실시간 랭킹에서 공을 추적하고 배경음악 볼륨도 조절할 수 있습니다.
                 </div>
             </div>
             <div class="chat-message">
@@ -97,20 +97,25 @@
                     <button data-game-action="reset" disabled>처음으로</button>
                     <button id="game-sound" type="button" aria-pressed="true">효과음 켜짐</button>
                     <button id="game-music" type="button" aria-pressed="true">배경음악 켜짐</button>
+                    <div class="game-music-volume">
+                        <input id="game-music-volume" type="range" min="0" max="100" step="1" aria-label="배경음악 볼륨">
+                        <span id="game-music-volume-value" aria-hidden="true"></span>
+                    </div>
                 </div>
                 <p id="game-phase">연결 중…</p>
                 <p id="game-avatar-status" class="game-help"></p>
             </div>
             <div id="game-container" aria-label="굴려굴려 경주 화면"></div>
-            <aside id="marble-results" aria-label="실시간 랭킹"><h2>실시간 랭킹 <span id="marble-finish-count">0명 완주</span></h2><p id="marble-finish-empty">경주 시작 후 순위가 표시됩니다.</p><ol id="marble-finish-list"></ol></aside>
+            <aside id="marble-results" aria-label="실시간 랭킹">
+                <h2>실시간 랭킹 <span id="marble-finish-count">0명 완주</span></h2>
+                <button id="marble-follow" type="button" disabled><span aria-hidden="true">◎</span> 선두 추적</button>
+                <p id="marble-finish-empty">경주 시작 후 순위가 표시됩니다.</p>
+                <ol id="marble-finish-list"></ol>
+            </aside>
         </div>
         <section class="game-lineup">
             <div class="lineup-heading"><strong id="game-lineup-title">참가한 시청자</strong><span id="game-participants">0명</span></div>
             <div class="roster-row">
-                <div class="roster-leader">
-                    <button id="marble-follow" class="roster-ball" type="button" aria-label="선두 추적" disabled>◎</button>
-                    <span class="roster-name">선두 추적</span>
-                </div>
                 <div id="game-roster"></div>
             </div>
         </section>

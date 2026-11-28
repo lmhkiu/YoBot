@@ -87,7 +87,7 @@ export default class MarbleScene extends Phaser.Scene {
         return sprite;
     }
     createBallShadow() { return null; }
-    updateTrackDetails(_elapsed, _alpha) {}
+    updateTrackDetails(_elapsed, _alpha, _viewTop, _viewBottom, _viewLeft, _viewRight) {}
     resizeView({ width, height }) {
         if (width <= 0 || height <= 0) return;
         const camera = this.cameras.main;
@@ -202,7 +202,6 @@ export default class MarbleScene extends Phaser.Scene {
         }
         const elapsed = state.elapsed;
         for (const { obstacle, sprite } of this.obstacleSprites) if (obstacle.type === 'spinner' || obstacle.type === 'carousel') sprite.rotation = obstacle.angle + obstacle.speed * elapsed;
-        this.updateTrackDetails(elapsed, alpha);
         const participant = this.actors.get(this.followedParticipant);
         if (this.cameraMode === 'participant' && (state.phase !== 'racing' || !participant || participant.target.rank)) this.followLeader();
         const tracked = this.heldBall && this.actors.get(this.heldBall);
@@ -226,6 +225,10 @@ export default class MarbleScene extends Phaser.Scene {
             this.map.width / 2 - centerX + Phaser.Math.Clamp(targetX - this.map.width / 2, -horizontalLimit, horizontalLimit), blend);
         camera.scrollY = Phaser.Math.Linear(camera.scrollY,
             Phaser.Math.Clamp(targetY, -120 + visibleHalfHeight, this.map.height - visibleHalfHeight) - centerY, blend);
+        const viewCenterY = camera.scrollY + centerY;
+        const viewCenterX = camera.scrollX + centerX;
+        this.updateTrackDetails(elapsed, alpha, viewCenterY - visibleHalfHeight, viewCenterY + visibleHalfHeight,
+            viewCenterX - visibleHalfWidth, viewCenterX + visibleHalfWidth);
         const mapProgress = this.map.id === 'marble' ? camera.scrollY + centerY : progress;
         this.mapView.y = this.mapTop + Phaser.Math.Clamp(mapProgress / this.map.progressLength, 0, 1) * this.mapHeight;
         const mapWindowHeight = 2 * (side ? visibleHalfWidth : visibleHalfHeight) / this.map.progressLength * this.mapHeight;
