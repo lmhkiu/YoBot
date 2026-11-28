@@ -15,6 +15,7 @@ export default class ChatMemoController {
         //컨트롤러 영역으로 따로 분리하는게 좋겠다. 클래스를 하나 더 만들자.
         const saveMemoBtn = document.getElementById('save-memo-btn');
         saveMemoBtn.addEventListener('click', this.saveMemo.bind(this));
+        document.getElementById('open-game-btn').addEventListener('click', () => this.openGameMode());
 
         const memoInput = document.getElementById('memo-input');
         memoInput.addEventListener('keydown', (event) => {
@@ -319,6 +320,19 @@ export default class ChatMemoController {
         }
     }
 
+    async openGameMode() {
+        const memoStatus = document.getElementById('memo-status');
+        try {
+            await this.onGameMode();
+            memoStatus.textContent = '';
+            return true;
+        } catch (error) {
+            memoStatus.textContent = error.message;
+            memoStatus.style.color = '#ff4444';
+            return false;
+        }
+    }
+
     async saveMemo() {
         const memoInput = document.getElementById('memo-input');
         const memoStatus = document.getElementById('memo-status');
@@ -333,14 +347,7 @@ export default class ChatMemoController {
 
         const inputText = memoInput.value.trim();
         if (inputText === '!게임모드') {
-            try {
-                await this.onGameMode();
-                memoInput.value = '';
-                memoStatus.textContent = '';
-            } catch (error) {
-                memoStatus.textContent = error.message;
-                memoStatus.style.color = '#ff4444';
-            }
+            if (await this.openGameMode()) memoInput.value = '';
             return;
         }
  

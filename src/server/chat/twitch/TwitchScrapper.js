@@ -105,6 +105,7 @@ export default class TwitchScrapper extends BaseChatScrapper {
             return {
                 messageType: config.PLATFORM_TYPE.TWITCH,
                 userId: tagMap['user-id'] || username,
+                login: username.toLowerCase(),
                 nickname: tagMap['display-name'] || username,
                 content: content,
                 msgTime: Date.now(),

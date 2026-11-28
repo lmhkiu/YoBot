@@ -1,4 +1,18 @@
 const hosts = ['pstatic.net', 'sooplive.co.kr', 'afreecatv.com', 'jtvnw.net'];
+const twitchLogin = /^[a-z0-9_]{1,25}$/;
+
+export function twitchAvatarLogin(login) {
+    return typeof login === 'string' && twitchLogin.test(login) ? login : '';
+}
+
+function twitchAvatarFromPage(html) {
+    for (const [tag] of html.matchAll(/<meta\b[^>]*>/gi)) {
+        if (!/\sproperty\s*=\s*["']og:image["']/i.test(tag)) continue;
+        const image = tag.match(/\scontent\s*=\s*["']([^"']+)["']/i)?.[1];
+        if (image && /^https:\/\/static-cdn\.jtvnw\.net\/jtv_user_pictures\/[\w-]+-profile_image-[\w-]+\.(?:png|jpe?g|webp|gif)$/i.test(image)) return image;
+    }
+    return '';
+}
 export function allowedAvatarUrl(value) {
     try {
         const url = new URL(value);
@@ -14,7 +28,6 @@ export function avatarForMessage(message, person) {
         const id = person.userId;
         return 'https://profile.img.sooplive.co.kr/LOGO/' + id.slice(0,2) + '/' + id + '/' + id + '.jpg';
     }
-    // Anonymous Twitch IRC has no avatar URL; leave the colored marble unless a URL is supplied.
     return '';
 }
 
@@ -26,13 +39,17 @@ export default class AvatarStore {
             if (image) return image;
         }
         if (person.platform === 'chzzk' && person.avatarLookup && /^[a-f0-9]{32}$/i.test(person.userId)) {
-            return this.#get('https://api.chzzk.naver.com/service/v1/channels/' + person.userId, true);
+            return this.#get('https://api.chzzk.naver.com/service/v1/channels/' + person.userId, 'chzzk');
+        }
+        const login = person.platform === 'twitch' && person.avatarLookup ? twitchAvatarLogin(person.login) : '';
+        if (login) {
+            return this.#get('https://www.twitch.tv/' + login, 'twitch');
         }
         return null;
     }
     async get(url) {
         if (!allowedAvatarUrl(url)) return null;
-        return this.#get(url, false);
+        return this.#get(url);
     }
     async #get(url, lookupProfile) {
         if (this.destroyed) return null;
@@ -58,8 +75,12 @@ export default class AvatarStore {
                     headers: { 'User-Agent': 'YoBot/1.0' }
                 });
                 if (!profile.ok) return null;
-                const { content } = await profile.json();
-                imageUrl = allowedAvatarUrl(content?.channelImageUrl);
+                if (lookupProfile === 'twitch') {
+                    imageUrl = twitchAvatarFromPage(await profile.text());
+                } else {
+                    const { content } = await profile.json();
+                    imageUrl = allowedAvatarUrl(content?.channelImageUrl);
+                }
                 if (!imageUrl) return null;
             }
             const response = await this.fetchImage(imageUrl, options);

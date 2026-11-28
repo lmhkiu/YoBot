@@ -1,12 +1,14 @@
 import config from '../../config.js';
 import { avatarImagePath } from './AvatarTextures.js';
-import { MARBLE_VIEW_HEIGHT, TRACK, createTrack } from './marbleTrack.js';
+import { MARBLE_VIEW_HEIGHT, TRACK, getMarbleTrack } from './marbleTrack.js';
 import MarblePhysics from './MarblePhysics.js';
 
 const RACE_MUSIC = new URL('../assets/game/marble/race-groove.mp3', import.meta.url);
 
 export default class GameController {
-    constructor() {
+    constructor(mapId) {
+        this.requestedMap = getMarbleTrack(mapId);
+        this.map = this.requestedMap;
         this.game = null;
         this.socket = null;
         this.state = null;
@@ -74,12 +76,14 @@ export default class GameController {
             await GameController.engineReady;
         }
         if (this.destroyed || !this.canControl || this.game) return;
-        const { default: MarbleScene } = await import('./scenes/game/MarbleScene.js');
-        if (this.destroyed || !this.canControl || this.game) return;
+        const map = this.map;
+        const { default: MarbleScene } = map.id === 'moon' ? await import('./scenes/game/MoonMarbleScene.js') :
+            await import('./scenes/game/MarbleScene.js');
+        if (this.destroyed || !this.canControl || this.game || this.map !== map) return;
         this.game = new Phaser.Game({
             type: Phaser.AUTO, width: TRACK.width, height: MARBLE_VIEW_HEIGHT, parent: 'game-container',
-            backgroundColor: '#0d1c2b', scene: [MarbleScene],
-            scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+            backgroundColor: map.id === 'moon' ? '#111e35' : '#0d1c2b', scene: [MarbleScene],
+            scale: { mode: Phaser.Scale.RESIZE },
             render: { antialias: true },
             callbacks: { preBoot: game => { game.registry.set('controller', this); } }
         });
@@ -87,7 +91,7 @@ export default class GameController {
 
     connect() {
         if (this.destroyed) return;
-        const socket = new WebSocket('ws://localhost:' + config.PORT.CHAT_DISPLAY + '/?game=marble');
+        const socket = new WebSocket('ws://localhost:' + config.PORT.CHAT_DISPLAY + '/?game=marble&map=' + this.requestedMap.id);
         this.socket = socket;
         socket.onmessage = event => {
             if (this.destroyed || this.socket !== socket) return;
@@ -116,10 +120,14 @@ export default class GameController {
         const session = message.state;
         this.canControl = message.canControl;
         this.canTakeControl = message.canTakeControl;
-        if (!this.canControl) this.stopRenderer();
-        const obstacles = this.canControl ? (this.obstacles ??= createTrack()) : [];
+        const map = getMarbleTrack(session.mapId ?? this.requestedMap.id);
+        if (!this.canControl || this.map !== map) this.stopRenderer();
+        this.map = map;
+        document.body.classList.toggle('moon-mode', map.id === 'moon' && this.canControl);
+        document.getElementById('game-title').textContent = map.title;
+        const obstacles = this.canControl ? (this.obstacles ??= map.createTrack()) : [];
         if (this.canControl && session.phase === 'racing') {
-            this.physics ??= new MarblePhysics(session.roster, obstacles);
+            this.physics ??= new MarblePhysics(session.roster, obstacles, Math.random, map);
         } else if (!this.canControl || session.phase !== 'finished') {
             this.physics = null;
         }
@@ -184,7 +192,7 @@ export default class GameController {
         document.getElementById('game-take-control').hidden = true;
         document.getElementById('game-control-warning').hidden = true;
         const set = (id, value) => { document.getElementById(id).textContent = value; };
-        set('game-title', '굴려굴려게임');
+        set('game-title', this.requestedMap.title);
         set('game-eyebrow', 'MARBLE RACE · 누구나 역전할 수 있어요');
         set('game-health', '0명');
         set('game-wave', '0.0초');
@@ -240,7 +248,7 @@ export default class GameController {
     }
 
     updateRanking(state) {
-        const ranked = [...state.balls].sort((a, b) => (a.rank || Infinity) - (b.rank || Infinity) || b.y - a.y);
+        const ranked = [...state.balls].sort((a, b) => (a.rank || Infinity) - (b.rank || Infinity) || b.progress - a.progress);
         const signature = JSON.stringify([state.phase, ranked.map(ball => [ball.key, ball.rank, ball.time])]);
         if (this.rankingSignature === signature) return;
         this.rankingSignature = signature;
@@ -270,7 +278,7 @@ export default class GameController {
     }
 
     updateRoster(roster, canTrack, results) {
-        const signature = JSON.stringify([canTrack, results.length, roster.map(person => [person.key, person.nickname, person.avatarUrl])]);
+        const signature = JSON.stringify([canTrack, results.length, roster.map(person => [person.key, person.nickname, person.avatarUrl, person.avatarLookup])]);
         if (signature === this.rosterSignature) return;
         this.rosterSignature = signature;
 
@@ -278,7 +286,7 @@ export default class GameController {
         const entries = new Map();
         for (const person of roster) {
             let entry = this.rosterEntries.get(person.key);
-            if (!entry || entry.nickname !== person.nickname || entry.avatarUrl !== person.avatarUrl) {
+            if (!entry || entry.nickname !== person.nickname || entry.avatarUrl !== person.avatarUrl || entry.avatarLookup !== person.avatarLookup) {
                 const tile = document.createElement('button');
                 tile.type = 'button';
                 tile.className = 'roster-player';
@@ -290,7 +298,7 @@ export default class GameController {
                 name.className = 'roster-name';
                 name.textContent = person.nickname;
                 tile.append(this.createProfileBall(person), name);
-                entry = { tile, nickname: person.nickname, avatarUrl: person.avatarUrl };
+                entry = { tile, nickname: person.nickname, avatarUrl: person.avatarUrl, avatarLookup: person.avatarLookup };
             }
             entry.tile.disabled = !canTrack || finished.has(person.key);
             entries.set(person.key, entry);
@@ -369,7 +377,7 @@ export default class GameController {
         this.events.abort();
         this.rosterEntries.clear();
         document.getElementById('game-roster').replaceChildren();
-        document.body.classList.remove('game-mode', 'marble-mode');
+        document.body.classList.remove('game-mode', 'marble-mode', 'moon-mode');
         clearTimeout(this.retry);
         this.socket?.close(1000);
         this.socket = null;

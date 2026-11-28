@@ -53,3 +53,19 @@ export function createTrack() {
     obstacles.push({ type: 'ramp', x: 505, y: 17800, length: 100, angle: Math.PI / 2, funnelWall: true });
     return obstacles;
 }
+import { MOON_TRACK } from './moonTrack.js';
+
+
+const CLASSIC_TRACK = {
+    ...TRACK, id: 'marble', title: '굴려굴려게임',
+    progressLength: TRACK.height, corridorAt, createTrack,
+    progressAt: ball => ball.y,
+    positionAt(y) {
+        const { left, right } = corridorAt(y);
+        return { x: (left + right) / 2, y };
+    }
+};
+
+export function getMarbleTrack(id) {
+    return id === MOON_TRACK.id ? MOON_TRACK : CLASSIC_TRACK;
+}

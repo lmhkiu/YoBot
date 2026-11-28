@@ -23,8 +23,8 @@
                     <div class="chat-message-nickname">꾸덕이</div>
                 </div>
                 <div class="chat-message-content-container">
-                    <strong>1.0.43 업데이트사항</strong><br>
-                    굴려굴려게임 화면 위에서 마우스 휠로 확대하거나 축소할 수 있습니다.
+                    <strong>1.0.44 업데이트사항</strong><br>
+                    메모 저장 아래의 게임 버튼으로 굴려굴려게임을 열고 달빛 놀이공원 맵을 선택할 수 있습니다.
                 </div>
             </div>
             <div class="chat-message">
@@ -49,7 +49,10 @@
             <div id="broad_time">00:00:00</div>
             <div class="memo-container">
                 <textarea id="memo-input" placeholder="메모할 내용을 입력하세요..."></textarea>
-                <button id="save-memo-btn">메모 저장</button>
+                <div class="memo-actions">
+                    <button id="save-memo-btn" type="button">메모 저장</button>
+                    <button id="open-game-btn" type="button">게임</button>
+                </div>
                 <div id="memo-status" class="memo-status"></div>
             </div>
         </div>
@@ -67,11 +70,14 @@
             <div class="game-heading-actions"><span id="game-connection">서버 연결 중…</span><button id="game-menu-back" type="button" hidden>게임 선택</button><button id="game-exit" type="button">게임 종료</button></div>
         </header>
         <section id="game-menu" hidden>
-            <p class="menu-intro">시청자와 함께하는 주디의 게임방</p>
-            <div class="game-cards">
-                <button type="button" class="game-card marble-card" data-game-select="marble"><span class="card-icon">●</span><span class="card-kicker">MARBLE RACE · 끝까지 모르는 승부</span><strong>굴려굴려게임</strong><span>공 하나에 내 닉네임을 싣고,<br>돌고 튕기는 장애물을 지나 결승선까지!</span><b>게임 열기 →</b></button>
+            <div id="game-selection" class="game-cards">
+                <button type="button" id="game-open-maps" class="game-card marble-card"><span class="card-icon" aria-hidden="true">●</span><strong>굴려굴려게임</strong><span>시청자의 공이 장애물을 지나 결승선까지 달립니다.</span><b>맵 고르기 →</b></button>
             </div>
-            <p class="menu-footnote">채팅 · 캠 위치는 그대로, 원하는 게임을 선택하세요.</p><p id="game-menu-error" role="status"></p>
+            <div id="game-map-selection" class="game-cards" hidden>
+                <button type="button" class="game-card marble-card" data-map-select="marble"><span class="card-icon" aria-hidden="true">●</span><strong>기본 코스</strong><span>구불구불한 트랙과 역전 갈림길</span><b>코스 열기 →</b></button>
+                <button type="button" class="game-card moon-card" data-map-select="moon"><span class="card-icon" aria-hidden="true">☾</span><strong>달빛 놀이공원</strong><span>별 범퍼와 회전목마, 좌우로 중력이 바뀌는 두 가로 트랙</span><b>코스 열기 →</b></button>
+            </div>
+            <p id="game-menu-error" role="status"></p>
         </section>
         <div id="game-play" hidden>
         <p id="game-control-warning" role="status" hidden>다른 YoBot 탭 또는 창에서 게임을 조작 중입니다. 이 화면에서 진행하려면 ‘조작권 가져오기’를 누르세요.</p>

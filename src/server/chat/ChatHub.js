@@ -77,6 +77,7 @@ export default class ChatHub {
                 this.gameHost = ws;
                 if (!this.game) {
                     this.game = new MarbleGame({
+                        mapId: query.get('map'),
                         excludedNicknames: config.CHAT_HISTORY?.EXCLUDED_NICKNAMES,
                         onChange: state => this.sendGameState(state)
                     });

@@ -1,7 +1,7 @@
-import AvatarStore, { avatarForMessage } from './AvatarStore.js';
+import AvatarStore, { avatarForMessage, twitchAvatarLogin } from './AvatarStore.js';
 import { normalizeHistoryMessage } from '../history/normalizeHistoryMessage.js';
 
-import { TRACK } from '../../client/game/marbleTrack.js';
+import { TRACK, getMarbleTrack } from '../../client/game/marbleTrack.js';
 
 const DEVELOPER_CHZZK_ID = '50829cb1f5ec5f3a202481fca210717b';
 const DEVELOPER_CHZZK_JOIN_EMOTE = 'https://ssl.pstatic.net/static/nng/glive/icon/b_05.gif';
@@ -9,8 +9,9 @@ const DEVELOPER_SOOP_ID = 'lmhkiu';
 const DEVELOPER_SOOP_JOIN_EMOTE = '/하하/';
 
 export default class MarbleGame {
-    constructor({ onChange = () => {}, excludedNicknames = [] } = {}) {
+    constructor({ onChange = () => {}, excludedNicknames = [], mapId } = {}) {
         this.onChange = onChange;
+        this.mapId = getMarbleTrack(mapId).id;
         this.excluded = new Set(excludedNicknames.filter(name => name.trim().normalize() !== '지니주디'));
         this.entrants = new Map();
         this.avatars = new AvatarStore();
@@ -25,7 +26,7 @@ export default class MarbleGame {
     }
 
     snapshot() {
-        return { ...this.state, entrants: this.entrants.size, roster: [...this.entrants.values()], maxPlayers: this.maxPlayers };
+        return { ...this.state, mapId: this.mapId, entrants: this.entrants.size, roster: [...this.entrants.values()], maxPlayers: this.maxPlayers };
     }
 
     emit() { this.onChange(this.snapshot()); }
@@ -53,9 +54,10 @@ export default class MarbleGame {
         if (!this.entrants.has(key) && this.entrants.size >= this.maxPlayers) return;
         const existing = this.entrants.get(key);
         const avatarUrl = avatarForMessage(message, person) || existing?.avatarUrl || '';
-        if (existing?.nickname === person.nickname && existing.avatarUrl === avatarUrl) return;
-        const avatarLookup = person.platform === 'chzzk' && /^[a-f0-9]{32}$/i.test(person.userId);
-        this.entrants.set(key, { key, platform: person.platform, userId: person.userId, nickname: person.nickname, avatarUrl, avatarLookup });
+        const login = person.platform === 'twitch' ? twitchAvatarLogin(message.login) || existing?.login || '' : '';
+        if (existing?.nickname === person.nickname && existing.avatarUrl === avatarUrl && existing.login === login) return;
+        const avatarLookup = Boolean(login) || (person.platform === 'chzzk' && /^[a-f0-9]{32}$/i.test(person.userId));
+        this.entrants.set(key, { key, platform: person.platform, userId: person.userId, nickname: person.nickname, avatarUrl, avatarLookup, login });
         this.emit();
     }
 

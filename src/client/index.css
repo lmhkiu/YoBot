@@ -19,7 +19,7 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
 .game-stats span { color: #c3acb7; font-size: 11px; }
 .game-stats strong { color: #f8ddbc; font-size: 19px; }
 #game-container { flex: 1 0 310px; min-height: 310px; position: relative; overflow: hidden; border-radius: 13px; background: #f8e6d5; box-shadow: 0 10px 35px #0005; }
-#game-container canvas { display: block; }
+#game-container canvas { display: block; position: absolute; inset: 0; }
 .game-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .game-actions button { border: 1px solid #a97487; border-radius: 7px; padding: 7px 12px; color: #ffeaf0; background: #654353; cursor: pointer; font: inherit; font-size: 12px; }
 .game-actions button:first-child { background: #c97188; color: #fff; }
@@ -280,17 +280,27 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
 }
 
 
-#save-memo-btn {
+.memo-actions {
+    flex: 0 0 68px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 
-    width: 100px;
-    margin: 0 10px;
-    padding: 10px 15px;
+.memo-actions button {
+    padding: 6px 5px;
     background-color: #5b2dff;
-    color: #000000;
+    color: #fff;
+    font-size: 11px;
     font-weight: bold;
     border: 1px solid #a2a2a2;
     border-radius: 8px;
     cursor: pointer;
+    white-space: nowrap;
+}
+
+#open-game-btn {
+    background-color: #b32636;
 }
 .chat-message-nickname[data-history-user] { cursor: pointer; }
 .chat-message-nickname[data-history-user]:hover { text-decoration: underline; }
@@ -298,7 +308,6 @@ body { display: flex; height: 100vh; margin: 0; overflow: hidden; background: #2
 
 #broadcast-sidebar .memo-container { flex-wrap: wrap; gap: 6px; }
 #broadcast-sidebar #memo-input { flex: 1 1 130px; min-width: 0; margin: 0; font-size: 12px; }
-#broadcast-sidebar #save-memo-btn { flex: 0 0 68px; width: auto; margin: 0; padding: 10px 5px; white-space: nowrap; font-size: 11px; color: #fff; }
 #broadcast-sidebar .memo-status { flex: 0 0 100%; font-size: 10px; line-height: 15px; }
 
 body.game-mode #chat-controller { display: none; }
@@ -313,22 +322,24 @@ body:not(.game-mode) #broadcast-sidebar { width: 100%; min-width: 0; flex: 1 1 a
 [hidden] { display: none !important; }
 #game-play { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 9px; }
 #game-menu { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0; }
-.menu-intro { color: #e7c5cf; font-size: 17px; }
 .game-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .game-card { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 22px; min-height: 340px; padding: 28px; border: 1px solid #947384; border-radius: 20px; color: #ffeaf1; background: linear-gradient(150deg, #684554, #382d3c); cursor: pointer; font: inherit; transition: transform .15s, border-color .15s; }
 .game-card:hover { transform: translateY(-4px); border-color: #ffe0ea; }
 .marble-card { background: linear-gradient(150deg, #234757, #1c283d); border-color: #558c95; color: #dffcf4; }
+.moon-card { background: linear-gradient(90deg, #101a37ee, #18254ba6), url('assets/game/marble/moon-park.webp') center 22% / cover; border-color: #8c82ad; color: #fff0cc; }
+.moon-card .card-icon { color: #ffe19b; }
 .card-icon { font-size: 64px; line-height: 1; color: #e3a0b6; }
 .marble-card .card-icon { color: #85e1c7; text-shadow: 16px 9px #edb270, -15px 18px #9b97dc; }
 .card-kicker { font-size: 10px; letter-spacing: 1px; opacity: .75; }
 .game-card strong { font-size: clamp(23px, 2.5vw, 38px); }
 .game-card > span:not(.card-icon):not(.card-kicker) { font-size: 13px; line-height: 1.9; opacity: .8; }
 .game-card b { font-size: 13px; margin-top: auto; }
-.menu-footnote { color: #ad9eab; font-size: 12px; margin-top: 24px; }
 #game-menu-error { color: #ffa7b6; }
+#game-menu-error:empty { display: none; }
 #game-menu-back { border: 1px solid #88768e; border-radius: 7px; padding: 7px 12px; background: #34303e; color: #e8dfea; cursor: pointer; white-space: nowrap; }
 #game-take-control { align-self: flex-start; border: 1px solid #548e96; border-radius: 7px; padding: 7px 12px; background: #245b62; color: #e7fffa; cursor: pointer; }
 body.marble-mode #game-panel { background: radial-gradient(ellipse at top, #253d4d, #161d2b 75%); }
+body.moon-mode #game-panel { background: radial-gradient(ellipse at top, #30365a, #151b34 75%); }
 body.marble-mode .game-eyebrow { display: none; }
 body.marble-mode #game-container { background: #0d1c2b; }
 body.marble-mode .game-actions button:first-child { background: #307e76; }
@@ -338,16 +349,28 @@ body.marble-mode .game-actions button:first-child { background: #307e76; }
 #marble-settings label { flex-basis: 100%; }
 #marble-settings input { width: 74px; padding: 7px 9px; border: 1px solid #548e96; border-radius: 7px; background: #132c3c; color: #e4fff8; font: inherit; }
 #marble-settings span { color: #839fa9; font-size: 10px; }
-.marble-toolbar { display: flex; flex: 0 0 146px; flex-direction: column; align-self: center; gap: 8px; }
+.marble-toolbar { display: flex; flex-direction: column; gap: 8px; }
 .marble-toolbar .game-stats { flex-direction: column; gap: 3px; }
 .marble-toolbar .game-stats > div { justify-content: space-between; gap: 4px; padding: 4px 7px; border-radius: 6px; }
 .marble-toolbar .game-stats strong { font-size: 14px; }
 .marble-toolbar .game-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
 .marble-toolbar .game-actions button { min-width: 0; padding: 5px 3px; font-size: 11px; }
 
-.game-stage { display: flex; justify-content: center; gap: 10px; flex: 1 0 350px; min-height: 350px; height: 0; container-type: size; }
-.game-stage #game-container { flex: 0 1 calc(100cqh * 8 / 7); min-width: 0; min-height: 0; }
-#marble-results { flex: 0 0 170px; min-width: 0; min-height: 0; height: 100%; max-height: 100%; overflow-y: auto; background: #0e1e2c; border: 1px solid #416371; border-radius: 12px; padding: 12px; }
+#game-panel:has(#game-stage:not([hidden])) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(152px, 11vw, 194px) clamp(180px, 14vw, 240px);
+    grid-template-rows: auto minmax(340px, 1fr) auto;
+    gap: 9px 10px;
+    padding: 8px 12px 8px 8px;
+}
+#game-play:has(#game-stage:not([hidden])), #game-stage:not([hidden]) { display: contents; }
+#game-panel:has(#game-stage:not([hidden])) .game-heading { grid-area: 1 / 3; flex-wrap: wrap; gap: 6px; }
+#game-panel:has(#game-stage:not([hidden])) .game-heading h1 { font-size: 19px; }
+#game-panel:has(#game-stage:not([hidden])) .game-heading-actions { flex-wrap: wrap; gap: 6px; }
+#game-container { grid-area: 1 / 1 / 3 / 2; min-width: 0; min-height: 0; }
+#marble-results { grid-area: 1 / 2 / 3 / 3; min-width: 0; min-height: 0; overflow-y: auto; background: #0e1e2c; border: 1px solid #416371; border-radius: 12px; padding: 12px; }
+.marble-toolbar { grid-area: 2 / 3; align-self: start; }
+#game-panel:has(#game-stage:not([hidden])) .game-lineup { grid-area: 3 / 1 / 4 / -1; }
 #marble-results h2 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 8px; font-size: 14px; margin: 0 0 8px; color: #bcebdd; }
 #marble-finish-count { float: right; font-size: 11px; color: #83aeb3; }
 #marble-finish-empty { color: #78909e; font-size: 11px; line-height: 1.8; }
@@ -358,10 +381,13 @@ body.marble-mode .game-actions button:first-child { background: #307e76; }
 #marble-finish-list span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #marble-finish-list small { color: #849fab; font-size: 10px; }
 @media (max-width: 1050px) {
-    .game-stage { display: grid; grid-template-columns: minmax(0, 1fr) 135px; grid-template-rows: auto minmax(0, 1fr); }
-    .marble-toolbar { grid-column: 1 / -1; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
-    #marble-settings label { flex-basis: auto; }
-    .marble-toolbar .game-stats { flex-direction: row; flex-wrap: wrap; }
-    .marble-toolbar .game-actions { display: flex; justify-content: flex-start; }
-    #marble-results { padding: 9px; }
+    #game-panel:has(#game-stage:not([hidden])) {
+        grid-template-columns: minmax(0, 1fr) 150px;
+        grid-template-rows: auto auto minmax(180px, 1fr) auto;
+    }
+    #game-panel:has(#game-stage:not([hidden])) .game-heading { grid-area: 1 / 2; }
+    #game-container { grid-area: 1 / 1 / 4 / 2; }
+    .marble-toolbar { grid-area: 2 / 2; }
+    #marble-results { grid-area: 3 / 2; padding: 9px; }
+    #game-panel:has(#game-stage:not([hidden])) .game-lineup { grid-area: 4 / 1 / 5 / -1; }
 }
