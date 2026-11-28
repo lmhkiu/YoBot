@@ -1,5 +1,5 @@
 {
-  "version": "1.0.44",
+  "version": "1.0.45",
   "arch": "x64",
   "nodePath": "runtime/node-v24.13.0-win-x64/node.exe",
   "files": [
@@ -41,7 +41,7 @@
     },
     {
       "path": "node_modules/.package-lock.json",
-      "sha256": "bc9542862280627aef63d64d868f31e108d9bd87ec6a918bd543e15a890bd61b"
+      "sha256": "a02fdd768308ac3de8e62cd4dcf83f43edf93b4a5788f70ca12e71cb12a49487"
     },
     {
       "path": "node_modules/accepts/HISTORY.md",
@@ -3993,15 +3993,15 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "93cb9bd235f9ac8730bb5350279666ce4e6cffb154a4b28c4b94fc9aa1fd2780"
+      "sha256": "295f7ebf2e4b523d3e1f380c28e24b3da96b03ac116e655420a7e8b3894edc5b"
     },
     {
       "path": "package.json",
-      "sha256": "f6b7f8811f3f37a65f9f4c48aa6851424f911ad6e712144f1527229a83eec32c"
+      "sha256": "88bc9a6a9bbee52b55836e789984c2f671c68898080ba845a5f5f34613015b01"
     },
     {
       "path": "README.md",
-      "sha256": "2daa62505b26685f6dc281871f61a37ab0c40daa3bc8777fcabb8d61f6c16b5a"
+      "sha256": "ef8e6f940a33f47261807aaf12e46e1ee8b587704bf15b092615987dec044c14"
     },
     {
       "path": "run.bat",
@@ -4054,6 +4054,10 @@
     {
       "path": "src/client/assets/game/bg/background.png",
       "sha256": "0b3e5ede7d87f195b44a61171c12e3a29caa7b3139aae387911df8f0169e8d93"
+    },
+    {
+      "path": "src/client/assets/game/marble/moon-course.webp",
+      "sha256": "99b31f5ed034dc69e3289c0829ecf9dd25cdf68780b11a38a16e0eaa7e38bd03"
     },
     {
       "path": "src/client/assets/game/marble/moon-gondola.webp",
@@ -4129,19 +4133,19 @@
     },
     {
       "path": "src/client/game/ferrisWheel.js",
-      "sha256": "084efe7b4b2f815cf7e186406d037474f8e2182431deda905ebb408aedb4f93c"
+      "sha256": "16ee9d240bfbb69a67c30e15b84a8d0ddb170c0f949eddb4e5e0c924470ac602"
     },
     {
       "path": "src/client/game/GameController.js",
-      "sha256": "e186806b5cf533cbe406a521da65006253fea16ad0708b4ac7e33f6a5786fefa"
+      "sha256": "b452399f712964db5c8beb20a307f391c65d71ab765d915f8199067dcbb4b60a"
     },
     {
       "path": "src/client/game/GameMenuController.js",
-      "sha256": "66cb82f5bce04d3ba4b5db865990bfcf4b278e04eceb03e92f177d008d604f71"
+      "sha256": "c0307fff74737a4a33d8e9d425238b92f03a250b766aaae08dec8e5d68481162"
     },
     {
       "path": "src/client/game/MarblePhysics.js",
-      "sha256": "85a6690ae467ffd75f8d6d67f05d1ffa1f78e0187088d7455a01811db3a22d1e"
+      "sha256": "499133064f6c8639dddd281d583217e5567d7c0c33a7c6067f38d72ed5849981"
     },
     {
       "path": "src/client/game/marbleTrack.js",
@@ -4153,11 +4157,15 @@
     },
     {
       "path": "src/client/game/scenes/game/MarbleScene.js",
-      "sha256": "3a390f78d615504cf9512432007bfebdd897644a2e3cf112c4aa3bd83956c3fe"
+      "sha256": "ec4b08d1147c64f0c1be40e1f90840440178bd2e73cc3203265cbd13db56e3a2"
+    },
+    {
+      "path": "src/client/game/scenes/game/moonDeck.js",
+      "sha256": "9ca45b6e9719b431569c3df22dd7ab5ca363370ee71d894ab9d770beb1bd71d7"
     },
     {
       "path": "src/client/game/scenes/game/MoonMarbleScene.js",
-      "sha256": "2d9834501930d8e26a4d8e9e3771492c17f336e388f28cc19b0fde9ac6a0a34e"
+      "sha256": "bb7f0719e85d4d43bd549c8ee6941dfc70d56b61be0f4923dd6e67f550a94804"
     },
     {
       "path": "src/client/game/scenes/game/SceneGame.js",
@@ -4181,11 +4189,11 @@
     },
     {
       "path": "src/client/index.css",
-      "sha256": "97f818373d1136303873081dcfdedc6c72b612e7643c7d3368f803c7b72fad93"
+      "sha256": "b03eee66175dc48d4cb51d8a99b0d147ac1044d065a4729ab3d590ed7cbf749f"
     },
     {
       "path": "src/client/index.html",
-      "sha256": "9643180f07d64a71ac10622dc974353673f9812a2a8a06bd67fedfaf073ac7e8"
+      "sha256": "0475f31b16f5ecf47746a219d4b9ab09e8510b68fdcbe6cfe743700d49dfb19d"
     },
     {
       "path": "src/client/lib/phaser.js",
