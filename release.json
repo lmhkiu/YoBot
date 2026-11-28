@@ -1,5 +1,5 @@
 {
-  "version": "1.0.43",
+  "version": "1.0.44",
   "arch": "x64",
   "nodePath": "runtime/node-v24.13.0-win-x64/node.exe",
   "files": [
@@ -41,7 +41,7 @@
     },
     {
       "path": "node_modules/.package-lock.json",
-      "sha256": "40160b4be835551cbd55b689521644e5da6cb5f4af83866aaa3603844c6d3f09"
+      "sha256": "bc9542862280627aef63d64d868f31e108d9bd87ec6a918bd543e15a890bd61b"
     },
     {
       "path": "node_modules/accepts/HISTORY.md",
@@ -3993,15 +3993,15 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "97d6cb8447991dc00d200bb9acb2be84439dc38515f131f948d5a941690fe52f"
+      "sha256": "93cb9bd235f9ac8730bb5350279666ce4e6cffb154a4b28c4b94fc9aa1fd2780"
     },
     {
       "path": "package.json",
-      "sha256": "fa487300ed19632dc911be554a3f5b6f9b7d73be025081b219135bc0933b7af3"
+      "sha256": "f6b7f8811f3f37a65f9f4c48aa6851424f911ad6e712144f1527229a83eec32c"
     },
     {
       "path": "README.md",
-      "sha256": "52a486ac5851be5acdbacc2067eb122c367802fe4897b796116b07f878ca8d80"
+      "sha256": "2daa62505b26685f6dc281871f61a37ab0c40daa3bc8777fcabb8d61f6c16b5a"
     },
     {
       "path": "run.bat",
@@ -4056,6 +4056,14 @@
       "sha256": "0b3e5ede7d87f195b44a61171c12e3a29caa7b3139aae387911df8f0169e8d93"
     },
     {
+      "path": "src/client/assets/game/marble/moon-gondola.webp",
+      "sha256": "41ba95f6cc20e85f01e1a3e1e4f3a58cc50017ff2c82023c571e6ff86dc8be5d"
+    },
+    {
+      "path": "src/client/assets/game/marble/moon-park.webp",
+      "sha256": "b73276d08166577b983326a3d1eaeb5f98c99dfb517d7051b831ac51f5bb2510"
+    },
+    {
       "path": "src/client/assets/game/marble/race-groove.mp3",
       "sha256": "c16594aa7d21e2f5710db371e36a819fc3824d856fa17868bc3224974ccdb07d"
     },
@@ -4089,7 +4097,7 @@
     },
     {
       "path": "src/client/chat/ChatMemoController.js",
-      "sha256": "649fb89ecd89442b8c0d081c0e5d6a5ee6d8a045c6bf51495d0d791e57f4d86f"
+      "sha256": "8c5066bf10c3aa524fff0d25fb30b56d1e2b1ce5bfb22d9c35e0c11b916cc152"
     },
     {
       "path": "src/client/chat/chzzk/ChzzkFormatter.js",
@@ -4120,24 +4128,36 @@
       "sha256": "d9ebdad5a787f9a278f19a0093f02f2eacf4eecd4097fb3f9980c10b28dc83cb"
     },
     {
+      "path": "src/client/game/ferrisWheel.js",
+      "sha256": "084efe7b4b2f815cf7e186406d037474f8e2182431deda905ebb408aedb4f93c"
+    },
+    {
       "path": "src/client/game/GameController.js",
-      "sha256": "25e1d716208f38f7985706c74f5afc7c6a919b1fa6cb97c87ef44657bc0e5bd4"
+      "sha256": "e186806b5cf533cbe406a521da65006253fea16ad0708b4ac7e33f6a5786fefa"
     },
     {
       "path": "src/client/game/GameMenuController.js",
-      "sha256": "391eb6748d55d85da550709e0d6972a5da2bcbc4630623fb38cf0e7aebd11de7"
+      "sha256": "66cb82f5bce04d3ba4b5db865990bfcf4b278e04eceb03e92f177d008d604f71"
     },
     {
       "path": "src/client/game/MarblePhysics.js",
-      "sha256": "f2db1eb386afc5941502a7f0eefd50284172e9ebb4f03eb55e8669456e9ad3f0"
+      "sha256": "85a6690ae467ffd75f8d6d67f05d1ffa1f78e0187088d7455a01811db3a22d1e"
     },
     {
       "path": "src/client/game/marbleTrack.js",
-      "sha256": "9467c8c7a4c7c2016bceccfd1deed1655bd5bd9507d47acee844027f15cf59b7"
+      "sha256": "5479b1b381d005699019341957b0b10594c315ec212e585875c1239a6a0f4ab2"
+    },
+    {
+      "path": "src/client/game/moonTrack.js",
+      "sha256": "bf516b523a4d941deae53e4bc0e08a7d7b37a50740904e59e0fcb9a750e97215"
     },
     {
       "path": "src/client/game/scenes/game/MarbleScene.js",
-      "sha256": "3fced7416868ae2a4354ca25496bd1b49f0f11f1de11d9dc86ed4e75ee3ddd2c"
+      "sha256": "3a390f78d615504cf9512432007bfebdd897644a2e3cf112c4aa3bd83956c3fe"
+    },
+    {
+      "path": "src/client/game/scenes/game/MoonMarbleScene.js",
+      "sha256": "2d9834501930d8e26a4d8e9e3771492c17f336e388f28cc19b0fde9ac6a0a34e"
     },
     {
       "path": "src/client/game/scenes/game/SceneGame.js",
@@ -4161,11 +4181,11 @@
     },
     {
       "path": "src/client/index.css",
-      "sha256": "da307e8d9ef0118e22a68dbbc7e0a218a5c0c1d456f65469eeba4c272840c957"
+      "sha256": "97f818373d1136303873081dcfdedc6c72b612e7643c7d3368f803c7b72fad93"
     },
     {
       "path": "src/client/index.html",
-      "sha256": "90c4049e7847495dde4afd8cce141d8de7c371851cb3749767da276cd8bb4a9b"
+      "sha256": "9643180f07d64a71ac10622dc974353673f9812a2a8a06bd67fedfaf073ac7e8"
     },
     {
       "path": "src/client/lib/phaser.js",
@@ -4181,7 +4201,7 @@
     },
     {
       "path": "src/server/chat/ChatHub.js",
-      "sha256": "39ddcbd7a26af3103cfdb2b98ab845966e0d45b80503a4459d5f1d9872217778"
+      "sha256": "7e297ccebf5b5cdce69045e42a50782278b2efa42921b3a44d1c724d19dbbabf"
     },
     {
       "path": "src/server/chat/chzzk/ChzzkScrapper.js",
@@ -4193,7 +4213,7 @@
     },
     {
       "path": "src/server/chat/twitch/TwitchScrapper.js",
-      "sha256": "a23575e5b2381eaa36b783684ee0f9acbbbdbab59279b6a8a4cacc23f8d22d98"
+      "sha256": "0688d925cf490c8fac6f368a368872ea2071060801c56c0d7f1cbd1709c100ca"
     },
     {
       "path": "src/server/favicon.ico",
@@ -4205,11 +4225,11 @@
     },
     {
       "path": "src/server/game/AvatarStore.js",
-      "sha256": "afc84934e14a5b107e4baa10f464c8c486c5255d14c12626b210d0c3dc6a90da"
+      "sha256": "e56c8c2af6a9c54a5222cde789de59520b3b2cb450623b2fa8adadef4bcf5b6d"
     },
     {
       "path": "src/server/game/MarbleGame.js",
-      "sha256": "6dbed2d49d3248db3064e500fc130a4e073b66e1923c98b2f6101870ec1de6ab"
+      "sha256": "5b4188afc326ddcdaea5400214d7ce242a1a32b04636104833f30651031f4d7d"
     },
     {
       "path": "src/server/gist/GistBackup.js",
